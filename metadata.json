@@ -1,0 +1,5 @@
+{
+  "name": "WesGuard",
+  "description": "A personalized system utility, WesGuard, built with Electron to display system information and clean temporary files.",
+  "requestFramePermissions": []
+}
