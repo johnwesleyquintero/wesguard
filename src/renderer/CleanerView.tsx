@@ -1,52 +1,9 @@
-import React, { useState } from "react";
-
-type Status = "idle" | "analyzing" | "analyzed" | "cleaning" | "cleaned";
-
-const formatBytes = (bytes: number, decimals = 2) => {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-};
+import React from "react";
+import useJunkFileCleaner from "./hooks/useJunkFileCleaner";
 
 const CleanerView: React.FC = () => {
-  const [status, setStatus] = useState<Status>("idle");
-  const [recoverableSpace, setRecoverableSpace] = useState(0);
-
-  const handleAnalyze = async () => {
-    setStatus("analyzing");
-    try {
-      const size = await window.electronAPI.analyzeJunkFiles();
-      setRecoverableSpace(size);
-      setStatus("analyzed");
-    } catch (error) {
-      console.error("Analysis failed:", error);
-      setStatus("idle"); // Reset on error
-    }
-  };
-
-  const handleClean = async () => {
-    setStatus("cleaning");
-    try {
-      const result = await window.electronAPI.executeCleaning();
-      if (result.success) {
-        setStatus("cleaned");
-      } else {
-        // Handle cleaning failure, maybe show a notification
-        setStatus("analyzed"); // Go back to analyzed state
-      }
-    } catch (error) {
-      console.error("Cleaning failed:", error);
-      setStatus("analyzed"); // Go back to analyzed state on error
-    }
-  };
-
-  const handleReset = () => {
-    setStatus("idle");
-    setRecoverableSpace(0);
-  };
+  const { status, recoverableSpace, analyze, clean, reset, formatBytes } =
+    useJunkFileCleaner();
 
   const renderContent = () => {
     switch (status) {
@@ -58,7 +15,7 @@ const CleanerView: React.FC = () => {
               Analyze your system to find temporary files and other junk that
               can be safely removed.
             </p>
-            <button onClick={handleAnalyze}>Analyze</button>
+            <button onClick={analyze}>Analyze</button>
           </>
         );
       case "analyzing":
@@ -79,8 +36,8 @@ const CleanerView: React.FC = () => {
               of junk files.
             </p>
             <div className="button-group">
-              <button onClick={handleClean}>Clean Now</button>
-              <button onClick={handleAnalyze}>Re-analyze</button>
+              <button onClick={clean}>Clean Now</button>
+              <button onClick={analyze}>Re-analyze</button>
             </div>
           </>
         );
@@ -101,7 +58,7 @@ const CleanerView: React.FC = () => {
               <span className="highlight">{formatBytes(recoverableSpace)}</span>
               !
             </p>
-            <button onClick={handleReset}>Finish</button>
+            <button onClick={reset}>Finish</button>
           </>
         );
       default:

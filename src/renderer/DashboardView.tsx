@@ -1,37 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import UsageCard from "./UsageCard";
+import useSystemInfo from "./hooks/useSystemInfo";
 
 const DashboardView: React.FC = () => {
-  const [systemInfo, setSystemInfo] = useState({ os: "", cpu: "" });
-  const [metrics, setMetrics] = useState({ cpu: 0, mem: 0 });
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (window.electronAPI) {
-      const handleSystemInfo = (info: { os: string; cpu: string }) => {
-        setSystemInfo(info);
-        setIsLoading(false);
-      };
-
-      const handleUpdateMetrics = (newMetrics: {
-        cpu: number;
-        mem: number;
-      }) => {
-        setMetrics(newMetrics);
-      };
-
-      window.electronAPI.getSystemInfo();
-      const removeSystemInfoListener =
-        window.electronAPI.onSystemInfoResponse(handleSystemInfo);
-      const removeUpdateMetricsListener =
-        window.electronAPI.onUpdateMetrics(handleUpdateMetrics);
-
-      return () => {
-        removeSystemInfoListener();
-        removeUpdateMetricsListener();
-      };
-    }
-  }, []);
+  const { systemInfo, metrics, isLoading } = useSystemInfo();
 
   return (
     <div className="dashboard-view">
