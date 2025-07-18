@@ -1,6 +1,8 @@
 # WesGuard PC Optimizer
 
-![WesGuard UI Screenshot](https://i.imgur.com/xI1tB7m.png) <!-- It's great to have a hero image. You can replace this URL with your own screenshot! -->
+
+<img width="1405" height="764" alt="image" src="https://github.com/user-attachments/assets/d3711723-e5d6-43ac-a59d-ea04a6c0dd94" />
+
 
 **A modern, lightweight, and powerful PC optimization tool built with Electron and React, designed to be fast, reliable, and easy to use.**
 
