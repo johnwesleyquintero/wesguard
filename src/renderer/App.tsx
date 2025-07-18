@@ -3,6 +3,7 @@ import Sidebar from "./Sidebar";
 import DashboardView from "./DashboardView";
 import CleanerView from "./CleanerView";
 import ReminderView from "./ReminderView";
+import ChatView from "./ChatView";
 import SettingsView from "./SettingsView"; // Import the new SettingsView
 
 const App: React.FC = () => {
@@ -25,6 +26,7 @@ const App: React.FC = () => {
         {activeView === "dashboard" && <DashboardView />}
         {activeView === "cleaner" && <CleanerView />}
         {activeView === "reminder" && <ReminderView />}
+        {activeView === "chat" && <ChatView />}
         {activeView === "settings" && <SettingsView />} {/* Add SettingsView */}
       </main>
     </div>

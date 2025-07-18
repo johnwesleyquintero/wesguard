@@ -6,6 +6,7 @@ import {
   Trash2,
   Bell,
   Shield,
+  MessageSquare,
   Settings, // Import Settings icon
 } from "lucide-react";
 
@@ -52,6 +53,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <Bell />
           {!isSidebarCollapsed && <span>Reminder</span>}
+        </button>
+        <button
+          className={`nav-button ${activeView === "chat" ? "active" : ""}`}
+          onClick={() => setActiveView("chat")}
+        >
+          <MessageSquare />
+          {!isSidebarCollapsed && <span>WesGuardAI</span>}
         </button>
         <button
           className={`nav-button ${activeView === "settings" ? "active" : ""}`}
