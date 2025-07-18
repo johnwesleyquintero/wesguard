@@ -52,7 +52,11 @@ class AppWindowManager {
     if (process.env["VITE_DEV_SERVER_URL"]) {
       this.mainWindow.loadURL(process.env["VITE_DEV_SERVER_URL"]);
     } else {
-      this.mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
+      // For packaged builds, the index.html is typically in the root of the app.asar
+      // or directly in the resources folder. Adjust path for production.
+      this.mainWindow.loadFile(
+        path.join(app.getAppPath(), "dist", "index.html"),
+      );
     }
 
     this.mainWindow.on("closed", () => {

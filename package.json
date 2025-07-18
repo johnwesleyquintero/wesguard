@@ -2,6 +2,7 @@
   "name": "wesguard",
   "version": "1.1.0",
   "private": true,
+  "description": "A modern, lightweight, and powerful PC optimization tool built with Electron and React.",
   "author": "John Wesley Quintero",
   "type": "module",
   "scripts": {
@@ -41,5 +42,25 @@
     "vite-plugin-electron-renderer": "^0.14.5",
     "vite-tsconfig-paths": "^4.3.2"
   },
-  "main": "main.js"
+  "main": "main.js",
+  "build": {
+    "appId": "com.scalesmart.wesguard",
+    "productName": "WesGuard",
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "icon": "assets/icon.svg"
+    },
+    "mac": {
+      "icon": "assets/icon.svg"
+    },
+    "linux": {
+      "icon": "assets/icon.svg"
+    }
+  }
 }
