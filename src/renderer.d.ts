@@ -10,7 +10,10 @@ declare global {
       onUpdateMetrics: (
         callback: (metrics: { cpu: number; mem: number }) => void,
       ) => () => void;
-      analyzeJunkFiles: () => Promise<number>;
+      analyzeJunkFiles: () => Promise<{
+        files: { name: string; size: number }[];
+        totalSize: number;
+      }>;
       executeCleaning: () => Promise<{ success: boolean }>;
     };
   }

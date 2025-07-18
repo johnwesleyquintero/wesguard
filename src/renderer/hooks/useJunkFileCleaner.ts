@@ -14,6 +14,9 @@ const formatBytes = (bytes: number, decimals = 2) => {
 const useJunkFileCleaner = () => {
   const [status, setStatus] = useState<Status>("idle");
   const [recoverableSpace, setRecoverableSpace] = useState(0);
+  const [junkFiles, setJunkFiles] = useState<{ name: string; size: number }[]>(
+    [],
+  );
 
   const analyze = useCallback(async () => {
     setStatus("analyzing");
@@ -21,10 +24,11 @@ const useJunkFileCleaner = () => {
       if (!window.electronAPI) {
         throw new Error("Electron API not available");
       }
-      const size = await window.electronAPI.analyzeJunkFiles();
-      setRecoverableSpace(size);
+      const { files, totalSize } = await window.electronAPI.analyzeJunkFiles(); // Destructure files and total size
+      setRecoverableSpace(totalSize);
+      setJunkFiles(files);
       setStatus("analyzed");
-      return size;
+      return { files, totalSize };
     } catch (error) {
       console.error("Analysis failed:", error);
       setStatus("idle"); // Reset on error
@@ -57,9 +61,18 @@ const useJunkFileCleaner = () => {
   const reset = useCallback(() => {
     setStatus("idle");
     setRecoverableSpace(0);
+    setJunkFiles([]);
   }, []);
 
-  return { status, recoverableSpace, analyze, clean, reset, formatBytes };
+  return {
+    status,
+    recoverableSpace,
+    junkFiles,
+    analyze,
+    clean,
+    reset,
+    formatBytes,
+  };
 };
 
 export default useJunkFileCleaner;

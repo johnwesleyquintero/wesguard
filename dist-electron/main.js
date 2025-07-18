@@ -19433,6 +19433,7 @@ ipcMain.on("get-system-info", async (event) => {
 });
 ipcMain.handle("analyze-junk-files", async () => {
   const tempDir = require$$0$1.tmpdir();
+  const junkFiles = [];
   let totalSize = 0;
   try {
     const files = await fs.readdir(tempDir);
@@ -19441,15 +19442,16 @@ ipcMain.handle("analyze-junk-files", async () => {
         const filePath = require$$1$2.join(tempDir, file2);
         const stats = await fs.stat(filePath);
         if (stats.isFile()) {
+          junkFiles.push({ name: file2, size: stats.size });
           totalSize += stats.size;
         }
       } catch (err) {
       }
     }
-    return totalSize;
+    return { files: junkFiles, totalSize };
   } catch (err) {
     console.error("Error analyzing junk files:", err);
-    return 0;
+    return { files: [], totalSize: 0 };
   }
 });
 ipcMain.handle("execute-cleaning", async () => {

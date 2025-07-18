@@ -24,6 +24,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) => {
         >
           Cleaner
         </button>
+        <button
+          className={`nav-button ${activeView === "reminder" ? "active" : ""}`}
+          onClick={() => setActiveView("reminder")}
+        >
+          Reminder
+        </button>
       </nav>
     </aside>
   );

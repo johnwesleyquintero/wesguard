@@ -84,6 +84,7 @@ ipcMain.on("get-system-info", async (event) => {
 // --- Junk File Analyzer ---
 ipcMain.handle("analyze-junk-files", async () => {
   const tempDir = os.tmpdir();
+  const junkFiles = [];
   let totalSize = 0;
 
   try {
@@ -93,16 +94,17 @@ ipcMain.handle("analyze-junk-files", async () => {
         const filePath = path.join(tempDir, file);
         const stats = await fs.stat(filePath);
         if (stats.isFile()) {
+          junkFiles.push({ name: file, size: stats.size });
           totalSize += stats.size;
         }
       } catch (err) {
         // Ignore errors for individual files (e.g., permission denied)
       }
     }
-    return totalSize;
+    return { files: junkFiles, totalSize: totalSize };
   } catch (err) {
     console.error("Error analyzing junk files:", err);
-    return 0; // Return 0 on error
+    return { files: [], totalSize: 0 }; // Return empty array and 0 on error
   }
 });
 
