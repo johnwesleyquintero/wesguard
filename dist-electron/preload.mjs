@@ -1,31 +1,29 @@
 "use strict";
-const o = require("electron"),
-  { contextBridge: r, ipcRenderer: e } = o;
-r.exposeInMainWorld("electronAPI", {
-  getSystemInfo: () => e.send("get-system-info"),
-  onSystemInfoResponse: (t) => {
-    const n = (s, i) => t(i);
-    return (
-      e.on("systemInfoResponse", n),
-      () => {
-        e.removeListener("systemInfoResponse", n);
-      }
-    );
+const require$$0 = require("electron");
+const { contextBridge, ipcRenderer } = require$$0;
+contextBridge.exposeInMainWorld("electronAPI", {
+  getSystemInfo: () => ipcRenderer.send("get-system-info"),
+  onSystemInfoResponse: (callback) => {
+    const listener = (_event, value) => callback(value);
+    ipcRenderer.on("systemInfoResponse", listener);
+    return () => {
+      ipcRenderer.removeListener("systemInfoResponse", listener);
+    };
   },
-  onUpdateMetrics: (t) => {
-    const n = (s, i) => t(i);
-    return (
-      e.on("updateMetrics", n),
-      () => {
-        e.removeListener("updateMetrics", n);
-      }
-    );
+  onUpdateMetrics: (callback) => {
+    const listener = (_event, value) => callback(value);
+    ipcRenderer.on("updateMetrics", listener);
+    return () => {
+      ipcRenderer.removeListener("updateMetrics", listener);
+    };
   },
-  analyzeJunkFiles: () => e.invoke("analyze-junk-files"),
-  executeCleaning: (t) => e.invoke("execute-cleaning", t),
-  getDiskUsage: () => e.invoke("get-disk-usage"),
-  getNetworkActivity: () => e.invoke("get-network-activity"),
-  showReminderNotification: (t, n, s) =>
-    e.send("show-reminder-notification", t, n, s),
-  setSystemMetricsInterval: (t) => e.send("set-system-metrics-interval", t),
+  // Cleaner API
+  analyzeJunkFiles: () => ipcRenderer.invoke("analyze-junk-files"),
+  executeCleaning: (filesToDelete) => ipcRenderer.invoke("execute-cleaning", filesToDelete),
+  getDiskUsage: () => ipcRenderer.invoke("get-disk-usage"),
+  getNetworkActivity: () => ipcRenderer.invoke("get-network-activity"),
+  // Reminder API
+  showReminderNotification: (title, body, sound) => ipcRenderer.send("show-reminder-notification", title, body, sound),
+  // Settings API
+  setSystemMetricsInterval: (interval) => ipcRenderer.send("set-system-metrics-interval", interval)
 });
