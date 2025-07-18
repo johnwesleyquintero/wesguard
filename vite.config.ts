@@ -11,9 +11,11 @@ export default defineConfig({
     electron({
       main: {
         entry: "main.js",
+        outputDir: "dist-electron",
       },
       preload: {
         input: path.join(__dirname, "preload.cjs"),
+        outputDir: "dist-electron",
       },
       renderer: {},
     }),
