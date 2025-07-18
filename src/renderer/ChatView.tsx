@@ -14,13 +14,17 @@ const ChatView: React.FC = () => {
   const [apiKey, setApiKey] = useState("");
   const [isApiKeySet, setIsApiKeySet] = useState(false);
   const [customInstructions, setCustomInstructions] = useState(
-    "You are WesGuardAI, a helpful assistant integrated into the WesGuard PC optimization tool. Help users with their daily tasks, answer questions, and provide assistance with productivity and system optimization."
+    "You are WesGuardAI, a helpful assistant integrated into the WesGuard PC optimization tool. Help users with their daily tasks, answer questions, and provide assistance with productivity and system optimization.",
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKeyStatus, setApiKeyStatus] = useState<"" | "connected" | "error">("");
-  
+  const [apiKeyStatus, setApiKeyStatus] = useState<"" | "connected" | "error">(
+    "",
+  );
+  const [apiKeyError, setApiKeyError] = useState<string | null>(null);
+  const [isApiConfigCollapsed, setIsApiConfigCollapsed] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const genAI = useRef<GoogleGenerativeAI | null>(null);
 
@@ -32,7 +36,9 @@ const ChatView: React.FC = () => {
   // Load saved data from localStorage on component mount
   useEffect(() => {
     const savedApiKey = localStorage.getItem("wesguard-gemini-api-key");
-    const savedInstructions = localStorage.getItem("wesguard-custom-instructions");
+    const savedInstructions = localStorage.getItem(
+      "wesguard-custom-instructions",
+    );
     const savedMessages = localStorage.getItem("wesguard-chat-messages");
 
     if (savedApiKey) {
@@ -48,10 +54,17 @@ const ChatView: React.FC = () => {
 
     if (savedMessages) {
       try {
-        const parsedMessages = JSON.parse(savedMessages).map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp)
-        }));
+        const parsedMessages = JSON.parse(savedMessages).map(
+          (msg: {
+            id: string;
+            type: "user" | "ai" | "system";
+            content: string;
+            timestamp: string;
+          }) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp),
+          }),
+        );
         setMessages(parsedMessages);
       } catch (error) {
         console.error("Error parsing saved messages:", error);
@@ -71,32 +84,33 @@ const ChatView: React.FC = () => {
       setApiKeyStatus("error");
       return;
     }
+    setApiKeyError(null);
 
     try {
       // Test the API key by making a simple request
       const testAI = new GoogleGenerativeAI(apiKey.trim());
-      const model = testAI.getGenerativeModel({ model: "gemini-pro" });
-      
+      const model = testAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
       // Make a test request
       await model.generateContent("Hello");
-      
+
       // If successful, save the API key
       genAI.current = testAI;
       setIsApiKeySet(true);
       setApiKeyStatus("connected");
       localStorage.setItem("wesguard-gemini-api-key", apiKey.trim());
-      
+
       // Add welcome message
       const welcomeMessage: ChatMessage = {
         id: Date.now().toString(),
         type: "system",
         content: "WesGuardAI is now connected and ready to help!",
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      setMessages(prev => [...prev, welcomeMessage]);
-      
+      setMessages((prev) => [...prev, welcomeMessage]);
     } catch (error) {
       console.error("API key validation failed:", error);
+      setApiKeyError((error as Error).message);
       setApiKeyStatus("error");
       setIsApiKeySet(false);
     }
@@ -114,16 +128,18 @@ const ChatView: React.FC = () => {
       id: Date.now().toString(),
       type: "user",
       content: inputMessage.trim(),
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
     setIsLoading(true);
 
     try {
-      const model = genAI.current.getGenerativeModel({ model: "gemini-pro" });
-      
+      const model = genAI.current.getGenerativeModel({
+        model: "gemini-1.5-flash",
+      });
+
       // Prepare the prompt with custom instructions and context
       const prompt = `${customInstructions}
 
@@ -139,21 +155,22 @@ Please provide a helpful response.`;
         id: (Date.now() + 1).toString(),
         type: "ai",
         content: aiResponseText,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
-      
+
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: "system",
-        content: "Sorry, I encountered an error while processing your message. Please check your API key and try again.",
-        timestamp: new Date()
+        content:
+          "Sorry, I encountered an error while processing your message. Please check your API key and try again.",
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -172,53 +189,71 @@ Please provide a helpful response.`;
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
     <div className="chat-view">
       <h2>WesGuardAI Chat</h2>
-      
+
       <div className="chat-container">
         {/* API Key Setup Section */}
         <div className="api-setup-section">
-          <h3>Gemini API Configuration</h3>
-          
-          <div className="api-key-input-group">
-            <input
-              type="password"
-              className="api-key-input"
-              placeholder="Enter your Gemini API Key"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              disabled={isApiKeySet}
-            />
+          <div className="api-setup-header">
+            <h3>Gemini API Configuration</h3>
             <button
-              className="api-key-button"
-              onClick={handleApiKeySubmit}
-              disabled={isApiKeySet}
+              className="collapse-button"
+              onClick={() => setIsApiConfigCollapsed(!isApiConfigCollapsed)}
             >
-              {isApiKeySet ? "Connected" : "Connect"}
+              {isApiConfigCollapsed ? "Show" : "Hide"}
             </button>
           </div>
-          
-          {apiKeyStatus && (
-            <div className={`api-key-status ${apiKeyStatus}`}>
-              {apiKeyStatus === "connected" && "✓ API Key connected successfully"}
-              {apiKeyStatus === "error" && "✗ Invalid API Key or connection failed"}
-            </div>
-          )}
+          {!isApiConfigCollapsed && (
+            <>
+              <div className="api-key-input-group">
+                <input
+                  type="password"
+                  className="api-key-input"
+                  placeholder="Enter your Gemini API Key"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  disabled={isApiKeySet}
+                />
+                <button
+                  className="api-key-button"
+                  onClick={handleApiKeySubmit}
+                  disabled={isApiKeySet}
+                >
+                  {isApiKeySet ? "Connected" : "Connect"}
+                </button>
+              </div>
 
-          {/* Custom Instructions Section */}
-          <div className="custom-instructions-section">
-            <h4>Custom Instructions</h4>
-            <textarea
-              className="custom-instructions-textarea"
-              placeholder="Customize how WesGuardAI should behave and respond..."
-              value={customInstructions}
-              onChange={(e) => handleCustomInstructionsChange(e.target.value)}
-            />
-          </div>
+              {apiKeyStatus && (
+                <div className={`api-key-status ${apiKeyStatus}`}>
+                  {apiKeyStatus === "connected" &&
+                    "✓ API Key connected successfully"}
+                  {apiKeyStatus === "error" &&
+                    "✗ Invalid API Key or connection failed"}
+                  {apiKeyError && (
+                    <div className="api-key-error-details">{apiKeyError}</div>
+                  )}
+                </div>
+              )}
+
+              {/* Custom Instructions Section */}
+              <div className="custom-instructions-section">
+                <h4>Custom Instructions</h4>
+                <textarea
+                  className="custom-instructions-textarea"
+                  placeholder="Customize how WesGuardAI should behave and respond..."
+                  value={customInstructions}
+                  onChange={(e) =>
+                    handleCustomInstructionsChange(e.target.value)
+                  }
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Chat Messages Container */}
@@ -239,13 +274,17 @@ Please provide a helpful response.`;
                 <MessageSquare size={48} />
                 <h3>Welcome to WesGuardAI</h3>
                 <p>
-                  Start a conversation with your AI assistant. I can help you with daily tasks,
-                  answer questions, and provide assistance with productivity and system optimization.
+                  Start a conversation with your AI assistant. I can help you
+                  with daily tasks, answer questions, and provide assistance
+                  with productivity and system optimization.
                 </p>
               </div>
             ) : (
               messages.map((message) => (
-                <div key={message.id} className={`chat-message ${message.type}`}>
+                <div
+                  key={message.id}
+                  className={`chat-message ${message.type}`}
+                >
                   <div>{message.content}</div>
                   <div className="message-timestamp">
                     {formatTime(message.timestamp)}
@@ -253,7 +292,7 @@ Please provide a helpful response.`;
                 </div>
               ))
             )}
-            
+
             {isLoading && (
               <div className="typing-indicator">
                 <span>WesGuardAI is typing</span>
@@ -264,7 +303,7 @@ Please provide a helpful response.`;
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
         </div>
@@ -274,7 +313,7 @@ Please provide a helpful response.`;
           <textarea
             className="chat-input"
             placeholder={
-              isApiKeySet 
+              isApiKeySet
                 ? "Type your message here... (Press Enter to send, Shift+Enter for new line)"
                 : "Please connect your Gemini API key first"
             }

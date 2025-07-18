@@ -32,7 +32,7 @@ const ReminderView: React.FC = () => {
         // Reset all reminders to inactive state on app launch
         const inactiveReminders = parsedReminders.map((reminder: Reminder) => ({
           ...reminder,
-          isActive: false
+          isActive: false,
         }));
         setReminders(inactiveReminders);
       } catch (error) {
@@ -105,11 +105,13 @@ const ReminderView: React.FC = () => {
               intervalRefs.current.delete(id);
             }
             // Find the original reminder data to reset to initial values
-            const originalReminder = prevReminders.find(reminder => reminder.id === id);
-            const originalMinutes = originalReminder ? 
-              parseInt(originalReminder.minutes.toString(), 10) : 
-              parseInt(newReminderMinutes, 10) || 30;
-            
+            const originalReminder = prevReminders.find(
+              (reminder) => reminder.id === id,
+            );
+            const originalMinutes = originalReminder
+              ? parseInt(originalReminder.minutes.toString(), 10)
+              : parseInt(newReminderMinutes, 10) || 30;
+
             return {
               ...r,
               minutes: originalMinutes,
@@ -121,7 +123,7 @@ const ReminderView: React.FC = () => {
         }),
       );
     },
-    [newReminderMinutes]
+    [newReminderMinutes],
   );
 
   const deleteReminder = useCallback((id: string) => {
@@ -168,15 +170,18 @@ const ReminderView: React.FC = () => {
                     alert(`Reminder: ${r.message}`);
                   }
                   // Reset to original time after completion instead of staying at 0
-                  const originalReminder = prevReminders.find(orig => orig.id === r.id);
-                  const originalMinutes = originalReminder ? 
-                    parseInt(originalReminder.minutes.toString(), 10) : 30;
-                  
-                  return { 
-                    ...r, 
+                  const originalReminder = prevReminders.find(
+                    (orig) => orig.id === r.id,
+                  );
+                  const originalMinutes = originalReminder
+                    ? parseInt(originalReminder.minutes.toString(), 10)
+                    : 30;
+
+                  return {
+                    ...r,
                     isActive: false,
                     minutes: originalMinutes,
-                    seconds: 0
+                    seconds: 0,
                   };
                 }
               }
@@ -236,33 +241,35 @@ const ReminderView: React.FC = () => {
         ) : (
           <>
             <div className="saved-reminders-info">
-              <span className="highlight">💾 Auto-saved:</span> Your reminders are automatically saved and will be available when you restart the application.
+              <span className="highlight">💾 Auto-saved:</span> Your reminders
+              are automatically saved and will be available when you restart the
+              application.
             </div>
-          reminders.map((reminder) => (
-            <div
-              key={reminder.id}
-              className={`reminder-card ${reminder.isActive ? "active" : ""}`}
-            >
-              <div className="timer-display">
-                {formatTime(reminder.minutes)}:{formatTime(reminder.seconds)}
+            {reminders.map((reminder) => (
+              <div
+                key={reminder.id}
+                className={`reminder-card ${reminder.isActive ? "active" : ""}`}
+              >
+                <div className="timer-display">
+                  {formatTime(reminder.minutes)}:{formatTime(reminder.seconds)}
+                </div>
+                <p className="reminder-message">{reminder.message}</p>
+                <div className="reminder-actions">
+                  <button onClick={() => toggleReminder(reminder.id)}>
+                    {reminder.isActive ? "Pause" : "Start"}
+                  </button>
+                  <button onClick={() => resetReminder(reminder.id)}>
+                    Reset
+                  </button>
+                  <button
+                    onClick={() => deleteReminder(reminder.id)}
+                    className="delete-button"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-              <p className="reminder-message">{reminder.message}</p>
-              <div className="reminder-actions">
-                <button onClick={() => toggleReminder(reminder.id)}>
-                  {reminder.isActive ? "Pause" : "Start"}
-                </button>
-                <button onClick={() => resetReminder(reminder.id)}>
-                  Reset
-                </button>
-                <button
-                  onClick={() => deleteReminder(reminder.id)}
-                  className="delete-button"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
+            ))}
           </>
         )}
       </div>
