@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Save } from "lucide-react";
 import "./ReminderView.css";
 
 interface Reminder {
@@ -241,7 +242,7 @@ const ReminderView: React.FC = () => {
         ) : (
           <>
             <div className="saved-reminders-info">
-              <span className="highlight">💾 Auto-saved:</span> Your reminders
+              <Save className="highlight" /> Auto-saved: Your reminders
               are automatically saved and will be available when you restart the
               application.
             </div>
