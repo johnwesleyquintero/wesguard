@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from "electron";
+const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
   getSystemInfo: () => ipcRenderer.send("get-system-info"),
@@ -18,5 +18,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
   // Cleaner API
   analyzeJunkFiles: () => ipcRenderer.invoke("analyze-junk-files"),
-  executeCleaning: () => ipcRenderer.invoke("execute-cleaning"),
+  executeCleaning: (filesToDelete) =>
+    ipcRenderer.invoke("execute-cleaning", filesToDelete),
+  getDiskUsage: () => ipcRenderer.invoke("get-disk-usage"),
+  getNetworkActivity: () => ipcRenderer.invoke("get-network-activity"),
+  // Reminder API
+  showReminderNotification: (title, body, sound) =>
+    ipcRenderer.send("show-reminder-notification", title, body, sound),
+  // Settings API
+  setSystemMetricsInterval: (interval) =>
+    ipcRenderer.send("set-system-metrics-interval", interval),
 });

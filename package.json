@@ -2,6 +2,7 @@
   "name": "wesguard",
   "version": "1.1.0",
   "private": true,
+  "author": "John Wesley Quintero",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,8 +14,11 @@
     "check": "node scripts/code-checker.mjs"
   },
   "dependencies": {
+    "chart.js": "^4.5.0",
     "fs-extra": "^11.2.0",
+    "lucide-react": "^0.525.0",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.2.0",
     "systeminformation": "^5.21.22"
   },

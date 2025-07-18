@@ -13,7 +13,7 @@ export default defineConfig({
         entry: "main.js",
       },
       preload: {
-        input: path.join(__dirname, "preload.js"),
+        input: path.join(__dirname, "preload.cjs"),
       },
       renderer: {},
     }),

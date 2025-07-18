@@ -1,22 +1,31 @@
 "use strict";
-const electron = require("electron");
-electron.contextBridge.exposeInMainWorld("electronAPI", {
-  getSystemInfo: () => electron.ipcRenderer.send("get-system-info"),
-  onSystemInfoResponse: (callback) => {
-    const listener = (_event, value) => callback(value);
-    electron.ipcRenderer.on("systemInfoResponse", listener);
-    return () => {
-      electron.ipcRenderer.removeListener("systemInfoResponse", listener);
-    };
+const o = require("electron"),
+  { contextBridge: r, ipcRenderer: e } = o;
+r.exposeInMainWorld("electronAPI", {
+  getSystemInfo: () => e.send("get-system-info"),
+  onSystemInfoResponse: (t) => {
+    const n = (s, i) => t(i);
+    return (
+      e.on("systemInfoResponse", n),
+      () => {
+        e.removeListener("systemInfoResponse", n);
+      }
+    );
   },
-  onUpdateMetrics: (callback) => {
-    const listener = (_event, value) => callback(value);
-    electron.ipcRenderer.on("updateMetrics", listener);
-    return () => {
-      electron.ipcRenderer.removeListener("updateMetrics", listener);
-    };
+  onUpdateMetrics: (t) => {
+    const n = (s, i) => t(i);
+    return (
+      e.on("updateMetrics", n),
+      () => {
+        e.removeListener("updateMetrics", n);
+      }
+    );
   },
-  // Cleaner API
-  analyzeJunkFiles: () => electron.ipcRenderer.invoke("analyze-junk-files"),
-  executeCleaning: () => electron.ipcRenderer.invoke("execute-cleaning")
+  analyzeJunkFiles: () => e.invoke("analyze-junk-files"),
+  executeCleaning: (t) => e.invoke("execute-cleaning", t),
+  getDiskUsage: () => e.invoke("get-disk-usage"),
+  getNetworkActivity: () => e.invoke("get-network-activity"),
+  showReminderNotification: (t, n, s) =>
+    e.send("show-reminder-notification", t, n, s),
+  setSystemMetricsInterval: (t) => e.send("set-system-metrics-interval", t),
 });

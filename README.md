@@ -14,14 +14,23 @@ Developed with a professional workflow, WesGuard leverages a strong, scalable ar
 
 ## Core Features
 
+- **Consistent UI/UX Design:** A unified and modern aesthetic applied across all application tabs for a seamless user experience.
 - **Real-time System Dashboard:** Get an instant, live overview of your system's health, including:
   - Operating System Information
   - CPU Model and Live Usage Percentage
   - Live Memory Usage Percentage
+  - Disk Usage
+  - Network Activity (Rx/Tx)
 
 - **Junk File Cleaner:** Safely analyze and remove temporary files and other system junk to free up valuable disk space.
   - **Analyze:** Scans your system to calculate the total amount of recoverable space.
   - **Clean:** Securely deletes junk files upon user confirmation.
+  - Features a consistent card-like design for improved aesthetics.
+
+- **Reminder Feature:** Set custom reminders with messages and optional system sound notifications to help manage your time or tasks.
+  - Customizable reminder messages.
+  - Option to play system sound notification when a reminder triggers.
+  - Pause, reset, and delete individual reminders.
 
 ## Tech Stack
 
@@ -32,6 +41,7 @@ WesGuard is built on a modern, robust, and scalable technology stack:
 - **Build Tool:** [Vite](https://vitejs.dev/)
 - **Styling:** CSS Modules
 - **Backend/System Interaction:** [Node.js](https://nodejs.org/)
+- **System Information Library:** [systeminformation](https://systeminformation.io/)
 
 ## Getting Started
 
@@ -73,8 +83,18 @@ You must have [Node.js](https://nodejs.org/) (which includes npm) installed on y
 We use a high-quality, automated workflow to ensure code stability.
 
 - **`npm run dev`**: Starts the application in development mode with hot-reloading.
-- **`npm run build`**: Compiles and builds the application for production.
-- **`npm run check`**: Runs our automated Code Quality Framework, which executes formatting, linting, and type-checking in parallel to ensure the codebase is healthy.
+- **`npm run build`**: Compiles and builds the application for production. This command will also package the Electron application into distributable formats (e.g., `.exe` for Windows).
+- **`npm run lint`**: Runs ESLint to check for code quality and style issues.
+- **`npm run preview`**: Previews the frontend build.
+- **`npm run format`**: Formats code using Prettier.
+- **`npm run typecheck`**: Runs TypeScript type checking.
+- **`npm run check`**: Executes our automated Code Quality Framework, which runs formatting, linting, and type-checking in parallel to ensure the codebase is healthy.
+
+## Publishing the Application
+
+To create a publishable version of the application, use the `npm run build` command. This will generate distributable files (e.g., `.exe` for Windows) in the `dist` or `dist_electron` directory.
+
+**Important:** For a professional release, it is highly recommended to code sign your application. This requires obtaining a developer certificate and configuring `electron-builder` to use it. Without code signing, users may encounter security warnings.
 
 ## Future Roadmap (Phase 2)
 
@@ -94,4 +114,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-**Built with ❤️ by The WesGuard Founders.**
+**Built with ❤️ by John Wesley Quintero.**

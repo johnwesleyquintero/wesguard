@@ -1,4 +1,9 @@
-import React from "react";
+import React, { CSSProperties } from "react";
+
+// Define a type for styles that includes custom properties
+interface CustomStyle extends CSSProperties {
+  "--progress-width"?: string;
+}
 
 interface UsageCardProps {
   title: string;
@@ -25,7 +30,16 @@ const UsageCard: React.FC<UsageCardProps> = ({
             <div className="usage-bar-container">
               <div
                 className="usage-bar"
-                style={{ width: `${usagePercentage}%` }}
+                style={
+                  {
+                    "--progress-width": `${usagePercentage}%`,
+                  } as CustomStyle
+                }
+                role="progressbar"
+                aria-valuenow={usagePercentage ?? 0}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={title}
               ></div>
               <span className="usage-percentage">
                 {usagePercentage.toFixed(2)}%
