@@ -100,6 +100,22 @@
   max-width: 900px; /* Max width for reminders list */
 }
 
+.saved-reminders-info {
+  background-color: #2c2c4a;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #b0b0b0;
+  font-size: 0.9em;
+  border-left: 4px solid #6a5acd;
+}
+
+.saved-reminders-info .highlight {
+  color: #6a5acd;
+  font-weight: bold;
+}
+
 .reminder-card {
   background-color: #20203a; /* Secondary Background */
   border-radius: 10px;

@@ -23,6 +23,34 @@ const ReminderView: React.FC = () => {
   // Use a ref to store interval IDs
   const intervalRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
+  // Load saved reminders from localStorage on component mount
+  useEffect(() => {
+    const savedReminders = localStorage.getItem("wesguard-reminders");
+    if (savedReminders) {
+      try {
+        const parsedReminders = JSON.parse(savedReminders);
+        // Reset all reminders to inactive state on app launch
+        const inactiveReminders = parsedReminders.map((reminder: Reminder) => ({
+          ...reminder,
+          isActive: false
+        }));
+        setReminders(inactiveReminders);
+      } catch (error) {
+        console.error("Error parsing saved reminders:", error);
+      }
+    }
+  }, []);
+
+  // Save reminders to localStorage whenever reminders change
+  useEffect(() => {
+    if (reminders.length > 0) {
+      localStorage.setItem("wesguard-reminders", JSON.stringify(reminders));
+    } else {
+      // Remove from localStorage if no reminders exist
+      localStorage.removeItem("wesguard-reminders");
+    }
+  }, [reminders]);
+
   const addReminder = useCallback(() => {
     const minutes = parseInt(newReminderMinutes, 10);
     if (isNaN(minutes) || minutes <= 0) {
@@ -76,9 +104,15 @@ const ReminderView: React.FC = () => {
               clearInterval(intervalId);
               intervalRefs.current.delete(id);
             }
+            // Find the original reminder data to reset to initial values
+            const originalReminder = prevReminders.find(reminder => reminder.id === id);
+            const originalMinutes = originalReminder ? 
+              parseInt(originalReminder.minutes.toString(), 10) : 
+              parseInt(newReminderMinutes, 10) || 30;
+            
             return {
               ...r,
-              minutes: parseInt(newReminderMinutes, 10) || 30, // Reset to initial input or default
+              minutes: originalMinutes,
               seconds: 0,
               isActive: false,
             };
@@ -87,7 +121,7 @@ const ReminderView: React.FC = () => {
         }),
       );
     },
-    [newReminderMinutes],
+    [newReminderMinutes]
   );
 
   const deleteReminder = useCallback((id: string) => {
@@ -133,7 +167,17 @@ const ReminderView: React.FC = () => {
                   } else {
                     alert(`Reminder: ${r.message}`);
                   }
-                  return { ...r, isActive: false };
+                  // Reset to original time after completion instead of staying at 0
+                  const originalReminder = prevReminders.find(orig => orig.id === r.id);
+                  const originalMinutes = originalReminder ? 
+                    parseInt(originalReminder.minutes.toString(), 10) : 30;
+                  
+                  return { 
+                    ...r, 
+                    isActive: false,
+                    minutes: originalMinutes,
+                    seconds: 0
+                  };
                 }
               }
               return r;
@@ -190,6 +234,10 @@ const ReminderView: React.FC = () => {
         {reminders.length === 0 ? (
           <p>No reminders set. Add one above!</p>
         ) : (
+          <>
+            <div className="saved-reminders-info">
+              <span className="highlight">💾 Auto-saved:</span> Your reminders are automatically saved and will be available when you restart the application.
+            </div>
           reminders.map((reminder) => (
             <div
               key={reminder.id}
@@ -215,6 +263,7 @@ const ReminderView: React.FC = () => {
               </div>
             </div>
           ))
+          </>
         )}
       </div>
     </div>
