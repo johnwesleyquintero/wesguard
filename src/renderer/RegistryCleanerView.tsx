@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useRegistryCleaner } from "./hooks/useRegistryCleaner";
 import { Trash2, Shield, RotateCcw, Check, AlertTriangle } from "lucide-react";
-import "./RegistryCleanerView.css";
 import type { RegistryBackup } from "./types";
+import { Button } from "./components/Button";
+import { Card } from "./components/Card";
 
 export const RegistryCleanerView: React.FC = () => {
   const {
@@ -69,28 +70,28 @@ export const RegistryCleanerView: React.FC = () => {
       <div className="registry-cleaner-header">
         <h2>Registry Cleaner</h2>
         <div className="header-actions">
-          <button
-            className="scan-button"
+          <Button
             onClick={() => scanRegistry()}
             disabled={scanning}
+            variant="primary"
           >
             {scanning ? "Scanning..." : "Scan Registry"}
-          </button>
+          </Button>
           {issues.length > 0 && (
-            <button
-              className="clean-button"
+            <Button
               onClick={handleClean}
               disabled={cleaning || selectedItems.size === 0}
+              variant="danger"
             >
               <Trash2 size={16} />
               {cleaning ? "Cleaning..." : "Clean Selected"}
-            </button>
+            </Button>
           )}
         </div>
       </div>
 
       {issues.length > 0 && (
-        <div className="registry-issues">
+        <Card className="registry-issues">
           <div className="issues-header">
             <label>
               <input
@@ -124,11 +125,11 @@ export const RegistryCleanerView: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
       {backups.length > 0 && (
-        <div className="registry-backups">
+        <Card className="registry-backups">
           <h3>Backup History</h3>
           <div className="backups-list">
             {backups.map((backup) => (
@@ -139,18 +140,18 @@ export const RegistryCleanerView: React.FC = () => {
                     Backup from {new Date(backup.timestamp).toLocaleString()}
                   </span>
                 </div>
-                <button
-                  className="restore-button"
+                <Button
                   onClick={() => handleRestore(backup)}
                   disabled={restoring}
+                  variant="secondary"
                 >
                   <RotateCcw size={16} />
                   {restoring ? "Restoring..." : "Restore"}
-                </button>
+                </Button>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
       {!scanning && issues.length === 0 && (

@@ -38,4 +38,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   aiLogPerformance: (data) => ipcRenderer.invoke("ai-log-performance", data),
   aiLogCrash: (data) => ipcRenderer.invoke("ai-log-crash", data),
   aiGetSuggestions: () => ipcRenderer.invoke("ai-get-suggestions"),
+  // Memory Optimizer API
+  memoryInitDataDir: () => ipcRenderer.invoke("memory-init-data-dir"),
+  memoryGetCurrentUsage: () => ipcRenderer.invoke("memory-get-current-usage"),
+  memoryOptimize: () => ipcRenderer.invoke("memory-optimize"),
+  memoryGetHistory: () => ipcRenderer.invoke("memory-get-history"),
 });

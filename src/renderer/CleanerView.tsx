@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import "./CleanerView.css";
 import useJunkFileCleaner from "./hooks/useJunkFileCleaner";
+import { Button } from "./components/Button";
+import { Card } from "./components/Card";
 
 const CleanerView: React.FC = () => {
   const {
@@ -59,34 +60,34 @@ const CleanerView: React.FC = () => {
         return (
           <>
             <h2>Junk File Cleaner</h2>
-            <div className="cleaner-card">
+            <Card>
               <p>
                 Analyze your system to find temporary files and other junk that
                 can be safely removed.
               </p>
-              <button onClick={analyze} disabled={status !== "idle"}>
+              <Button onClick={analyze} disabled={status !== "idle"}>
                 Analyze
-              </button>
-            </div>
+              </Button>
+            </Card>
           </>
         );
       case "analyzing":
         return (
           <>
             <h2>Analyzing...</h2>
-            <div className="cleaner-card">
+            <Card>
               <div className="loading-indicator">
                 <div className="spinner"></div>
                 <p>{progress || "Scanning for junk files..."}</p>
               </div>
-            </div>
+            </Card>
           </>
         );
       case "analyzed":
         return (
           <>
             <h2 className="analysis-complete-title">Analysis Complete!</h2>
-            <div className="cleaner-card analyzed-state-card">
+            <Card className="analyzed-state-card">
               {error && <p className="error-message">Error: {error}</p>}
               {junkFiles.length > 0 ? (
                 <>
@@ -143,10 +144,10 @@ const CleanerView: React.FC = () => {
                     </ul>
                   </div>
                   <div className="action-buttons">
-                    <button
+                    <Button
                       onClick={handleCleanClick}
                       disabled={selectedFiles.length === 0}
-                      className="clean-selected-button"
+                      variant="primary"
                     >
                       Clean Selected (
                       {formatBytes(
@@ -155,10 +156,10 @@ const CleanerView: React.FC = () => {
                           .reduce((acc, f) => acc + f.size, 0),
                       )}
                       )
-                    </button>
-                    <button onClick={reset} className="analyze-again-button">
+                    </Button>
+                    <Button onClick={reset} variant="secondary">
                       Analyze Again
-                    </button>
+                    </Button>
                   </div>
                 </>
               ) : (
@@ -166,31 +167,31 @@ const CleanerView: React.FC = () => {
                   No junk files found. Your system is clean!
                 </p>
               )}
-            </div>
+            </Card>
           </>
         );
       case "cleaning":
         return (
           <>
             <h2>Cleaning...</h2>
-            <div className="cleaner-card">
+            <Card>
               <div className="loading-indicator">
                 <div className="spinner"></div>
                 <p>{progress || "Removing junk files..."}</p>
               </div>
-            </div>
+            </Card>
           </>
         );
       case "cleaned":
         return (
           <>
             <h2>Cleaning Complete!</h2>
-            <div className="cleaner-card">
+            <Card>
               <p>
                 Successfully recovered {formatBytes(recoverableSpace)} of space.
               </p>
-              <button onClick={reset}>Clean Again</button>
-            </div>
+              <Button onClick={reset}>Clean Again</Button>
+            </Card>
           </>
         );
       default:
@@ -204,18 +205,18 @@ const CleanerView: React.FC = () => {
 
       {showConfirmDialog && (
         <div className="confirm-dialog-overlay">
-          <div className="confirm-dialog">
+          <Card className="confirm-dialog">
             <h3>Confirm Cleaning</h3>
             <p>Are you sure you want to delete the selected files?</p>
             <div className="dialog-actions">
-              <button onClick={confirmClean} className="confirm-button">
+              <Button onClick={confirmClean} variant="danger">
                 Yes, Clean
-              </button>
-              <button onClick={cancelClean} className="cancel-button">
+              </Button>
+              <Button onClick={cancelClean} variant="secondary">
                 Cancel
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>

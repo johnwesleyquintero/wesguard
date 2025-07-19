@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Save } from "lucide-react";
-import "./ReminderView.css";
+import { Button } from "./components/Button";
+import { Card } from "./components/Card";
 
 interface Reminder {
   id: string;
@@ -210,7 +211,7 @@ const ReminderView: React.FC = () => {
     <div className="reminder-view">
       <h2>Reminders</h2>
 
-      <div className="add-reminder-section">
+      <Card className="add-reminder-section">
         <h3>Add New Reminder</h3>
         <input
           type="number"
@@ -218,12 +219,14 @@ const ReminderView: React.FC = () => {
           onChange={(e) => setNewReminderMinutes(e.target.value)}
           placeholder="Minutes"
           min="1"
+          className="input"
         />
         <input
           type="text"
           value={newReminderMessage}
           onChange={(e) => setNewReminderMessage(e.target.value)}
           placeholder="Message"
+          className="input"
         />
         <label className="sound-toggle">
           <input
@@ -233,8 +236,8 @@ const ReminderView: React.FC = () => {
           />
           Play Sound
         </label>
-        <button onClick={addReminder}>Add Reminder</button>
-      </div>
+        <Button onClick={addReminder}>Add Reminder</Button>
+      </Card>
 
       <div className="reminders-list">
         {reminders.length === 0 ? (
@@ -247,7 +250,7 @@ const ReminderView: React.FC = () => {
               application.
             </div>
             {reminders.map((reminder) => (
-              <div
+              <Card
                 key={reminder.id}
                 className={`reminder-card ${reminder.isActive ? "active" : ""}`}
               >
@@ -256,20 +259,23 @@ const ReminderView: React.FC = () => {
                 </div>
                 <p className="reminder-message">{reminder.message}</p>
                 <div className="reminder-actions">
-                  <button onClick={() => toggleReminder(reminder.id)}>
+                  <Button onClick={() => toggleReminder(reminder.id)}>
                     {reminder.isActive ? "Pause" : "Start"}
-                  </button>
-                  <button onClick={() => resetReminder(reminder.id)}>
+                  </Button>
+                  <Button
+                    onClick={() => resetReminder(reminder.id)}
+                    variant="secondary"
+                  >
                     Reset
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => deleteReminder(reminder.id)}
-                    className="delete-button"
+                    variant="danger"
                   >
                     Delete
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
             ))}
           </>
         )}

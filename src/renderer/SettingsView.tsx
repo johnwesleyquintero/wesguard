@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useSystemInfo from "./hooks/useSystemInfo";
-import "./SettingsView.css"; // Assuming you'll create this CSS file
+import { Button } from "./components/Button";
+import { Card } from "./components/Card";
 
 const SettingsView: React.FC = () => {
   const { updateInterval, setMetricsUpdateInterval } = useSystemInfo();
@@ -26,7 +27,7 @@ const SettingsView: React.FC = () => {
     <div className="settings-view">
       <h2>Settings</h2>
 
-      <section className="settings-section">
+      <Card className="settings-section">
         <h3>System Metrics</h3>
         <div className="setting-item">
           <label htmlFor="update-interval">Update Interval (seconds):</label>
@@ -36,10 +37,11 @@ const SettingsView: React.FC = () => {
             value={localInterval}
             onChange={handleIntervalChange}
             min="1"
+            className="input"
           />
-          <button onClick={handleSaveSettings}>Save</button>
+          <Button onClick={handleSaveSettings}>Save</Button>
         </div>
-      </section>
+      </Card>
 
       {/* Add more settings sections here as needed */}
     </div>

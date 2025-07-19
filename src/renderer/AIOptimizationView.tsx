@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import "./AIOptimizationView.css";
 import type { ElectronAPI } from "./types";
+import { Button } from "./components/Button";
+import { Card } from "./components/Card";
 
 const AIOptimizationView: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -41,21 +42,21 @@ const AIOptimizationView: React.FC = () => {
       <h2>AI-Powered Optimization</h2>
       <p>Get predictive maintenance suggestions based on system analysis.</p>
 
-      <button onClick={fetchSuggestions} disabled={loading}>
+      <Button onClick={fetchSuggestions} disabled={loading}>
         {loading ? "Analyzing..." : "Analyze System for Suggestions"}
-      </button>
+      </Button>
 
       {error && <p className="error-message">{error}</p>}
 
       {suggestions.length > 0 && (
-        <div className="suggestions-list">
+        <Card className="suggestions-list">
           <h3>Suggestions:</h3>
           <ul>
             {suggestions.map((suggestion, index) => (
               <li key={index}>{suggestion}</li>
             ))}
           </ul>
-        </div>
+        </Card>
       )}
 
       {suggestions.length === 0 && !loading && !error && (

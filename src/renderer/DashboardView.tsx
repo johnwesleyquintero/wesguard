@@ -1,8 +1,8 @@
 import React from "react";
 import UsageCard from "./UsageCard";
 import useSystemInfo from "./hooks/useSystemInfo";
-import "./DashboardView.css"; // Import the new CSS file
 import { Line } from "react-chartjs-2";
+import { Card } from "./components/Card";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -138,19 +138,19 @@ const DashboardView: React.FC = () => {
         />
       </div>
 
-      <div className="chart-container">
+      <Card className="chart-container">
         <h3>Historical CPU Usage</h3>
         <div className="chart-wrapper">
           <Line data={cpuChartData} options={chartOptions} />
         </div>
-      </div>
+      </Card>
 
-      <div className="chart-container">
+      <Card className="chart-container">
         <h3>Historical Memory Usage</h3>
         <div className="chart-wrapper">
           <Line data={memChartData} options={chartOptions} />
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

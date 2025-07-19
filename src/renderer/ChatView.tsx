@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Send, MessageSquare, Trash2 } from "lucide-react";
-import "./ChatView.css";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Button } from "./components/Button";
+import { Card } from "./components/Card";
 
 interface ChatMessage {
   id: string;
@@ -198,34 +199,30 @@ Please provide a helpful response.`;
 
       <div className="chat-container">
         {/* API Key Setup Section */}
-        <div className="api-setup-section">
+        <Card className="api-setup-section">
           <div className="api-setup-header">
             <h3>Gemini API Configuration</h3>
-            <button
-              className="collapse-button"
+            <Button
+              variant="ghost"
               onClick={() => setIsApiConfigCollapsed(!isApiConfigCollapsed)}
             >
               {isApiConfigCollapsed ? "Show" : "Hide"}
-            </button>
+            </Button>
           </div>
           {!isApiConfigCollapsed && (
             <>
-              <div className="api-key-input-group">
+              <div className="input-group">
                 <input
                   type="password"
-                  className="api-key-input"
+                  className="input"
                   placeholder="Enter your Gemini API Key"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   disabled={isApiKeySet}
                 />
-                <button
-                  className="api-key-button"
-                  onClick={handleApiKeySubmit}
-                  disabled={isApiKeySet}
-                >
+                <Button onClick={handleApiKeySubmit} disabled={isApiKeySet}>
                   {isApiKeySet ? "Connected" : "Connect"}
-                </button>
+                </Button>
               </div>
 
               {apiKeyStatus && (
@@ -241,10 +238,10 @@ Please provide a helpful response.`;
               )}
 
               {/* Custom Instructions Section */}
-              <div className="custom-instructions-section">
+              <div className="input-group">
                 <h4>Custom Instructions</h4>
                 <textarea
-                  className="custom-instructions-textarea"
+                  className="input"
                   placeholder="Customize how WesGuardAI should behave and respond..."
                   value={customInstructions}
                   onChange={(e) =>
@@ -254,17 +251,17 @@ Please provide a helpful response.`;
               </div>
             </>
           )}
-        </div>
+        </Card>
 
         {/* Chat Messages Container */}
-        <div className="chat-messages-container">
+        <Card className="chat-messages-container">
           <div className="chat-header">
             <h3>Chat</h3>
             {messages.length > 0 && (
-              <button className="clear-chat-button" onClick={clearChat}>
+              <Button variant="danger" onClick={clearChat}>
                 <Trash2 size={16} />
                 Clear Chat
-              </button>
+              </Button>
             )}
           </div>
 
@@ -306,12 +303,12 @@ Please provide a helpful response.`;
 
             <div ref={messagesEndRef} />
           </div>
-        </div>
+        </Card>
 
         {/* Chat Input */}
         <div className="chat-input-container">
           <textarea
-            className="chat-input"
+            className="input"
             placeholder={
               isApiKeySet
                 ? "Type your message here... (Press Enter to send, Shift+Enter for new line)"
@@ -323,14 +320,13 @@ Please provide a helpful response.`;
             disabled={!isApiKeySet || isLoading}
             rows={1}
           />
-          <button
-            className="send-button"
+          <Button
             onClick={sendMessage}
             disabled={!isApiKeySet || !inputMessage.trim() || isLoading}
           >
             <Send size={18} />
             Send
-          </button>
+          </Button>
         </div>
       </div>
     </div>

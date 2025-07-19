@@ -7,6 +7,7 @@ import os from "os";
 import fs from "fs-extra";
 import { initRegistryHandlers } from "./src/main/registry.js";
 import { initAIOptimizationHandlers } from "./src/main/aiOptimization.js";
+import { initMemoryOptimizerHandlers } from "./src/main/memoryOptimizer.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -86,6 +87,9 @@ initRegistryHandlers();
 
 // Initialize AI Optimization handlers
 initAIOptimizationHandlers();
+
+// Initialize Memory Optimizer handlers
+initMemoryOptimizerHandlers();
 
 const appWindowManager = new AppWindowManager();
 appWindowManager.init();

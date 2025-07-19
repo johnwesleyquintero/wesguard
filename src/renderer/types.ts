@@ -67,6 +67,30 @@ export interface ElectronAPI {
   }) => Promise<void>;
   aiGetSuggestions: () => Promise<string[]>;
 
+  // Memory Optimizer
+  memoryInitDataDir: () => Promise<void>;
+  memoryGetCurrentUsage: () => Promise<{
+    timestamp: string;
+    total: number;
+    used: number;
+    free: number;
+    usedPercentage: number;
+  }>;
+  memoryOptimize: () => Promise<{
+    success: boolean;
+    suggestions: string[];
+    error?: string;
+  }>;
+  memoryGetHistory: () => Promise<
+    Array<{
+      timestamp: string;
+      total: number;
+      used: number;
+      free: number;
+      usedPercentage: number;
+    }>
+  >;
+
   // Registry
   scanRegistry: () => Promise<RegistryItem[]>;
   backupRegistry: (backup: RegistryBackup) => Promise<void>;
