@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import styles from "./components/styles.module.css";
 import { Send, MessageSquare, Trash2 } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Button } from "./components/Button";
 import { Card } from "./components/Card";
+import PageHeader from "./components/PageHeader";
 
 interface ChatMessage {
   id: string;
@@ -36,18 +38,10 @@ const ChatView: React.FC = () => {
 
   // Load saved data from localStorage on component mount
   useEffect(() => {
-    const savedApiKey = localStorage.getItem("wesguard-gemini-api-key");
     const savedInstructions = localStorage.getItem(
       "wesguard-custom-instructions",
     );
     const savedMessages = localStorage.getItem("wesguard-chat-messages");
-
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-      setIsApiKeySet(true);
-      setApiKeyStatus("connected");
-      genAI.current = new GoogleGenerativeAI(savedApiKey);
-    }
 
     if (savedInstructions) {
       setCustomInstructions(savedInstructions);
@@ -79,7 +73,6 @@ const ChatView: React.FC = () => {
       localStorage.setItem("wesguard-chat-messages", JSON.stringify(messages));
     }
   }, [messages]);
-
   const handleApiKeySubmit = async () => {
     if (!apiKey.trim()) {
       setApiKeyStatus("error");
@@ -95,11 +88,10 @@ const ChatView: React.FC = () => {
       // Make a test request
       await model.generateContent("Hello");
 
-      // If successful, save the API key
+      // If successful, set the API key (in-memory only)
       genAI.current = testAI;
       setIsApiKeySet(true);
       setApiKeyStatus("connected");
-      localStorage.setItem("wesguard-gemini-api-key", apiKey.trim());
 
       // Add welcome message
       const welcomeMessage: ChatMessage = {
@@ -195,7 +187,7 @@ Please provide a helpful response.`;
 
   return (
     <div className="chat-view">
-      <h2>WesGuardAI Chat</h2>
+      <PageHeader title="WesGuardAI Chat" />
 
       <div className="chat-container">
         {/* API Key Setup Section */}
@@ -211,10 +203,10 @@ Please provide a helpful response.`;
           </div>
           {!isApiConfigCollapsed && (
             <>
-              <div className="input-group">
+              <div className={styles["input-group"]}>
                 <input
                   type="password"
-                  className="input"
+                  className={styles.input}
                   placeholder="Enter your Gemini API Key"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
@@ -238,10 +230,10 @@ Please provide a helpful response.`;
               )}
 
               {/* Custom Instructions Section */}
-              <div className="input-group">
+              <div className={styles["input-group"]}>
                 <h4>Custom Instructions</h4>
                 <textarea
-                  className="input"
+                  className={styles.input}
                   placeholder="Customize how WesGuardAI should behave and respond..."
                   value={customInstructions}
                   onChange={(e) =>
@@ -308,7 +300,7 @@ Please provide a helpful response.`;
         {/* Chat Input */}
         <div className="chat-input-container">
           <textarea
-            className="input"
+            className={styles.input}
             placeholder={
               isApiKeySet
                 ? "Type your message here... (Press Enter to send, Shift+Enter for new line)"

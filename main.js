@@ -120,39 +120,36 @@ ipcMain.on("get-system-info", async (event) => {
   }
 });
 
-ipcMain.handle("get-disk-usage", async () => {
+ipcMain.handle("get-disk-and-network-metrics", async () => {
   try {
-    const diskData = await si.fsSize();
+    const [diskData, netStats] = await Promise.all([
+      si.fsSize(),
+      si.networkStats(),
+    ]);
+
+    let diskUsage = { diskUsage: 0, totalDisk: 0 };
     if (diskData.length > 0) {
       const totalDisk = diskData.reduce((acc, fs) => acc + fs.size, 0);
       const usedDisk = diskData.reduce((acc, fs) => acc + fs.used, 0);
-      const diskUsagePercentage = parseFloat(
-        ((usedDisk / totalDisk) * 100).toFixed(2),
-      );
-      return {
-        diskUsage: diskUsagePercentage,
+      diskUsage = {
+        diskUsage: parseFloat(((usedDisk / totalDisk) * 100).toFixed(2)),
         totalDisk: totalDisk,
       };
     }
-    return { diskUsage: 0, totalDisk: 0 };
-  } catch (error) {
-    console.error("Error fetching disk usage:", error);
-    return { error: error.message || "Failed to fetch disk usage" };
-  }
-});
 
-ipcMain.handle("get-network-activity", async () => {
-  try {
-    const netStats = await si.networkStats();
+    let networkActivity = { netRx: 0, netTx: 0 };
     if (netStats.length > 0) {
       const totalRx = netStats.reduce((acc, net) => acc + net.rx_sec, 0);
       const totalTx = netStats.reduce((acc, net) => acc + net.tx_sec, 0);
-      return { netRx: totalRx, netTx: totalTx };
+      networkActivity = { netRx: totalRx, netTx: totalTx };
     }
-    return { netRx: 0, netTx: 0 };
+
+    return { ...diskUsage, ...networkActivity };
   } catch (error) {
-    console.error("Error fetching network activity:", error);
-    return { error: error.message || "Failed to fetch network activity" };
+    console.error("Error fetching disk and network metrics:", error);
+    return {
+      error: error.message || "Failed to fetch disk and network metrics",
+    };
   }
 });
 

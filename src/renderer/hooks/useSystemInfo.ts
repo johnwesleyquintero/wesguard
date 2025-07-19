@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
+import { formatBytes } from "../../../src/utils/formatters";
 
-interface SystemInfo {
+export interface SystemInfo {
   os: string;
   cpu: string;
   disk?: string; // Add disk information
@@ -21,17 +22,81 @@ interface HistoricalData {
 
 const MAX_HISTORY_POINTS = 60; // Keep history for 60 seconds (assuming 1-second interval)
 
-const useSystemInfo = () => {
+const useSystemInfo = (interval: number = 2000) => {
   const [systemInfo, setSystemInfo] = useState<SystemInfo>({ os: "", cpu: "" });
   const [metrics, setMetrics] = useState<Metrics>({ cpu: 0, mem: 0 });
   const [isLoading, setIsLoading] = useState(true);
-  const [updateInterval, setUpdateInterval] = useState(2000); // Default to 2 seconds
   const [historicalData, setHistoricalData] = useState<HistoricalData>({
     cpu: [],
     mem: [],
   });
+  const [isFetching, setIsFetching] = useState(true); // New state to control fetching
+
+  const fetchDiskAndNetwork = useCallback(async () => {
+    try {
+      const diskResponse = await window.electronAPI.getDiskUsage();
+      const networkResponse = await window.electronAPI.getNetworkActivity();
+
+      if (diskResponse.error) {
+        console.error("Error fetching disk usage:", diskResponse.error);
+      } else {
+        setMetrics((prev) => ({
+          ...prev,
+          diskUsage: diskResponse.diskUsage,
+        }));
+        setSystemInfo((prev) => ({
+          ...prev,
+          disk: formatBytes(diskResponse.totalDisk),
+        }));
+      }
+
+      if (networkResponse.error) {
+        console.error(
+          "Error fetching network activity:",
+          networkResponse.error,
+        );
+      } else {
+        setMetrics((prev) => ({
+          ...prev,
+          netRx: networkResponse.netRx,
+          netTx: networkResponse.netTx,
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching disk/network data:", error);
+    }
+  }, []);
+
+  // Initial fetch for disk and network
+  useEffect(() => {
+    fetchDiskAndNetwork();
+  }, [fetchDiskAndNetwork]);
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    const startFetching = () => {
+      if (isFetching) {
+        intervalId = setInterval(fetchDiskAndNetwork, interval);
+      }
+    };
+
+    const stopFetching = () => {
+      clearInterval(intervalId);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        setIsFetching(false);
+        stopFetching();
+      } else {
+        setIsFetching(true);
+        startFetching();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     if (window.electronAPI) {
       const handleSystemInfo = (info: SystemInfo & { error?: string }) => {
         if (info.error) {
@@ -65,43 +130,8 @@ const useSystemInfo = () => {
         });
       };
 
-      const fetchDiskAndNetwork = async () => {
-        try {
-          const diskResponse = await window.electronAPI.getDiskUsage();
-          if (diskResponse.error) {
-            console.error("Error fetching disk usage:", diskResponse.error);
-          } else {
-            setMetrics((prev) => ({
-              ...prev,
-              diskUsage: diskResponse.diskUsage,
-            }));
-            setSystemInfo((prev) => ({
-              ...prev,
-              disk: formatBytes(diskResponse.totalDisk),
-            }));
-          }
-
-          const networkResponse = await window.electronAPI.getNetworkActivity();
-          if (networkResponse.error) {
-            console.error(
-              "Error fetching network activity:",
-              networkResponse.error,
-            );
-          } else {
-            setMetrics((prev) => ({
-              ...prev,
-              netRx: networkResponse.netRx,
-              netTx: networkResponse.netTx,
-            }));
-          }
-        } catch (error) {
-          console.error("Error fetching disk/network data:", error);
-        }
-      };
-
       // Initial fetch
       window.electronAPI.getSystemInfo();
-      fetchDiskAndNetwork();
 
       // Set up listeners
       const removeSystemInfoListener =
@@ -109,41 +139,26 @@ const useSystemInfo = () => {
       const removeUpdateMetricsListener =
         window.electronAPI.onUpdateMetrics(handleUpdateMetrics);
 
-      // Set up polling for disk and network activity
-      const intervalId = setInterval(fetchDiskAndNetwork, updateInterval);
+      // Initial fetch and start polling
+      startFetching();
 
       // Cleanup listeners and interval on unmount
       return () => {
         removeSystemInfoListener();
         removeUpdateMetricsListener();
-        clearInterval(intervalId);
+        stopFetching();
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange,
+        );
       };
     }
-  }, [updateInterval]); // Depend on updateInterval to re-create interval if it changes
-
-  // Function to format bytes (can be moved to a utility file if needed elsewhere)
-  const formatBytes = (bytes: number, decimals = 2) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  };
-
-  const setMetricsUpdateInterval = useCallback((interval: number) => {
-    setUpdateInterval(interval);
-    if (window.electronAPI) {
-      window.electronAPI.setSystemMetricsInterval(interval);
-    }
-  }, []);
+  }, [interval, isFetching, fetchDiskAndNetwork]); // Depend on interval, isFetching, and fetchDiskAndNetwork
 
   return {
     systemInfo,
     metrics,
     isLoading,
-    setMetricsUpdateInterval,
-    updateInterval,
     historicalData,
   };
 };

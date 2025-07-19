@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import type { RegistryItem, RegistryBackup, ElectronAPI } from "../types";
+import type { RegistryItem, RegistryBackup } from "../types";
 
 export const useRegistryCleaner = () => {
   const [scanning, setScanning] = useState(false);
@@ -11,7 +11,7 @@ export const useRegistryCleaner = () => {
     setScanning(true);
     try {
       // Use IPC to communicate with main process for registry operations
-      const result = await (window.electronAPI as ElectronAPI).scanRegistry();
+      const result = await window.electronAPI.registry.scan();
       setIssues(result);
     } catch (error) {
       console.error("Failed to scan registry:", error);
@@ -27,7 +27,7 @@ export const useRegistryCleaner = () => {
         timestamp: new Date().toISOString(),
         items: [...issues],
       };
-      await (window.electronAPI as ElectronAPI).backupRegistry(backup);
+      await window.electronAPI.registry.backup(backup);
       setBackups((prev) => [...prev, backup]);
       return true;
     } catch (error) {
@@ -38,16 +38,17 @@ export const useRegistryCleaner = () => {
 
   // Clean selected registry items
   const cleanRegistry = useCallback(
-    async (selectedItems: RegistryItem[]) => {
+    async (selectedItems: RegistryItem[], backup = true) => {
       try {
-        // Create backup before cleaning
-        const backupCreated = await createBackup();
-        if (!backupCreated) {
-          throw new Error("Failed to create backup before cleaning");
+        if (backup) {
+          const backupCreated = await createBackup();
+          if (!backupCreated) {
+            throw new Error("Failed to create backup before cleaning");
+          }
         }
 
         // Clean registry entries
-        await (window.electronAPI as ElectronAPI).cleanRegistry(selectedItems);
+        await window.electronAPI.registry.clean(selectedItems);
 
         // Update issues list
         setIssues((prev) =>
@@ -69,7 +70,7 @@ export const useRegistryCleaner = () => {
   // Restore from backup
   const restoreBackup = useCallback(async (backup: RegistryBackup) => {
     try {
-      await (window.electronAPI as ElectronAPI).restoreRegistry(backup);
+      await window.electronAPI.registry.restore(backup);
       return true;
     } catch (error) {
       console.error("Failed to restore backup:", error);

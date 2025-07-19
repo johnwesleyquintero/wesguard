@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import type { ElectronAPI } from "./types";
 import { Button } from "./components/Button";
-import { Card } from "./components/Card";
+import PageHeader from "./components/PageHeader";
+import { SuggestionCard } from "./components/AIOptimization/SuggestionCard";
 
 const AIOptimizationView: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -12,9 +12,7 @@ const AIOptimizationView: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await (
-        window.electronAPI as ElectronAPI
-      ).aiGetSuggestions();
+      const result = await window.electronAPI.aiOptimization.getSuggestions();
       setSuggestions(result);
     } catch (err) {
       console.error("Failed to fetch AI suggestions:", err);
@@ -26,7 +24,7 @@ const AIOptimizationView: React.FC = () => {
 
   const initAIDataDir = useCallback(async () => {
     try {
-      await (window.electronAPI as ElectronAPI).aiInitDataDir();
+      await window.electronAPI.aiOptimization.initDataDir();
     } catch (err) {
       console.error("Failed to initialize AI data directory:", err);
     }
@@ -39,7 +37,7 @@ const AIOptimizationView: React.FC = () => {
 
   return (
     <div className="ai-optimization-view">
-      <h2>AI-Powered Optimization</h2>
+      <PageHeader title="AI-Powered Optimization" />
       <p>Get predictive maintenance suggestions based on system analysis.</p>
 
       <Button onClick={fetchSuggestions} disabled={loading}>
@@ -48,16 +46,11 @@ const AIOptimizationView: React.FC = () => {
 
       {error && <p className="error-message">{error}</p>}
 
-      {suggestions.length > 0 && (
-        <Card className="suggestions-list">
-          <h3>Suggestions:</h3>
-          <ul>
-            {suggestions.map((suggestion, index) => (
-              <li key={index}>{suggestion}</li>
-            ))}
-          </ul>
-        </Card>
-      )}
+      <div className="suggestions-grid">
+        {suggestions.map((suggestion, index) => (
+          <SuggestionCard key={index} suggestion={suggestion} />
+        ))}
+      </div>
 
       {suggestions.length === 0 && !loading && !error && (
         <p>

@@ -1,0 +1,5 @@
+.pageHeader {
+  font-size: 2rem;
+  color: var(--text-color); /* Assuming a CSS variable for text color */
+  margin-bottom: 1.5rem;
+}

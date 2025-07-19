@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
+  // System Info API
   getSystemInfo: () => ipcRenderer.send("get-system-info"),
   onSystemInfoResponse: (callback) => {
     const listener = (_event, value) => callback(value);
@@ -16,31 +17,49 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.removeListener("updateMetrics", listener);
     };
   },
+
   // Cleaner API
-  analyzeJunkFiles: () => ipcRenderer.invoke("analyze-junk-files"),
-  executeCleaning: (filesToDelete) =>
-    ipcRenderer.invoke("execute-cleaning", filesToDelete),
-  getDiskUsage: () => ipcRenderer.invoke("get-disk-usage"),
-  getNetworkActivity: () => ipcRenderer.invoke("get-network-activity"),
+  cleaner: {
+    analyzeJunkFiles: () => ipcRenderer.invoke("analyze-junk-files"),
+    executeCleaning: (filesToDelete) =>
+      ipcRenderer.invoke("execute-cleaning", filesToDelete),
+    getDiskAndNetworkMetrics: () =>
+      ipcRenderer.invoke("get-disk-and-network-metrics"),
+  },
+
   // Reminder API
-  showReminderNotification: (title, body, sound) =>
-    ipcRenderer.send("show-reminder-notification", title, body, sound),
+  reminder: {
+    showReminderNotification: (title, body, sound) =>
+      ipcRenderer.send("show-reminder-notification", title, body, sound),
+  },
+
   // Settings API
-  setSystemMetricsInterval: (interval) =>
-    ipcRenderer.send("set-system-metrics-interval", interval),
+  settings: {
+    setSystemMetricsInterval: (interval) =>
+      ipcRenderer.send("set-system-metrics-interval", interval),
+  },
+
   // Registry API
-  scanRegistry: () => ipcRenderer.invoke("scan-registry"),
-  backupRegistry: (backup) => ipcRenderer.invoke("backup-registry", backup),
-  cleanRegistry: (items) => ipcRenderer.invoke("clean-registry", items),
-  restoreRegistry: (backup) => ipcRenderer.invoke("restore-registry", backup),
+  registry: {
+    scan: () => ipcRenderer.invoke("scan-registry"),
+    backup: (backup) => ipcRenderer.invoke("backup-registry", backup),
+    clean: (items) => ipcRenderer.invoke("clean-registry", items),
+    restore: (backup) => ipcRenderer.invoke("restore-registry", backup),
+  },
+
   // AI Optimization API
-  aiInitDataDir: () => ipcRenderer.invoke("ai-init-data-dir"),
-  aiLogPerformance: (data) => ipcRenderer.invoke("ai-log-performance", data),
-  aiLogCrash: (data) => ipcRenderer.invoke("ai-log-crash", data),
-  aiGetSuggestions: () => ipcRenderer.invoke("ai-get-suggestions"),
+  aiOptimization: {
+    initDataDir: () => ipcRenderer.invoke("ai-init-data-dir"),
+    logPerformance: (data) => ipcRenderer.invoke("ai-log-performance", data),
+    logCrash: (data) => ipcRenderer.invoke("ai-log-crash", data),
+    getSuggestions: () => ipcRenderer.invoke("ai-get-suggestions"),
+  },
+
   // Memory Optimizer API
-  memoryInitDataDir: () => ipcRenderer.invoke("memory-init-data-dir"),
-  memoryGetCurrentUsage: () => ipcRenderer.invoke("memory-get-current-usage"),
-  memoryOptimize: () => ipcRenderer.invoke("memory-optimize"),
-  memoryGetHistory: () => ipcRenderer.invoke("memory-get-history"),
+  memoryOptimizer: {
+    initDataDir: () => ipcRenderer.invoke("memory-init-data-dir"),
+    getCurrentUsage: () => ipcRenderer.invoke("memory-get-current-usage"),
+    optimize: () => ipcRenderer.invoke("memory-optimize"),
+    getHistory: () => ipcRenderer.invoke("memory-get-history"),
+  },
 });

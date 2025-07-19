@@ -1,0 +1,106 @@
+.analyzed-state-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.analysis-summary {
+  font-size: 1.1em;
+  text-align: center;
+}
+
+.highlight {
+  color: var(--accent-color); /* Assuming a CSS variable for accent color */
+  font-weight: bold;
+}
+
+.junk-files-list {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.list-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: var(--background-light);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.list-header-container h3 {
+  margin: 0;
+  font-size: 1em;
+}
+
+.select-all-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.file-list-grid {
+  display: grid;
+  grid-template-columns: 20px 2fr 3fr 1.5fr 1fr; /* Checkbox, Name, Path, Last Modified, Size */
+  gap: 10px;
+  padding: 10px 15px;
+  align-items: center;
+}
+
+.file-list-grid.header {
+  font-weight: bold;
+  background-color: var(--background-lighter);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.file-list-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px; /* Scrollable area for files */
+  overflow-y: auto;
+}
+
+.file-list-item {
+  display: grid;
+  grid-template-columns: 20px 2fr 3fr 1.5fr 1fr;
+  gap: 10px;
+  padding: 8px 15px;
+  border-bottom: 1px dashed var(--border-color-light);
+  align-items: center;
+}
+
+.file-list-item:last-child {
+  border-bottom: none;
+}
+
+.file-name,
+.file-path,
+.file-last-modified,
+.file-size {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.no-files-found {
+  text-align: center;
+  font-style: italic;
+  color: var(--text-color-secondary);
+}
+
+.error-message {
+  color: var(--danger-color); /* Assuming a CSS variable for danger color */
+  text-align: center;
+  margin-bottom: 15px;
+}

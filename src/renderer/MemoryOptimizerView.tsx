@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import type { ElectronAPI } from "./types";
 import { Button } from "./components/Button";
 import { Card } from "./components/Card";
+import PageHeader from "./components/PageHeader";
 
 interface MemoryUsageData {
   timestamp: string;
@@ -26,9 +26,7 @@ const MemoryOptimizerView: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await (
-        window.electronAPI as ElectronAPI
-      ).memoryGetCurrentUsage();
+      const result = await window.electronAPI.memoryOptimizer.getCurrentUsage();
       setCurrentUsage(result);
     } catch (err) {
       console.error("Failed to fetch current memory usage:", err);
@@ -42,9 +40,9 @@ const MemoryOptimizerView: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await (window.electronAPI as ElectronAPI).memoryOptimize();
+      const result = await window.electronAPI.memoryOptimizer.optimizeMemory();
       if (result.success) {
-        setOptimizationSuggestions(result.suggestions);
+        setOptimizationSuggestions(result.suggestions || []);
         // Re-fetch current usage after optimization attempt
         await fetchCurrentUsage();
       } else {
@@ -60,9 +58,7 @@ const MemoryOptimizerView: React.FC = () => {
 
   const fetchMemoryHistory = useCallback(async () => {
     try {
-      const result = await (
-        window.electronAPI as ElectronAPI
-      ).memoryGetHistory();
+      const result = await window.electronAPI.memoryOptimizer.getHistory();
       setHistory(result);
     } catch (err) {
       console.error("Failed to fetch memory history:", err);
@@ -71,7 +67,7 @@ const MemoryOptimizerView: React.FC = () => {
 
   const initMemoryDataDir = useCallback(async () => {
     try {
-      await (window.electronAPI as ElectronAPI).memoryInitDataDir();
+      await window.electronAPI.memoryOptimizer.initDataDir();
     } catch (err) {
       console.error("Failed to initialize memory data directory:", err);
     }
@@ -84,14 +80,14 @@ const MemoryOptimizerView: React.FC = () => {
     // Optionally, set up an interval to log memory usage periodically
     const interval = setInterval(() => {
       if (currentUsage) {
-        (window.electronAPI as ElectronAPI).aiLogPerformance({
+        window.electronAPI.aiOptimization.logPerformance({
           timestamp: new Date().toISOString(),
-          cpu: 0, // Placeholder, ideally get from system info (not directly available in currentUsage)
+          cpu: 0,
           mem: currentUsage.usedPercentage,
-          diskUsage: 0, // Placeholder (not directly available in currentUsage)
-          totalDisk: 0, // Placeholder (not directly available in currentUsage)
-          netRx: 0, // Placeholder (not directly available in currentUsage)
-          netTx: 0, // Placeholder (not directly available in currentUsage)
+          diskUsage: 0,
+          totalDisk: 0,
+          netRx: 0,
+          netTx: 0,
         });
       }
     }, 60000); // Log every minute
@@ -101,7 +97,7 @@ const MemoryOptimizerView: React.FC = () => {
 
   return (
     <div className="memory-optimizer-view">
-      <h2>Memory Optimizer</h2>
+      <PageHeader title="Memory Optimizer" />
       <p>Analyze and optimize your system's RAM usage.</p>
 
       <Card className="memory-stats">

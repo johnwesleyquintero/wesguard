@@ -1,22 +1,8 @@
 import { useState, useCallback } from "react";
+import { formatBytes } from "../../../src/utils/formatters";
+import type { JunkFile } from "../types"; // Import JunkFile
 
 type Status = "idle" | "analyzing" | "analyzed" | "cleaning" | "cleaned";
-
-interface JunkFile {
-  name: string;
-  path: string;
-  size: number;
-  lastModified: number; // Unix timestamp
-}
-
-const formatBytes = (bytes: number, decimals = 2) => {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-};
 
 const useJunkFileCleaner = () => {
   const [status, setStatus] = useState<Status>("idle");
@@ -33,15 +19,20 @@ const useJunkFileCleaner = () => {
       if (!window.electronAPI) {
         throw new Error("Electron API not available");
       }
-      const response = await window.electronAPI.analyzeJunkFiles();
+      const response = await window.electronAPI.cleaner.analyzeJunkFiles();
       if (response.error) {
+        // Access error property
         throw new Error(response.error);
       }
       setRecoverableSpace(response.totalSize);
       setJunkFiles(response.files);
       setStatus("analyzed");
       setProgress("");
-      return { files: response.files, totalSize: response.totalSize };
+      return {
+        files: response.files,
+        totalSize: response.totalSize,
+        error: response.error,
+      };
     } catch (err: unknown) {
       console.error("Analysis failed:", err);
       setError(
@@ -72,7 +63,9 @@ const useJunkFileCleaner = () => {
           setProgress(
             `Removing file ${deletedCount + 1} of ${filesToDelete.length}...`,
           );
-          const result = await window.electronAPI.executeCleaning([file]);
+          const result = await window.electronAPI.cleaner.executeCleaning([
+            file,
+          ]);
           if (result.success) {
             deletedCount++;
           } else {
@@ -143,7 +136,7 @@ const useJunkFileCleaner = () => {
     analyze,
     clean,
     reset,
-    formatBytes,
+    formatBytes: formatBytes,
     progress,
     error,
   };

@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import styles from "./components/styles.module.css";
 import useSystemInfo from "./hooks/useSystemInfo";
-import { Button } from "./components/Button";
 import { Card } from "./components/Card";
+import PageHeader from "./components/PageHeader";
 
 const SettingsView: React.FC = () => {
-  const { updateInterval, setMetricsUpdateInterval } = useSystemInfo();
-  const [localInterval, setLocalInterval] = useState(updateInterval / 1000); // Convert ms to seconds
-
-  useEffect(() => {
-    setLocalInterval(updateInterval / 1000);
-  }, [updateInterval]);
+  const [localInterval, setLocalInterval] = useState(2); // Default to 2 seconds, matching useSystemInfo default
+  useSystemInfo(localInterval * 1000); // Pass localInterval to useSystemInfo
 
   const handleIntervalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
@@ -18,18 +15,13 @@ const SettingsView: React.FC = () => {
     }
   };
 
-  const handleSaveSettings = () => {
-    setMetricsUpdateInterval(localInterval * 1000); // Convert seconds back to ms
-    alert("Settings saved!");
-  };
-
   return (
-    <div className="settings-view">
-      <h2>Settings</h2>
+    <div className={styles["settings-view"]}>
+      <PageHeader title="Settings" />
 
-      <Card className="settings-section">
+      <Card className={styles["settings-section"]}>
         <h3>System Metrics</h3>
-        <div className="setting-item">
+        <div className={styles["setting-item"]}>
           <label htmlFor="update-interval">Update Interval (seconds):</label>
           <input
             id="update-interval"
@@ -37,9 +29,8 @@ const SettingsView: React.FC = () => {
             value={localInterval}
             onChange={handleIntervalChange}
             min="1"
-            className="input"
+            className={styles.input}
           />
-          <Button onClick={handleSaveSettings}>Save</Button>
         </div>
       </Card>
 

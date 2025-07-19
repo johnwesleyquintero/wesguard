@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import styles from "./components/styles.module.css";
 import { Save } from "lucide-react";
 import { Button } from "./components/Button";
 import { Card } from "./components/Card";
+import PageHeader from "./components/PageHeader";
 
 interface Reminder {
   id: string;
+  initialMinutes: number; // Store original minutes
   minutes: number;
   seconds: number;
   message: string;
@@ -62,6 +65,7 @@ const ReminderView: React.FC = () => {
 
     const newReminder: Reminder = {
       id: Date.now().toString(), // Simple unique ID
+      initialMinutes: minutes, // Add initialMinutes
       minutes: minutes,
       seconds: 0,
       message: newReminderMessage,
@@ -111,7 +115,7 @@ const ReminderView: React.FC = () => {
               (reminder) => reminder.id === id,
             );
             const originalMinutes = originalReminder
-              ? parseInt(originalReminder.minutes.toString(), 10)
+              ? originalReminder.initialMinutes // Use initialMinutes
               : parseInt(newReminderMinutes, 10) || 30;
 
             return {
@@ -176,7 +180,7 @@ const ReminderView: React.FC = () => {
                     (orig) => orig.id === r.id,
                   );
                   const originalMinutes = originalReminder
-                    ? parseInt(originalReminder.minutes.toString(), 10)
+                    ? originalReminder.initialMinutes // Use initialMinutes
                     : 30;
 
                   return {
@@ -208,10 +212,10 @@ const ReminderView: React.FC = () => {
   }, [reminders]); // This dependency is still needed to react to new reminders being added or deleted
 
   return (
-    <div className="reminder-view">
-      <h2>Reminders</h2>
+    <div className={styles["reminder-view"]}>
+      <PageHeader title="Reminders" />
 
-      <Card className="add-reminder-section">
+      <Card className={styles["add-reminder-section"]}>
         <h3>Add New Reminder</h3>
         <input
           type="number"
@@ -219,16 +223,16 @@ const ReminderView: React.FC = () => {
           onChange={(e) => setNewReminderMinutes(e.target.value)}
           placeholder="Minutes"
           min="1"
-          className="input"
+          className={styles.input}
         />
         <input
           type="text"
           value={newReminderMessage}
           onChange={(e) => setNewReminderMessage(e.target.value)}
           placeholder="Message"
-          className="input"
+          className={styles.input}
         />
-        <label className="sound-toggle">
+        <label className={styles["sound-toggle"]}>
           <input
             type="checkbox"
             checked={newReminderSound}
@@ -239,26 +243,26 @@ const ReminderView: React.FC = () => {
         <Button onClick={addReminder}>Add Reminder</Button>
       </Card>
 
-      <div className="reminders-list">
+      <div className={styles["reminders-list"]}>
         {reminders.length === 0 ? (
           <p>No reminders set. Add one above!</p>
         ) : (
           <>
-            <div className="saved-reminders-info">
-              <Save className="highlight" /> Auto-saved: Your reminders are
-              automatically saved and will be available when you restart the
+            <div className={styles["saved-reminders-info"]}>
+              <Save className={styles.highlight} /> Auto-saved: Your reminders
+              are automatically saved and will be available when you restart the
               application.
             </div>
             {reminders.map((reminder) => (
               <Card
                 key={reminder.id}
-                className={`reminder-card ${reminder.isActive ? "active" : ""}`}
+                className={`${styles["reminder-card"]} ${reminder.isActive ? styles.active : ""}`}
               >
-                <div className="timer-display">
+                <div className={styles["timer-display"]}>
                   {formatTime(reminder.minutes)}:{formatTime(reminder.seconds)}
                 </div>
-                <p className="reminder-message">{reminder.message}</p>
-                <div className="reminder-actions">
+                <p className={styles["reminder-message"]}>{reminder.message}</p>
+                <div className={styles["reminder-actions"]}>
                   <Button onClick={() => toggleReminder(reminder.id)}>
                     {reminder.isActive ? "Pause" : "Start"}
                   </Button>
