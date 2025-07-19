@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, Notification } from "electron";
 import path from "path";
 import si from "systeminformation";
 import { fileURLToPath } from "url";

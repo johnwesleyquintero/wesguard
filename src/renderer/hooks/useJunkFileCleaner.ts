@@ -61,19 +61,55 @@ const useJunkFileCleaner = () => {
       if (!window.electronAPI) {
         throw new Error("Electron API not available");
       }
-      const result = await window.electronAPI.executeCleaning(filesToDelete);
-      if (result.success) {
+      
+      // Track the files that were successfully deleted
+      let deletedCount = 0;
+      const failedFiles: string[] = [];
+      
+      // Process files one by one with a small delay
+      for (const file of filesToDelete) {
+        try {
+          setProgress(`Removing file ${deletedCount + 1} of ${filesToDelete.length}...`);
+          const result = await window.electronAPI.executeCleaning([file]);
+          if (result.success) {
+            deletedCount++;
+          } else {
+            failedFiles.push(file);
+          }
+          // Add a small delay between deletions
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (err) {
+          failedFiles.push(file);
+        }
+      }
+
+      if (deletedCount === filesToDelete.length) {
+        // All files were deleted successfully
         setStatus("cleaned");
-        setRecoverableSpace(0); // Reset recoverable space after cleaning
-        setJunkFiles([]); // Clear junk files after cleaning
+        setRecoverableSpace(0);
+        setJunkFiles([]);
+        setProgress("");
+      } else if (deletedCount > 0) {
+        // Some files were deleted
+        setError(`Partially completed. ${failedFiles.length} files could not be deleted.`);
+        setStatus("analyzed");
+        // Update junkFiles to only include the files that weren't deleted
+        setJunkFiles(prevFiles => prevFiles.filter(f => failedFiles.includes(f.path)));
         setProgress("");
       } else {
-        setError(result.error || "Cleaning operation failed.");
-        setStatus("analyzed"); // Go back to analyzed state
+        // No files were deleted
+        setError("Failed to delete any files. Files might be in use.");
+        setStatus("analyzed");
         setProgress("");
-        throw new Error(result.error || "Cleaning operation failed");
+        throw new Error("Failed to delete any files");
       }
-      return result;
+      
+      return {
+        success: deletedCount > 0,
+        deletedCount,
+        failedFiles,
+        error: failedFiles.length > 0 ? "Some files could not be deleted" : undefined
+      };
     } catch (err: unknown) {
       console.error("Cleaning failed:", err);
       setError(err instanceof Error ? err.message : "Failed to clean files.");
