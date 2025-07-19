@@ -19,11 +19,19 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
   // Cleaner API
   analyzeJunkFiles: () => ipcRenderer.invoke("analyze-junk-files"),
-  executeCleaning: (filesToDelete) => ipcRenderer.invoke("execute-cleaning", filesToDelete),
+  executeCleaning: (filesToDelete) =>
+    ipcRenderer.invoke("execute-cleaning", filesToDelete),
   getDiskUsage: () => ipcRenderer.invoke("get-disk-usage"),
   getNetworkActivity: () => ipcRenderer.invoke("get-network-activity"),
   // Reminder API
-  showReminderNotification: (title, body, sound) => ipcRenderer.send("show-reminder-notification", title, body, sound),
+  showReminderNotification: (title, body, sound) =>
+    ipcRenderer.send("show-reminder-notification", title, body, sound),
   // Settings API
-  setSystemMetricsInterval: (interval) => ipcRenderer.send("set-system-metrics-interval", interval)
+  setSystemMetricsInterval: (interval) =>
+    ipcRenderer.send("set-system-metrics-interval", interval),
+  // Registry API
+  scanRegistry: () => ipcRenderer.invoke("scan-registry"),
+  backupRegistry: (backup) => ipcRenderer.invoke("backup-registry", backup),
+  cleanRegistry: (items) => ipcRenderer.invoke("clean-registry", items),
+  restoreRegistry: (backup) => ipcRenderer.invoke("restore-registry", backup),
 });

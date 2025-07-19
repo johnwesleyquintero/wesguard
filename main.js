@@ -5,6 +5,8 @@ import { fileURLToPath } from "url";
 import process from "node:process";
 import os from "os";
 import fs from "fs-extra";
+import { initRegistryHandlers } from "./src/main/registry.js";
+import { initAIOptimizationHandlers } from "./src/main/aiOptimization.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -78,6 +80,12 @@ class AppWindowManager {
     });
   }
 }
+
+// Initialize registry handlers
+initRegistryHandlers();
+
+// Initialize AI Optimization handlers
+initAIOptimizationHandlers();
 
 const appWindowManager = new AppWindowManager();
 appWindowManager.init();

@@ -7,7 +7,8 @@ import {
   Bell,
   Shield,
   MessageSquare,
-  Settings, // Import Settings icon
+  Settings,
+  FileJson,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -60,6 +61,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <MessageSquare />
           {!isSidebarCollapsed && <span>WesGuardAI</span>}
+        </button>
+        <button
+          className={`nav-button ${activeView === "registry" ? "active" : ""}`}
+          onClick={() => setActiveView("registry")}
+        >
+          <FileJson />
+          {!isSidebarCollapsed && <span>Registry</span>}
         </button>
         <button
           className={`nav-button ${activeView === "settings" ? "active" : ""}`}

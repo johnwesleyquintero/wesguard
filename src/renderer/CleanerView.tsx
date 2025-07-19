@@ -121,7 +121,10 @@ const CleanerView: React.FC = () => {
                     </div>
                     <ul className="file-list-items">
                       {junkFiles.map((file) => (
-                        <li key={`${file.path}-${file.lastModified}`} className="file-list-item">
+                        <li
+                          key={`${file.path}-${file.lastModified}`}
+                          className="file-list-item"
+                        >
                           <input
                             type="checkbox"
                             checked={selectedFiles.includes(file.path)}

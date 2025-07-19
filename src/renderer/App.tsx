@@ -4,7 +4,8 @@ import DashboardView from "./DashboardView";
 import CleanerView from "./CleanerView";
 import ReminderView from "./ReminderView";
 import ChatView from "./ChatView";
-import SettingsView from "./SettingsView"; // Import the new SettingsView
+import SettingsView from "./SettingsView";
+import { RegistryCleanerView } from "./RegistryCleanerView";
 
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState("dashboard");
@@ -27,7 +28,8 @@ const App: React.FC = () => {
         {activeView === "cleaner" && <CleanerView />}
         {activeView === "reminder" && <ReminderView />}
         {activeView === "chat" && <ChatView />}
-        {activeView === "settings" && <SettingsView />} {/* Add SettingsView */}
+        {activeView === "settings" && <SettingsView />}
+        {activeView === "registry" && <RegistryCleanerView />}
       </main>
     </div>
   );

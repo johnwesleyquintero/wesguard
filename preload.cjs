@@ -28,4 +28,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // Settings API
   setSystemMetricsInterval: (interval) =>
     ipcRenderer.send("set-system-metrics-interval", interval),
+  // Registry API
+  scanRegistry: () => ipcRenderer.invoke("scan-registry"),
+  backupRegistry: (backup) => ipcRenderer.invoke("backup-registry", backup),
+  cleanRegistry: (items) => ipcRenderer.invoke("clean-registry", items),
+  restoreRegistry: (backup) => ipcRenderer.invoke("restore-registry", backup),
+  // AI Optimization API
+  aiInitDataDir: () => ipcRenderer.invoke("ai-init-data-dir"),
+  aiLogPerformance: (data) => ipcRenderer.invoke("ai-log-performance", data),
+  aiLogCrash: (data) => ipcRenderer.invoke("ai-log-crash", data),
+  aiGetSuggestions: () => ipcRenderer.invoke("ai-get-suggestions"),
 });
