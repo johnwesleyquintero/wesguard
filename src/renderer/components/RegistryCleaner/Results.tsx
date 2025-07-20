@@ -1,6 +1,6 @@
-import React from "react";
-import type { RegistryItem } from "../../types";
-import { Button } from "../Button";
+import React from 'react';
+import type { RegistryItem } from '../../types';
+import { Button } from '../Button';
 
 interface ResultsProps {
   issues: RegistryItem[];
@@ -17,13 +17,13 @@ export const Results: React.FC<ResultsProps> = ({
 
   const handleToggle = (path: string) => {
     setSelected((prev) =>
-      prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path],
+      prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path]
     );
   };
 
   const handleClean = () => {
     const selectedItems = issues.filter((issue) =>
-      selected.includes(issue.path),
+      selected.includes(issue.path)
     );
     onClean(selectedItems);
   };

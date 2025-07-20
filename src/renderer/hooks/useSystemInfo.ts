@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { formatBytes } from "../../../src/utils/formatters";
+import { useState, useEffect, useCallback } from 'react';
+import { formatBytes } from '../../../src/utils/formatters';
 
 export interface SystemInfo {
   os: string;
@@ -23,7 +23,7 @@ interface HistoricalData {
 const MAX_HISTORY_POINTS = 60; // Keep history for 60 seconds (assuming 1-second interval)
 
 const useSystemInfo = (interval: number = 2000) => {
-  const [systemInfo, setSystemInfo] = useState<SystemInfo>({ os: "", cpu: "" });
+  const [systemInfo, setSystemInfo] = useState<SystemInfo>({ os: '', cpu: '' });
   const [metrics, setMetrics] = useState<Metrics>({ cpu: 0, mem: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [historicalData, setHistoricalData] = useState<HistoricalData>({
@@ -38,7 +38,7 @@ const useSystemInfo = (interval: number = 2000) => {
       const networkResponse = await window.electronAPI.getNetworkActivity();
 
       if (diskResponse.error) {
-        console.error("Error fetching disk usage:", diskResponse.error);
+        console.error('Error fetching disk usage:', diskResponse.error);
       } else {
         setMetrics((prev) => ({
           ...prev,
@@ -52,8 +52,8 @@ const useSystemInfo = (interval: number = 2000) => {
 
       if (networkResponse.error) {
         console.error(
-          "Error fetching network activity:",
-          networkResponse.error,
+          'Error fetching network activity:',
+          networkResponse.error
         );
       } else {
         setMetrics((prev) => ({
@@ -63,7 +63,7 @@ const useSystemInfo = (interval: number = 2000) => {
         }));
       }
     } catch (error) {
-      console.error("Error fetching disk/network data:", error);
+      console.error('Error fetching disk/network data:', error);
     }
   }, []);
 
@@ -86,7 +86,7 @@ const useSystemInfo = (interval: number = 2000) => {
     };
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
+      if (document.visibilityState === 'hidden') {
         setIsFetching(false);
         stopFetching();
       } else {
@@ -95,12 +95,12 @@ const useSystemInfo = (interval: number = 2000) => {
       }
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     if (window.electronAPI) {
       const handleSystemInfo = (info: SystemInfo & { error?: string }) => {
         if (info.error) {
-          console.error("Error from main process (system info):", info.error);
+          console.error('Error from main process (system info):', info.error);
         } else {
           setSystemInfo(info);
         }
@@ -148,8 +148,8 @@ const useSystemInfo = (interval: number = 2000) => {
         removeUpdateMetricsListener();
         stopFetching();
         document.removeEventListener(
-          "visibilitychange",
-          handleVisibilityChange,
+          'visibilitychange',
+          handleVisibilityChange
         );
       };
     }

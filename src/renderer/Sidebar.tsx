@@ -1,5 +1,7 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+// Removed unused import: import styles from "./styles.module.css";
+import sidebarStyles from './components/Sidebar.module.css'; // Import sidebar specific styles
 import {
   ChevronLeft,
   ChevronRight,
@@ -12,31 +14,36 @@ import {
   FileJson,
   Zap, // For AI Optimization
   HardDrive, // For Memory Optimizer
-} from "lucide-react";
-import { useGlobalAppContext } from "./context/SystemInfoContext";
+} from 'lucide-react';
+import { useSidebarContext } from './context/SystemInfoContext'; // Use the correct context hook
 
 const Sidebar: React.FC = () => {
-  const { isSidebarCollapsed, toggleSidebar } = useGlobalAppContext();
+  const { isSidebarCollapsed, toggleSidebar } = useSidebarContext(); // Use the correct context hook
 
   return (
-    <aside className={`sidebar ${isSidebarCollapsed ? "collapsed" : ""}`}>
-      <div className="sidebar-header">
-        <Shield className="sidebar-logo-icon" /> {/* Added Shield icon */}
+    <aside
+      className={`${sidebarStyles.sidebar} ${isSidebarCollapsed ? sidebarStyles.collapsed : ''}`}
+    >
+      <div className={sidebarStyles.sidebarHeader}>
+        <Shield className={sidebarStyles.sidebarLogoIcon} />{' '}
+        {/* Added Shield icon */}
         <h1>WesGuard</h1>
         <button
-          className="collapse-button"
+          className={sidebarStyles.collapseButton}
           onClick={toggleSidebar}
           aria-label={
-            isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+            isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'
           }
         >
           {isSidebarCollapsed ? <ChevronRight /> : <ChevronLeft />}
         </button>
       </div>
-      <nav className="nav" aria-label="Main navigation">
+      <nav className={sidebarStyles.nav} aria-label="Main navigation">
         <NavLink
           to="/dashboard"
-          className={({ isActive }) => `nav-button ${isActive ? "active" : ""}`}
+          className={({ isActive }) =>
+            `${sidebarStyles.navButton} ${isActive ? sidebarStyles.active : ''}`
+          }
           aria-label="Dashboard"
         >
           <LayoutDashboard />
@@ -44,7 +51,9 @@ const Sidebar: React.FC = () => {
         </NavLink>
         <NavLink
           to="/cleaner"
-          className={({ isActive }) => `nav-button ${isActive ? "active" : ""}`}
+          className={({ isActive }) =>
+            `${sidebarStyles.navButton} ${isActive ? sidebarStyles.active : ''}`
+          }
           aria-label="Cleaner"
         >
           <Trash2 />
@@ -52,7 +61,9 @@ const Sidebar: React.FC = () => {
         </NavLink>
         <NavLink
           to="/ai-optimization"
-          className={({ isActive }) => `nav-button ${isActive ? "active" : ""}`}
+          className={({ isActive }) =>
+            `${sidebarStyles.navButton} ${isActive ? sidebarStyles.active : ''}`
+          }
           aria-label="AI Optimization"
         >
           <Zap />
@@ -60,7 +71,9 @@ const Sidebar: React.FC = () => {
         </NavLink>
         <NavLink
           to="/memory-optimizer"
-          className={({ isActive }) => `nav-button ${isActive ? "active" : ""}`}
+          className={({ isActive }) =>
+            `${sidebarStyles.navButton} ${isActive ? sidebarStyles.active : ''}`
+          }
           aria-label="Memory Optimizer"
         >
           <HardDrive />
@@ -68,7 +81,9 @@ const Sidebar: React.FC = () => {
         </NavLink>
         <NavLink
           to="/registry"
-          className={({ isActive }) => `nav-button ${isActive ? "active" : ""}`}
+          className={({ isActive }) =>
+            `${sidebarStyles.navButton} ${isActive ? sidebarStyles.active : ''}`
+          }
           aria-label="Registry"
         >
           <FileJson />
@@ -76,7 +91,9 @@ const Sidebar: React.FC = () => {
         </NavLink>
         <NavLink
           to="/reminder"
-          className={({ isActive }) => `nav-button ${isActive ? "active" : ""}`}
+          className={({ isActive }) =>
+            `${sidebarStyles.navButton} ${isActive ? sidebarStyles.active : ''}`
+          }
           aria-label="Reminder"
         >
           <Bell />
@@ -84,7 +101,9 @@ const Sidebar: React.FC = () => {
         </NavLink>
         <NavLink
           to="/chat"
-          className={({ isActive }) => `nav-button ${isActive ? "active" : ""}`}
+          className={({ isActive }) =>
+            `${sidebarStyles.navButton} ${isActive ? sidebarStyles.active : ''}`
+          }
           aria-label="WesGuard AI Chat"
         >
           <MessageSquare />
@@ -92,7 +111,9 @@ const Sidebar: React.FC = () => {
         </NavLink>
         <NavLink
           to="/settings"
-          className={({ isActive }) => `nav-button ${isActive ? "active" : ""}`}
+          className={({ isActive }) =>
+            `${sidebarStyles.navButton} ${isActive ? sidebarStyles.active : ''}`
+          }
           aria-label="Settings"
         >
           <Settings />

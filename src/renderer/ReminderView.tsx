@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import styles from "./components/styles.module.css";
-import { Save } from "lucide-react";
-import { Button } from "./components/Button";
-import { Card } from "./components/Card";
-import PageHeader from "./components/PageHeader";
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import styles from './components/styles.module.css';
+import { Save } from 'lucide-react';
+import { Button } from './components/Button';
+import { Card } from './components/Card';
+import PageHeader from './components/PageHeader';
 
 interface Reminder {
   id: string;
@@ -19,9 +19,9 @@ const formatTime = (num: number) => (num < 10 ? `0${num}` : num);
 
 const ReminderView: React.FC = () => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
-  const [newReminderMinutes, setNewReminderMinutes] = useState("30");
+  const [newReminderMinutes, setNewReminderMinutes] = useState('30');
   const [newReminderMessage, setNewReminderMessage] = useState(
-    "Time to take a break!",
+    'Time to take a break!'
   );
   const [newReminderSound, setNewReminderSound] = useState(true);
 
@@ -30,7 +30,7 @@ const ReminderView: React.FC = () => {
 
   // Load saved reminders from localStorage on component mount
   useEffect(() => {
-    const savedReminders = localStorage.getItem("wesguard-reminders");
+    const savedReminders = localStorage.getItem('wesguard-reminders');
     if (savedReminders) {
       try {
         const parsedReminders = JSON.parse(savedReminders);
@@ -41,7 +41,7 @@ const ReminderView: React.FC = () => {
         }));
         setReminders(inactiveReminders);
       } catch (error) {
-        console.error("Error parsing saved reminders:", error);
+        console.error('Error parsing saved reminders:', error);
       }
     }
   }, []);
@@ -49,17 +49,17 @@ const ReminderView: React.FC = () => {
   // Save reminders to localStorage whenever reminders change
   useEffect(() => {
     if (reminders.length > 0) {
-      localStorage.setItem("wesguard-reminders", JSON.stringify(reminders));
+      localStorage.setItem('wesguard-reminders', JSON.stringify(reminders));
     } else {
       // Remove from localStorage if no reminders exist
-      localStorage.removeItem("wesguard-reminders");
+      localStorage.removeItem('wesguard-reminders');
     }
   }, [reminders]);
 
   const addReminder = useCallback(() => {
     const minutes = parseInt(newReminderMinutes, 10);
     if (isNaN(minutes) || minutes <= 0) {
-      alert("Please enter a valid number of minutes (greater than 0).");
+      alert('Please enter a valid number of minutes (greater than 0).');
       return;
     }
 
@@ -73,8 +73,8 @@ const ReminderView: React.FC = () => {
       sound: newReminderSound,
     };
     setReminders((prev) => [...prev, newReminder]);
-    setNewReminderMinutes("30");
-    setNewReminderMessage("Time to take a break!");
+    setNewReminderMinutes('30');
+    setNewReminderMessage('Time to take a break!');
     setNewReminderSound(true);
   }, [newReminderMinutes, newReminderMessage, newReminderSound]);
 
@@ -96,7 +96,7 @@ const ReminderView: React.FC = () => {
           }
         }
         return r;
-      }),
+      })
     );
   }, []);
 
@@ -112,7 +112,7 @@ const ReminderView: React.FC = () => {
             }
             // Find the original reminder data to reset to initial values
             const originalReminder = prevReminders.find(
-              (reminder) => reminder.id === id,
+              (reminder) => reminder.id === id
             );
             const originalMinutes = originalReminder
               ? originalReminder.initialMinutes // Use initialMinutes
@@ -126,10 +126,10 @@ const ReminderView: React.FC = () => {
             };
           }
           return r;
-        }),
+        })
       );
     },
-    [newReminderMinutes],
+    [newReminderMinutes]
   );
 
   const deleteReminder = useCallback((id: string) => {
@@ -143,7 +143,7 @@ const ReminderView: React.FC = () => {
           }
         }
         return r.id !== id;
-      }),
+      })
     );
   }, []);
 
@@ -168,16 +168,16 @@ const ReminderView: React.FC = () => {
                   }
                   if (window.electronAPI) {
                     window.electronAPI.showReminderNotification(
-                      "Reminder!",
+                      'Reminder!',
                       r.message,
-                      r.sound,
+                      r.sound
                     );
                   } else {
                     alert(`Reminder: ${r.message}`);
                   }
                   // Reset to original time after completion instead of staying at 0
                   const originalReminder = prevReminders.find(
-                    (orig) => orig.id === r.id,
+                    (orig) => orig.id === r.id
                   );
                   const originalMinutes = originalReminder
                     ? originalReminder.initialMinutes // Use initialMinutes
@@ -212,10 +212,10 @@ const ReminderView: React.FC = () => {
   }, [reminders]); // This dependency is still needed to react to new reminders being added or deleted
 
   return (
-    <div className={styles["reminder-view"]}>
+    <div className={styles['reminder-view']}>
       <PageHeader title="Reminders" />
 
-      <Card className={styles["add-reminder-section"]}>
+      <Card className={styles['add-reminder-section']}>
         <h3>Add New Reminder</h3>
         <input
           type="number"
@@ -232,7 +232,7 @@ const ReminderView: React.FC = () => {
           placeholder="Message"
           className={styles.input}
         />
-        <label className={styles["sound-toggle"]}>
+        <label className={styles['sound-toggle']}>
           <input
             type="checkbox"
             checked={newReminderSound}
@@ -243,12 +243,12 @@ const ReminderView: React.FC = () => {
         <Button onClick={addReminder}>Add Reminder</Button>
       </Card>
 
-      <div className={styles["reminders-list"]}>
+      <div className={styles['reminders-list']}>
         {reminders.length === 0 ? (
           <p>No reminders set. Add one above!</p>
         ) : (
           <>
-            <div className={styles["saved-reminders-info"]}>
+            <div className={styles['saved-reminders-info']}>
               <Save className={styles.highlight} /> Auto-saved: Your reminders
               are automatically saved and will be available when you restart the
               application.
@@ -256,15 +256,15 @@ const ReminderView: React.FC = () => {
             {reminders.map((reminder) => (
               <Card
                 key={reminder.id}
-                className={`${styles["reminder-card"]} ${reminder.isActive ? styles.active : ""}`}
+                className={`${styles['reminder-card']} ${reminder.isActive ? styles.active : ''}`}
               >
-                <div className={styles["timer-display"]}>
+                <div className={styles['timer-display']}>
                   {formatTime(reminder.minutes)}:{formatTime(reminder.seconds)}
                 </div>
-                <p className={styles["reminder-message"]}>{reminder.message}</p>
-                <div className={styles["reminder-actions"]}>
+                <p className={styles['reminder-message']}>{reminder.message}</p>
+                <div className={styles['reminder-actions']}>
                   <Button onClick={() => toggleReminder(reminder.id)}>
-                    {reminder.isActive ? "Pause" : "Start"}
+                    {reminder.isActive ? 'Pause' : 'Start'}
                   </Button>
                   <Button
                     onClick={() => resetReminder(reminder.id)}

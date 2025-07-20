@@ -1,16 +1,16 @@
-import React from "react";
-import { Button } from "../Button";
-import { Card } from "../Card";
-import PageHeader from "../PageHeader";
-import { JunkFile } from "../../types";
+import React from 'react';
+import { Button } from '../Button';
+import { Card } from '../Card';
+import PageHeader from '../PageHeader';
+import { JunkFile } from '../../types';
 import {
   CLEANER_ANALYSIS_COMPLETE_TITLE,
   CLEANER_FILES_TO_CLEAN_HEADER,
   CLEANER_SELECT_ALL,
   CLEANER_NO_FILES_FOUND,
   CLEANER_ANALYZE_AGAIN_BUTTON,
-} from "../../constants";
-import styles from "./AnalysisResults.module.css";
+} from '../../constants';
+import styles from './AnalysisResults.module.css';
 
 interface AnalysisResultsProps {
   error: string | null;
@@ -43,12 +43,12 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
         {junkFiles.length > 0 ? (
           <>
             <p className={styles.analysisSummary}>
-              Found{" "}
+              Found{' '}
               <span className={styles.highlight}>
                 {formatBytes(recoverableSpace)}
-              </span>{" "}
-              of recoverable space across{" "}
-              <span className={styles.highlight}>{junkFiles.length}</span>{" "}
+              </span>{' '}
+              of recoverable space across{' '}
+              <span className={styles.highlight}>{junkFiles.length}</span>{' '}
               files.
             </p>
             <div className={styles.junkFilesList}>
@@ -105,7 +105,7 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 {formatBytes(
                   junkFiles
                     .filter((f) => selectedFiles.includes(f.path))
-                    .reduce((acc, f) => acc + f.size, 0),
+                    .reduce((acc, f) => acc + f.size, 0)
                 )}
                 )
               </Button>

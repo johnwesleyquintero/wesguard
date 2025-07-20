@@ -1,8 +1,8 @@
-import { defineConfig } from "vite";
-import path from "node:path";
-import electron from "vite-plugin-electron/simple";
-import react from "@vitejs/plugin-react";
-import tsConfigPaths from "vite-tsconfig-paths";
+import { defineConfig } from 'vite';
+import path from 'node:path';
+import electron from 'vite-plugin-electron/simple';
+import react from '@vitejs/plugin-react';
+import tsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [
@@ -10,19 +10,24 @@ export default defineConfig({
     tsConfigPaths(),
     electron({
       main: {
-        entry: "main.js",
-        outputDir: "dist-electron",
+        entry: 'main.js',
+        // Removed outputDir as it's not a valid option here
       },
       preload: {
-        input: path.join(__dirname, "preload.cjs"),
-        outputDir: "dist-electron",
+        input: path.join(__dirname, 'preload.cjs'),
+        // Removed outputDir as it's not a valid option here
       },
       renderer: {},
     }),
   ],
+  css: {
+    postcss: {
+      plugins: [require('tailwindcss'), require('autoprefixer')],
+    },
+  },
   build: {
     rollupOptions: {
-      external: ["systeminformation"],
+      external: ['systeminformation'],
     },
   },
 });

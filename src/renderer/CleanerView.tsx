@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import toast from "react-hot-toast";
-import useJunkFileCleaner from "./hooks/useJunkFileCleaner";
-import { Card } from "./components/Card";
-import { Button } from "./components/Button";
-import AnalysisIdle from "./components/cleaner/AnalysisIdle";
-import AnalysisResults from "./components/cleaner/AnalysisResults";
-import CleaningInProgress from "./components/cleaner/CleaningInProgress";
-import CleaningComplete from "./components/cleaner/CleaningComplete";
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import useJunkFileCleaner from './hooks/useJunkFileCleaner';
+import { Card } from './components/Card';
+import { Button } from './components/Button';
+import AnalysisIdle from './components/cleaner/AnalysisIdle';
+import AnalysisResults from './components/cleaner/AnalysisResults';
+import CleaningInProgress from './components/cleaner/CleaningInProgress';
+import CleaningComplete from './components/cleaner/CleaningComplete';
 import {
   CLEANER_CONFIRM_DIALOG_TITLE,
   CLEANER_CONFIRM_DIALOG_MESSAGE,
@@ -14,7 +14,7 @@ import {
   CLEANER_CANCEL_BUTTON,
   CLEANER_TOAST_NO_FILES_SELECTED,
   CLEANER_ANALYZING_MESSAGE,
-} from "./constants";
+} from './constants';
 
 const CleanerView: React.FC = () => {
   const {
@@ -36,7 +36,7 @@ const CleanerView: React.FC = () => {
     setSelectedFiles((prevSelected) =>
       prevSelected.includes(filePath)
         ? prevSelected.filter((p) => p !== filePath)
-        : [...prevSelected, filePath],
+        : [...prevSelected, filePath]
     );
   };
 
@@ -68,15 +68,15 @@ const CleanerView: React.FC = () => {
 
   return (
     <div className="cleaner-container">
-      {status === "idle" && (
-        <AnalysisIdle onAnalyze={analyze} isDisabled={status !== "idle"} />
+      {status === 'idle' && (
+        <AnalysisIdle onAnalyze={analyze} isDisabled={status !== 'idle'} />
       )}
 
-      {status === "analyzing" && (
+      {status === 'analyzing' && (
         <CleaningInProgress progress={progress || CLEANER_ANALYZING_MESSAGE} />
       )}
 
-      {status === "analyzed" && (
+      {status === 'analyzed' && (
         <AnalysisResults
           error={error}
           junkFiles={junkFiles}
@@ -90,11 +90,11 @@ const CleanerView: React.FC = () => {
         />
       )}
 
-      {status === "cleaning" && (
+      {status === 'cleaning' && (
         <CleaningInProgress progress={progress || CLEANER_ANALYZING_MESSAGE} />
       )}
 
-      {status === "cleaned" && (
+      {status === 'cleaned' && (
         <CleaningComplete
           recoverableSpace={recoverableSpace}
           formatBytes={formatBytes}

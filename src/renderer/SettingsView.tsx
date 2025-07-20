@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import styles from "./components/styles.module.css";
-import useSystemInfo from "./hooks/useSystemInfo";
-import { Card } from "./components/Card";
-import PageHeader from "./components/PageHeader";
+import React, { useState } from 'react';
+import styles from './components/styles.module.css';
+import useSystemInfo from './hooks/useSystemInfo';
+import { Card } from './components/Card';
+import PageHeader from './components/PageHeader';
 
 const SettingsView: React.FC = () => {
   const [localInterval, setLocalInterval] = useState(2); // Default to 2 seconds, matching useSystemInfo default
@@ -16,12 +16,12 @@ const SettingsView: React.FC = () => {
   };
 
   return (
-    <div className={styles["settings-view"]}>
+    <div className={styles['settings-view']}>
       <PageHeader title="Settings" />
 
-      <Card className={styles["settings-section"]}>
+      <Card className={styles['settings-section']}>
         <h3>System Metrics</h3>
-        <div className={styles["setting-item"]}>
+        <div className={styles['setting-item']}>
           <label htmlFor="update-interval">Update Interval (seconds):</label>
           <input
             id="update-interval"

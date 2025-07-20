@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "./components/Button";
-import { Card } from "./components/Card";
-import PageHeader from "./components/PageHeader";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button } from './components/Button';
+import { Card } from './components/Card';
+import PageHeader from './components/PageHeader';
 
 interface MemoryUsageData {
   timestamp: string;
@@ -13,7 +13,7 @@ interface MemoryUsageData {
 
 const MemoryOptimizerView: React.FC = () => {
   const [currentUsage, setCurrentUsage] = useState<MemoryUsageData | null>(
-    null,
+    null
   );
   const [optimizationSuggestions, setOptimizationSuggestions] = useState<
     string[]
@@ -29,8 +29,8 @@ const MemoryOptimizerView: React.FC = () => {
       const result = await window.electronAPI.memoryOptimizer.getCurrentUsage();
       setCurrentUsage(result);
     } catch (err) {
-      console.error("Failed to fetch current memory usage:", err);
-      setError("Failed to load current memory usage. Please try again.");
+      console.error('Failed to fetch current memory usage:', err);
+      setError('Failed to load current memory usage. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -46,11 +46,11 @@ const MemoryOptimizerView: React.FC = () => {
         // Re-fetch current usage after optimization attempt
         await fetchCurrentUsage();
       } else {
-        setError(result.error || "Failed to optimize memory.");
+        setError(result.error || 'Failed to optimize memory.');
       }
     } catch (err) {
-      console.error("Failed to optimize memory:", err);
-      setError("Failed to optimize memory. Please try again.");
+      console.error('Failed to optimize memory:', err);
+      setError('Failed to optimize memory. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ const MemoryOptimizerView: React.FC = () => {
       const result = await window.electronAPI.memoryOptimizer.getHistory();
       setHistory(result);
     } catch (err) {
-      console.error("Failed to fetch memory history:", err);
+      console.error('Failed to fetch memory history:', err);
     }
   }, []);
 
@@ -69,7 +69,7 @@ const MemoryOptimizerView: React.FC = () => {
     try {
       await window.electronAPI.memoryOptimizer.initDataDir();
     } catch (err) {
-      console.error("Failed to initialize memory data directory:", err);
+      console.error('Failed to initialize memory data directory:', err);
     }
   }, []);
 
@@ -115,7 +115,7 @@ const MemoryOptimizerView: React.FC = () => {
       </Card>
 
       <Button onClick={optimizeMemory} disabled={loading}>
-        {loading ? "Optimizing..." : "Optimize Memory"}
+        {loading ? 'Optimizing...' : 'Optimize Memory'}
       </Button>
 
       {optimizationSuggestions.length > 0 && (
@@ -135,7 +135,7 @@ const MemoryOptimizerView: React.FC = () => {
           <ul>
             {history.slice(-10).map((entry, index) => (
               <li key={index}>
-                {new Date(entry.timestamp).toLocaleTimeString()}:{" "}
+                {new Date(entry.timestamp).toLocaleTimeString()}:{' '}
                 {entry.usedPercentage.toFixed(2)}% used
               </li>
             ))}

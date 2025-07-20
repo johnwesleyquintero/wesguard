@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useRegistryCleaner } from "./hooks/useRegistryCleaner";
-import { Shield, RotateCcw, Check } from "lucide-react";
-import { Button } from "./components/Button";
-import { Card } from "./components/Card";
-import type { RegistryBackup, RegistryItem } from "./types";
-import PageHeader from "./components/PageHeader";
-import { Results } from "./components/RegistryCleaner/Results";
+import React, { useEffect, useState } from 'react';
+import { useRegistryCleaner } from './hooks/useRegistryCleaner';
+import { Shield, RotateCcw, Check } from 'lucide-react';
+import { Button } from './components/Button';
+import { Card } from './components/Card';
+import type { RegistryBackup, RegistryItem } from './types';
+import PageHeader from './components/PageHeader';
+import { Results } from './components/RegistryCleaner/Results';
 
 export const RegistryCleanerView: React.FC = () => {
   const {
@@ -53,7 +53,7 @@ export const RegistryCleanerView: React.FC = () => {
             disabled={scanning}
             variant="primary"
           >
-            {scanning ? "Scanning..." : "Scan Registry"}
+            {scanning ? 'Scanning...' : 'Scan Registry'}
           </Button>
         </div>
       </div>
@@ -81,7 +81,7 @@ export const RegistryCleanerView: React.FC = () => {
                     <div className="backup-info">
                       <Shield size={16} />
                       <span>
-                        Backup from{" "}
+                        Backup from{' '}
                         {new Date(backup.timestamp).toLocaleString()}
                       </span>
                     </div>
@@ -91,7 +91,7 @@ export const RegistryCleanerView: React.FC = () => {
                       variant="secondary"
                     >
                       <RotateCcw size={16} />
-                      {restoring ? "Restoring..." : "Restore"}
+                      {restoring ? 'Restoring...' : 'Restore'}
                     </Button>
                   </div>
                 ))}

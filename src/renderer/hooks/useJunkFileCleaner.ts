@@ -1,23 +1,23 @@
-import { useState, useCallback } from "react";
-import { formatBytes } from "../../../src/utils/formatters";
-import type { JunkFile } from "../types"; // Import JunkFile
+import { useState, useCallback } from 'react';
+import { formatBytes } from '../../../src/utils/formatters';
+import type { JunkFile } from '../types'; // Import JunkFile
 
-type Status = "idle" | "analyzing" | "analyzed" | "cleaning" | "cleaned";
+type Status = 'idle' | 'analyzing' | 'analyzed' | 'cleaning' | 'cleaned';
 
 const useJunkFileCleaner = () => {
-  const [status, setStatus] = useState<Status>("idle");
+  const [status, setStatus] = useState<Status>('idle');
   const [recoverableSpace, setRecoverableSpace] = useState(0);
   const [junkFiles, setJunkFiles] = useState<JunkFile[]>([]);
-  const [progress, setProgress] = useState<string>("");
+  const [progress, setProgress] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   const analyze = useCallback(async () => {
-    setStatus("analyzing");
-    setProgress("Scanning common junk locations...");
+    setStatus('analyzing');
+    setProgress('Scanning common junk locations...');
     setError(null);
     try {
       if (!window.electronAPI) {
-        throw new Error("Electron API not available");
+        throw new Error('Electron API not available');
       }
       const response = await window.electronAPI.cleaner.analyzeJunkFiles();
       if (response.error) {
@@ -26,31 +26,31 @@ const useJunkFileCleaner = () => {
       }
       setRecoverableSpace(response.totalSize);
       setJunkFiles(response.files);
-      setStatus("analyzed");
-      setProgress("");
+      setStatus('analyzed');
+      setProgress('');
       return {
         files: response.files,
         totalSize: response.totalSize,
         error: response.error,
       };
     } catch (err: unknown) {
-      console.error("Analysis failed:", err);
+      console.error('Analysis failed:', err);
       setError(
-        err instanceof Error ? err.message : "Failed to analyze junk files.",
+        err instanceof Error ? err.message : 'Failed to analyze junk files.'
       );
-      setStatus("idle"); // Reset on error
-      setProgress("");
+      setStatus('idle'); // Reset on error
+      setProgress('');
       throw err; // Re-throw to allow caller to handle
     }
   }, []);
 
   const clean = useCallback(async (filesToDelete: string[]) => {
-    setStatus("cleaning");
-    setProgress("Removing selected files...");
+    setStatus('cleaning');
+    setProgress('Removing selected files...');
     setError(null);
     try {
       if (!window.electronAPI) {
-        throw new Error("Electron API not available");
+        throw new Error('Electron API not available');
       }
 
       // Track the files that were successfully deleted
@@ -61,7 +61,7 @@ const useJunkFileCleaner = () => {
       for (const file of filesToDelete) {
         try {
           setProgress(
-            `Removing file ${deletedCount + 1} of ${filesToDelete.length}...`,
+            `Removing file ${deletedCount + 1} of ${filesToDelete.length}...`
           );
           const result = await window.electronAPI.cleaner.executeCleaning([
             file,
@@ -80,27 +80,27 @@ const useJunkFileCleaner = () => {
 
       if (deletedCount === filesToDelete.length) {
         // All files were deleted successfully
-        setStatus("cleaned");
+        setStatus('cleaned');
         setRecoverableSpace(0);
         setJunkFiles([]);
-        setProgress("");
+        setProgress('');
       } else if (deletedCount > 0) {
         // Some files were deleted
         setError(
-          `Partially completed. ${failedFiles.length} files could not be deleted.`,
+          `Partially completed. ${failedFiles.length} files could not be deleted.`
         );
-        setStatus("analyzed");
+        setStatus('analyzed');
         // Update junkFiles to only include the files that weren't deleted
         setJunkFiles((prevFiles) =>
-          prevFiles.filter((f) => failedFiles.includes(f.path)),
+          prevFiles.filter((f) => failedFiles.includes(f.path))
         );
-        setProgress("");
+        setProgress('');
       } else {
         // No files were deleted
-        setError("Failed to delete any files. Files might be in use.");
-        setStatus("analyzed");
-        setProgress("");
-        throw new Error("Failed to delete any files");
+        setError('Failed to delete any files. Files might be in use.');
+        setStatus('analyzed');
+        setProgress('');
+        throw new Error('Failed to delete any files');
       }
 
       return {
@@ -109,23 +109,23 @@ const useJunkFileCleaner = () => {
         failedFiles,
         error:
           failedFiles.length > 0
-            ? "Some files could not be deleted"
+            ? 'Some files could not be deleted'
             : undefined,
       };
     } catch (err: unknown) {
-      console.error("Cleaning failed:", err);
-      setError(err instanceof Error ? err.message : "Failed to clean files.");
-      setStatus("analyzed"); // Go back to analyzed state on error
-      setProgress("");
+      console.error('Cleaning failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to clean files.');
+      setStatus('analyzed'); // Go back to analyzed state on error
+      setProgress('');
       throw err; // Re-throw to allow caller to handle
     }
   }, []);
 
   const reset = useCallback(() => {
-    setStatus("idle");
+    setStatus('idle');
     setRecoverableSpace(0);
     setJunkFiles([]);
-    setProgress("");
+    setProgress('');
     setError(null);
   }, []);
 

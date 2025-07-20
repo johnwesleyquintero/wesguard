@@ -1,11 +1,11 @@
-import React from "react";
-import { Card } from "../Card";
-import LoadingIndicator from "../LoadingIndicator";
-import PageHeader from "../PageHeader";
+import React from 'react';
+import { Card } from '../Card';
+import LoadingIndicator from '../LoadingIndicator';
+import PageHeader from '../PageHeader';
 import {
   CLEANER_CLEANING_TITLE,
   CLEANER_CLEANING_MESSAGE,
-} from "../../constants";
+} from '../../constants';
 
 interface CleaningInProgressProps {
   progress: string | null;

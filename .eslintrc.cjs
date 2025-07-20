@@ -5,19 +5,43 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
+    "plugin:jsx-a11y/recommended",
   ],
-  ignorePatterns: ["dist", ".eslintrc.cjs", "scripts", "preload.cjs"],
+  ignorePatterns: [
+    "dist",
+    ".eslintrc.cjs",
+    "scripts",
+    "preload.cjs",
+    "postcss.config.js",
+    "tailwind.config.js",
+  ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
     project: ["./tsconfig.json", "./tsconfig.node.json"],
   },
-  plugins: ["react-refresh"],
+  plugins: ["react-refresh", "import", "jsx-a11y", "prettier"],
   rules: {
     "react-refresh/only-export-components": [
       "warn",
       { allowConstantExport: true },
     ],
+    "prettier/prettier": [
+      "error",
+      { singleQuote: true, trailingComma: "es5", semi: true },
+    ],
+    "import/no-unresolved": [
+      "error",
+      { ignore: ["\\.module\\.css$", "vite-plugin-electron/simple"] },
+    ],
+  },
+  settings: {
+    "import/resolver": {
+      typescript: {
+        project: "./tsconfig.json",
+      },
+    },
   },
 };

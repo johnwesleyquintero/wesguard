@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "./components/Button";
-import PageHeader from "./components/PageHeader";
-import { SuggestionCard } from "./components/AIOptimization/SuggestionCard";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button } from './components/Button';
+import PageHeader from './components/PageHeader';
+import { SuggestionCard } from './components/AIOptimization/SuggestionCard';
 
 const AIOptimizationView: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -15,8 +15,8 @@ const AIOptimizationView: React.FC = () => {
       const result = await window.electronAPI.aiOptimization.getSuggestions();
       setSuggestions(result);
     } catch (err) {
-      console.error("Failed to fetch AI suggestions:", err);
-      setError("Failed to load suggestions. Please try again.");
+      console.error('Failed to fetch AI suggestions:', err);
+      setError('Failed to load suggestions. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -26,7 +26,7 @@ const AIOptimizationView: React.FC = () => {
     try {
       await window.electronAPI.aiOptimization.initDataDir();
     } catch (err) {
-      console.error("Failed to initialize AI data directory:", err);
+      console.error('Failed to initialize AI data directory:', err);
     }
   }, []);
 
@@ -41,7 +41,7 @@ const AIOptimizationView: React.FC = () => {
       <p>Get predictive maintenance suggestions based on system analysis.</p>
 
       <Button onClick={fetchSuggestions} disabled={loading}>
-        {loading ? "Analyzing..." : "Analyze System for Suggestions"}
+        {loading ? 'Analyzing...' : 'Analyze System for Suggestions'}
       </Button>
 
       {error && <p className="error-message">{error}</p>}

@@ -1,4 +1,4 @@
-import type { RegistryItem, RegistryBackup } from "../../renderer/types";
+import type { RegistryItem, RegistryBackup } from '../../renderer/types';
 
 export interface IRegistryCleaner {
   scanRegistry(): Promise<RegistryItem[]>;

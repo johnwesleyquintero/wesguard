@@ -23,15 +23,6 @@
   color: var(--primary-text);
 }
 
-/* Card Component */
-.card {
-  background-color: var(--secondary-bg);
-  border-radius: 10px;
-  padding: 25px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  color: var(--primary-text);
-}
-
 .card-flat {
   background-color: var(--tertiary-bg);
   box-shadow: none;

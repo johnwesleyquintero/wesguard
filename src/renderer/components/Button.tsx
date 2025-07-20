@@ -1,15 +1,15 @@
-import React from "react";
-import styles from "./styles.module.css";
+import React from 'react';
+import styles from './styles.module.css';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "danger" | "ghost";
-  size?: "small" | "medium" | "large";
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  size?: 'small' | 'medium' | 'large';
   ariaLabel?: string; // Added ariaLabel prop
 }
 
 export const Button: React.FC<ButtonProps> = ({
-  variant = "primary",
-  size = "medium",
+  variant = 'primary',
+  size = 'medium',
   className,
   children,
   ariaLabel, // Destructure ariaLabel
@@ -22,7 +22,7 @@ export const Button: React.FC<ButtonProps> = ({
     className,
   ]
     .filter(Boolean)
-    .join(" ");
+    .join(' ');
 
   return (
     <button className={classes} aria-label={ariaLabel} {...props}>

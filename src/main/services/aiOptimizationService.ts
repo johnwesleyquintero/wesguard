@@ -1,12 +1,12 @@
-import { app } from "electron";
-import fs from "fs-extra";
-import path from "path";
+import { app } from 'electron';
+import fs from 'fs-extra';
+import path from 'path';
 
-const DATA_DIR = path.join(app.getPath("userData"), "ai-data");
-const PERFORMANCE_LOG_FILE = path.join(DATA_DIR, "performance.json");
-const CRASH_LOG_FILE = path.join(DATA_DIR, "crashes.json");
-const APP_USAGE_LOG_FILE = path.join(DATA_DIR, "app-usage.json");
-const SYSTEM_EVENT_LOG_FILE = path.join(DATA_DIR, "system-events.json");
+const DATA_DIR = path.join(app.getPath('userData'), 'ai-data');
+const PERFORMANCE_LOG_FILE = path.join(DATA_DIR, 'performance.json');
+const CRASH_LOG_FILE = path.join(DATA_DIR, 'crashes.json');
+const APP_USAGE_LOG_FILE = path.join(DATA_DIR, 'app-usage.json');
+const SYSTEM_EVENT_LOG_FILE = path.join(DATA_DIR, 'system-events.json');
 
 interface PerformanceLogEntry {
   timestamp: string;
@@ -45,7 +45,7 @@ export const aiOptimizationService = {
     try {
       let logs: PerformanceLogEntry[] = [];
       if (await fs.pathExists(PERFORMANCE_LOG_FILE)) {
-        logs = JSON.parse(await fs.readFile(PERFORMANCE_LOG_FILE, "utf-8"));
+        logs = JSON.parse(await fs.readFile(PERFORMANCE_LOG_FILE, 'utf-8'));
       }
       logs.push(data);
       if (logs.length > 1000) {
@@ -53,7 +53,7 @@ export const aiOptimizationService = {
       }
       await fs.writeFile(PERFORMANCE_LOG_FILE, JSON.stringify(logs, null, 2));
     } catch (error) {
-      console.error("Failed to log performance data:", error);
+      console.error('Failed to log performance data:', error);
     }
   },
 
@@ -61,7 +61,7 @@ export const aiOptimizationService = {
     try {
       let logs: CrashLogEntry[] = [];
       if (await fs.pathExists(CRASH_LOG_FILE)) {
-        logs = JSON.parse(await fs.readFile(CRASH_LOG_FILE, "utf-8"));
+        logs = JSON.parse(await fs.readFile(CRASH_LOG_FILE, 'utf-8'));
       }
       logs.push(data);
       if (logs.length > 100) {
@@ -69,7 +69,7 @@ export const aiOptimizationService = {
       }
       await fs.writeFile(CRASH_LOG_FILE, JSON.stringify(logs, null, 2));
     } catch (error) {
-      console.error("Failed to log crash data:", error);
+      console.error('Failed to log crash data:', error);
     }
   },
 
@@ -77,7 +77,7 @@ export const aiOptimizationService = {
     try {
       let logs: AppUsageLogEntry[] = [];
       if (await fs.pathExists(APP_USAGE_LOG_FILE)) {
-        logs = JSON.parse(await fs.readFile(APP_USAGE_LOG_FILE, "utf-8"));
+        logs = JSON.parse(await fs.readFile(APP_USAGE_LOG_FILE, 'utf-8'));
       }
       logs.push(data);
       if (logs.length > 1000) {
@@ -85,7 +85,7 @@ export const aiOptimizationService = {
       }
       await fs.writeFile(APP_USAGE_LOG_FILE, JSON.stringify(logs, null, 2));
     } catch (error) {
-      console.error("Failed to log app usage data:", error);
+      console.error('Failed to log app usage data:', error);
     }
   },
 
@@ -93,7 +93,7 @@ export const aiOptimizationService = {
     try {
       let logs: SystemEventLogEntry[] = [];
       if (await fs.pathExists(SYSTEM_EVENT_LOG_FILE)) {
-        logs = JSON.parse(await fs.readFile(SYSTEM_EVENT_LOG_FILE, "utf-8"));
+        logs = JSON.parse(await fs.readFile(SYSTEM_EVENT_LOG_FILE, 'utf-8'));
       }
       logs.push(data);
       if (logs.length > 500) {
@@ -101,7 +101,7 @@ export const aiOptimizationService = {
       }
       await fs.writeFile(SYSTEM_EVENT_LOG_FILE, JSON.stringify(logs, null, 2));
     } catch (error) {
-      console.error("Failed to log system event data:", error);
+      console.error('Failed to log system event data:', error);
     }
   },
 
@@ -112,14 +112,14 @@ export const aiOptimizationService = {
       // Analyze performance logs
       if (await fs.pathExists(PERFORMANCE_LOG_FILE)) {
         const logs: PerformanceLogEntry[] = JSON.parse(
-          await fs.readFile(PERFORMANCE_LOG_FILE, "utf-8"),
+          await fs.readFile(PERFORMANCE_LOG_FILE, 'utf-8')
         );
         const recentLogs = logs.slice(-50);
 
         const highCpuCount = recentLogs.filter((log) => log.cpu > 80).length;
         if (highCpuCount > 10) {
           suggestions.push(
-            "Sustained high CPU usage detected. Consider checking background processes or running a system scan.",
+            'Sustained high CPU usage detected. Consider checking background processes or running a system scan.'
           );
         }
 
@@ -130,7 +130,7 @@ export const aiOptimizationService = {
           (lastLog.totalDisk - lastLog.diskUsage) / lastLog.totalDisk < 0.1
         ) {
           suggestions.push(
-            "Your disk space is running low. Consider cleaning junk files or uninstalling unused applications.",
+            'Your disk space is running low. Consider cleaning junk files or uninstalling unused applications.'
           );
         }
       }
@@ -138,12 +138,12 @@ export const aiOptimizationService = {
       // Analyze crash logs
       if (await fs.pathExists(CRASH_LOG_FILE)) {
         const crashes: CrashLogEntry[] = JSON.parse(
-          await fs.readFile(CRASH_LOG_FILE, "utf-8"),
+          await fs.readFile(CRASH_LOG_FILE, 'utf-8')
         );
         if (crashes.length > 5) {
           const appName = crashes[crashes.length - 1].appName;
           suggestions.push(
-            `Multiple application crashes detected for ${appName}. This might indicate system instability or problematic software.`,
+            `Multiple application crashes detected for ${appName}. This might indicate system instability or problematic software.`
           );
         }
       }
@@ -151,28 +151,28 @@ export const aiOptimizationService = {
       // Analyze app usage logs
       if (await fs.pathExists(APP_USAGE_LOG_FILE)) {
         const usageLogs: AppUsageLogEntry[] = JSON.parse(
-          await fs.readFile(APP_USAGE_LOG_FILE, "utf-8"),
+          await fs.readFile(APP_USAGE_LOG_FILE, 'utf-8')
         );
         const appDurations = usageLogs.reduce(
           (acc, log) => {
             acc[log.appName] = (acc[log.appName] || 0) + log.duration;
             return acc;
           },
-          {} as Record<string, number>,
+          {} as Record<string, number>
         );
 
         const sortedApps = Object.entries(appDurations).sort(
-          (a, b) => b[1] - a[1],
+          (a, b) => b[1] - a[1]
         );
         if (sortedApps.length > 0) {
           const heaviestApp = sortedApps[0][0];
           suggestions.push(
-            `The application '${heaviestApp}' is consuming the most resources. If you are not using it, consider closing it to improve performance.`,
+            `The application '${heaviestApp}' is consuming the most resources. If you are not using it, consider closing it to improve performance.`
           );
         }
       }
     } catch (error) {
-      console.error("Failed to analyze AI data:", error);
+      console.error('Failed to analyze AI data:', error);
     }
 
     return suggestions;

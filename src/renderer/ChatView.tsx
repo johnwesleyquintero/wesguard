@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useRef } from "react";
-import styles from "./components/styles.module.css";
-import { Send, MessageSquare, Trash2 } from "lucide-react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Button } from "./components/Button";
-import { Card } from "./components/Card";
-import PageHeader from "./components/PageHeader";
+import React, { useState, useEffect, useRef } from 'react';
+import styles from './components/styles.module.css';
+import { Send, MessageSquare, Trash2 } from 'lucide-react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { Button } from './components/Button';
+import { Card } from './components/Card';
+import PageHeader from './components/PageHeader';
 
 interface ChatMessage {
   id: string;
-  type: "user" | "ai" | "system";
+  type: 'user' | 'ai' | 'system';
   content: string;
   timestamp: Date;
 }
 
 const ChatView: React.FC = () => {
-  const [apiKey, setApiKey] = useState("");
+  const [apiKey, setApiKey] = useState('');
   const [isApiKeySet, setIsApiKeySet] = useState(false);
   const [customInstructions, setCustomInstructions] = useState(
-    "You are WesGuardAI, a helpful assistant integrated into the WesGuard PC optimization tool. Help users with their daily tasks, answer questions, and provide assistance with productivity and system optimization.",
+    'You are WesGuardAI, a helpful assistant integrated into the WesGuard PC optimization tool. Help users with their daily tasks, answer questions, and provide assistance with productivity and system optimization.'
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputMessage, setInputMessage] = useState("");
+  const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKeyStatus, setApiKeyStatus] = useState<"" | "connected" | "error">(
-    "",
+  const [apiKeyStatus, setApiKeyStatus] = useState<'' | 'connected' | 'error'>(
+    ''
   );
   const [apiKeyError, setApiKeyError] = useState<string | null>(null);
   const [isApiConfigCollapsed, setIsApiConfigCollapsed] = useState(false);
@@ -33,15 +33,15 @@ const ChatView: React.FC = () => {
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   // Load saved data from localStorage on component mount
   useEffect(() => {
     const savedInstructions = localStorage.getItem(
-      "wesguard-custom-instructions",
+      'wesguard-custom-instructions'
     );
-    const savedMessages = localStorage.getItem("wesguard-chat-messages");
+    const savedMessages = localStorage.getItem('wesguard-chat-messages');
 
     if (savedInstructions) {
       setCustomInstructions(savedInstructions);
@@ -52,17 +52,17 @@ const ChatView: React.FC = () => {
         const parsedMessages = JSON.parse(savedMessages).map(
           (msg: {
             id: string;
-            type: "user" | "ai" | "system";
+            type: 'user' | 'ai' | 'system';
             content: string;
             timestamp: string;
           }) => ({
             ...msg,
             timestamp: new Date(msg.timestamp),
-          }),
+          })
         );
         setMessages(parsedMessages);
       } catch (error) {
-        console.error("Error parsing saved messages:", error);
+        console.error('Error parsing saved messages:', error);
       }
     }
   }, []);
@@ -70,12 +70,12 @@ const ChatView: React.FC = () => {
   // Save messages to localStorage whenever messages change
   useEffect(() => {
     if (messages.length > 0) {
-      localStorage.setItem("wesguard-chat-messages", JSON.stringify(messages));
+      localStorage.setItem('wesguard-chat-messages', JSON.stringify(messages));
     }
   }, [messages]);
   const handleApiKeySubmit = async () => {
     if (!apiKey.trim()) {
-      setApiKeyStatus("error");
+      setApiKeyStatus('error');
       return;
     }
     setApiKeyError(null);
@@ -83,35 +83,35 @@ const ChatView: React.FC = () => {
     try {
       // Test the API key by making a simple request
       const testAI = new GoogleGenerativeAI(apiKey.trim());
-      const model = testAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = testAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
       // Make a test request
-      await model.generateContent("Hello");
+      await model.generateContent('Hello');
 
       // If successful, set the API key (in-memory only)
       genAI.current = testAI;
       setIsApiKeySet(true);
-      setApiKeyStatus("connected");
+      setApiKeyStatus('connected');
 
       // Add welcome message
       const welcomeMessage: ChatMessage = {
         id: Date.now().toString(),
-        type: "system",
-        content: "WesGuardAI is now connected and ready to help!",
+        type: 'system',
+        content: 'WesGuardAI is now connected and ready to help!',
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, welcomeMessage]);
     } catch (error) {
-      console.error("API key validation failed:", error);
+      console.error('API key validation failed:', error);
       setApiKeyError((error as Error).message);
-      setApiKeyStatus("error");
+      setApiKeyStatus('error');
       setIsApiKeySet(false);
     }
   };
 
   const handleCustomInstructionsChange = (value: string) => {
     setCustomInstructions(value);
-    localStorage.setItem("wesguard-custom-instructions", value);
+    localStorage.setItem('wesguard-custom-instructions', value);
   };
 
   const sendMessage = async () => {
@@ -119,18 +119,18 @@ const ChatView: React.FC = () => {
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      type: "user",
+      type: 'user',
       content: inputMessage.trim(),
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInputMessage("");
+    setInputMessage('');
     setIsLoading(true);
 
     try {
       const model = genAI.current.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: 'gemini-1.5-flash',
       });
 
       // Prepare the prompt with custom instructions and context
@@ -146,20 +146,20 @@ Please provide a helpful response.`;
 
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        type: "ai",
+        type: 'ai',
         content: aiResponseText,
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('Error sending message:', error);
 
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        type: "system",
+        type: 'system',
         content:
-          "Sorry, I encountered an error while processing your message. Please check your API key and try again.",
+          'Sorry, I encountered an error while processing your message. Please check your API key and try again.',
         timestamp: new Date(),
       };
 
@@ -170,7 +170,7 @@ Please provide a helpful response.`;
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
@@ -178,11 +178,11 @@ Please provide a helpful response.`;
 
   const clearChat = () => {
     setMessages([]);
-    localStorage.removeItem("wesguard-chat-messages");
+    localStorage.removeItem('wesguard-chat-messages');
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -198,12 +198,12 @@ Please provide a helpful response.`;
               variant="ghost"
               onClick={() => setIsApiConfigCollapsed(!isApiConfigCollapsed)}
             >
-              {isApiConfigCollapsed ? "Show" : "Hide"}
+              {isApiConfigCollapsed ? 'Show' : 'Hide'}
             </Button>
           </div>
           {!isApiConfigCollapsed && (
             <>
-              <div className={styles["input-group"]}>
+              <div className={styles['input-group']}>
                 <input
                   type="password"
                   className={styles.input}
@@ -213,16 +213,16 @@ Please provide a helpful response.`;
                   disabled={isApiKeySet}
                 />
                 <Button onClick={handleApiKeySubmit} disabled={isApiKeySet}>
-                  {isApiKeySet ? "Connected" : "Connect"}
+                  {isApiKeySet ? 'Connected' : 'Connect'}
                 </Button>
               </div>
 
               {apiKeyStatus && (
                 <div className={`api-key-status ${apiKeyStatus}`}>
-                  {apiKeyStatus === "connected" &&
-                    "✓ API Key connected successfully"}
-                  {apiKeyStatus === "error" &&
-                    "✗ Invalid API Key or connection failed"}
+                  {apiKeyStatus === 'connected' &&
+                    '✓ API Key connected successfully'}
+                  {apiKeyStatus === 'error' &&
+                    '✗ Invalid API Key or connection failed'}
                   {apiKeyError && (
                     <div className="api-key-error-details">{apiKeyError}</div>
                   )}
@@ -230,7 +230,7 @@ Please provide a helpful response.`;
               )}
 
               {/* Custom Instructions Section */}
-              <div className={styles["input-group"]}>
+              <div className={styles['input-group']}>
                 <h4>Custom Instructions</h4>
                 <textarea
                   className={styles.input}
@@ -303,8 +303,8 @@ Please provide a helpful response.`;
             className={styles.input}
             placeholder={
               isApiKeySet
-                ? "Type your message here... (Press Enter to send, Shift+Enter for new line)"
-                : "Please connect your Gemini API key first"
+                ? 'Type your message here... (Press Enter to send, Shift+Enter for new line)'
+                : 'Please connect your Gemini API key first'
             }
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
