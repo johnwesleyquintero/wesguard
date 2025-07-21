@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './components/styles.module.css';
 import { Send, MessageSquare, Trash2 } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Button } from './components/Button';
@@ -203,66 +202,99 @@ Please provide a helpful response.`;
           </div>
           {!isApiConfigCollapsed && (
             <>
-              <div className={styles['input-group']}>
+              <div className="mb-4">
+                <label
+                  htmlFor="api-key"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Gemini API Key:
+                </label>
                 <input
+                  id="api-key"
                   type="password"
-                  className={styles.input}
+                  className="form-input mt-1"
                   placeholder="Enter your Gemini API Key"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   disabled={isApiKeySet}
                 />
-                <Button onClick={handleApiKeySubmit} disabled={isApiKeySet}>
+                {/* {apiKeyError && <p className="mt-2 text-sm text-red-600">{apiKeyError}</p>} */}
+                <Button
+                  onClick={handleApiKeySubmit}
+                  disabled={isApiKeySet}
+                  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
                   {isApiKeySet ? 'Connected' : 'Connect'}
                 </Button>
               </div>
 
               {apiKeyStatus && (
-                <div className={`api-key-status ${apiKeyStatus}`}>
+                <div
+                  className={`mt-2 text-sm ${
+                    apiKeyStatus === 'connected'
+                      ? 'text-green-600'
+                      : 'text-red-600'
+                  }`}
+                >
                   {apiKeyStatus === 'connected' &&
                     '✓ API Key connected successfully'}
                   {apiKeyStatus === 'error' &&
                     '✗ Invalid API Key or connection failed'}
                   {apiKeyError && (
-                    <div className="api-key-error-details">{apiKeyError}</div>
+                    <div className="text-red-500 text-xs mt-1">
+                      {apiKeyError}
+                    </div>
                   )}
                 </div>
               )}
 
               {/* Custom Instructions Section */}
-              <div className={styles['input-group']}>
-                <h4>Custom Instructions</h4>
+              <div className="mb-4">
+                <h4 className="text-lg font-semibold mb-2">
+                  Custom Instructions
+                </h4>
                 <textarea
-                  className={styles.input}
+                  className="form-input mt-1"
                   placeholder="Customize how WesGuardAI should behave and respond..."
                   value={customInstructions}
                   onChange={(e) =>
                     handleCustomInstructionsChange(e.target.value)
                   }
-                />
+                  rows={5}
+                ></textarea>
+                {/* {customInstructionsError && <p className="mt-2 text-sm text-red-600">{customInstructionsError}</p>} */}
               </div>
             </>
           )}
         </Card>
 
         {/* Chat Messages Container */}
-        <Card className="chat-messages-container">
-          <div className="chat-header">
-            <h3>Chat</h3>
+        <Card className="chat-messages-container p-4">
+          <div className="chat-header flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">Chat</h3>
             {messages.length > 0 && (
-              <Button variant="danger" onClick={clearChat}>
-                <Trash2 size={16} />
+              <Button
+                variant="danger"
+                onClick={clearChat}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center"
+              >
+                <Trash2 size={16} className="mr-2" />
                 Clear Chat
               </Button>
             )}
           </div>
 
-          <div className="chat-messages">
+          <div className="chat-messages space-y-4">
             {messages.length === 0 ? (
-              <div className="chat-empty-state">
-                <MessageSquare size={48} />
-                <h3>Welcome to WesGuardAI</h3>
-                <p>
+              <div className="chat-empty-state text-center text-gray-500 py-10">
+                <MessageSquare
+                  size={48}
+                  className="mx-auto mb-4 text-gray-400"
+                />
+                <h3 className="text-xl font-semibold mb-2">
+                  Welcome to WesGuardAI
+                </h3>
+                <p className="text-gray-600">
                   Start a conversation with your AI assistant. I can help you
                   with daily tasks, answer questions, and provide assistance
                   with productivity and system optimization.
@@ -272,10 +304,16 @@ Please provide a helpful response.`;
               messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`chat-message ${message.type}`}
+                  className={`chat-message p-3 rounded-lg ${
+                    message.type === 'user'
+                      ? 'bg-blue-100 text-blue-800 ml-auto'
+                      : message.type === 'ai'
+                        ? 'bg-gray-100 text-gray-800 mr-auto'
+                        : 'bg-yellow-100 text-yellow-800 text-center'
+                  } max-w-3/4`}
                 >
                   <div>{message.content}</div>
-                  <div className="message-timestamp">
+                  <div className="message-timestamp text-xs text-gray-500 mt-1 text-right">
                     {formatTime(message.timestamp)}
                   </div>
                 </div>
@@ -283,12 +321,12 @@ Please provide a helpful response.`;
             )}
 
             {isLoading && (
-              <div className="typing-indicator">
+              <div className="typing-indicator flex items-center text-gray-500">
                 <span>WesGuardAI is typing</span>
-                <div className="typing-dots">
-                  <div className="typing-dot"></div>
-                  <div className="typing-dot"></div>
-                  <div className="typing-dot"></div>
+                <div className="typing-dots ml-2 flex space-x-1">
+                  <div className="typing-dot w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="typing-dot w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
+                  <div className="typing-dot w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></div>
                 </div>
               </div>
             )}
@@ -298,9 +336,9 @@ Please provide a helpful response.`;
         </Card>
 
         {/* Chat Input */}
-        <div className="chat-input-container">
+        <div className="chat-input-container flex items-center p-4 border-t border-gray-200 bg-white">
           <textarea
-            className={styles.input}
+            className="form-input flex-grow mr-4 resize-none"
             placeholder={
               isApiKeySet
                 ? 'Type your message here... (Press Enter to send, Shift+Enter for new line)'
@@ -315,8 +353,9 @@ Please provide a helpful response.`;
           <Button
             onClick={sendMessage}
             disabled={!isApiKeySet || !inputMessage.trim() || isLoading}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
           >
-            <Send size={18} />
+            <Send size={18} className="mr-2" />
             Send
           </Button>
         </div>

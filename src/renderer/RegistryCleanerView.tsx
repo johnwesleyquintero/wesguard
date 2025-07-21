@@ -18,6 +18,7 @@ export const RegistryCleanerView: React.FC = () => {
   } = useRegistryCleaner();
   const [restoring, setRestoring] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [ignoredIssues, setIgnoredIssues] = useState<string[]>([]);
 
   useEffect(() => {
     scanRegistry();
@@ -43,6 +44,10 @@ export const RegistryCleanerView: React.FC = () => {
     }
   };
 
+  const handleIgnore = (item: RegistryItem) => {
+    setIgnoredIssues((prev) => [...prev, item.path]);
+  };
+
   return (
     <div className="registry-cleaner">
       <div className="registry-cleaner-header">
@@ -60,15 +65,22 @@ export const RegistryCleanerView: React.FC = () => {
 
       {showResults ? (
         <Results
-          issues={issues}
+          issues={issues.filter((issue) => !ignoredIssues.includes(issue.path))}
           onClean={handleClean}
           onBack={() => setShowResults(false)}
+          onIgnore={handleIgnore}
         />
       ) : (
         <>
-          {issues.length > 0 && (
+          {issues.filter((issue) => !ignoredIssues.includes(issue.path))
+            .length > 0 && (
             <Button onClick={() => setShowResults(true)}>
-              View {issues.length} Issues
+              View{' '}
+              {
+                issues.filter((issue) => !ignoredIssues.includes(issue.path))
+                  .length
+              }{' '}
+              Issues
             </Button>
           )}
 
@@ -99,12 +111,14 @@ export const RegistryCleanerView: React.FC = () => {
             </Card>
           )}
 
-          {!scanning && issues.length === 0 && (
-            <div className="no-issues">
-              <Check size={24} className="success-icon" />
-              <p>No registry issues found</p>
-            </div>
-          )}
+          {!scanning &&
+            issues.filter((issue) => !ignoredIssues.includes(issue.path))
+              .length === 0 && (
+              <div className="no-issues">
+                <Check size={24} className="success-icon" />
+                <p>No registry issues found</p>
+              </div>
+            )}
         </>
       )}
     </div>

@@ -12,51 +12,66 @@ import AIOptimizationView from './AIOptimizationView';
 import MemoryOptimizerView from './MemoryOptimizerView';
 import { SidebarProvider } from './context/SidebarProvider'; // Import new provider
 import { SystemInfoProvider } from './context/SystemInfoProvider'; // Import new provider
-import { GlobalStyles } from './styles/GlobalStyles';
-import { ThemeProvider } from 'styled-components';
-import { theme } from './styles/theme';
-import { useSystemInfoContext } from './context/SystemInfoContext'; // Import context hook
+import {
+  useSystemInfoContext,
+  useSidebarContext,
+} from './context/SystemInfoContext'; // Import context hooks
+import { Menu } from 'lucide-react'; // Import Menu icon
 
 const App: React.FC = () => {
   const { themeMode } = useSystemInfoContext(); // Get themeMode from context
+  const { toggleSidebar } = useSidebarContext(); // Get toggleSidebar from context
+
+  // Apply dark class to body based on themeMode
+  React.useEffect(() => {
+    if (themeMode === 'dark') {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [themeMode]);
 
   return (
     <BrowserRouter>
-      <ThemeProvider theme={themeMode === 'light' ? theme.light : theme.dark}>
-        <GlobalStyles />
-        <SidebarProvider>
+      <SidebarProvider>
+        {' '}
+        {/* Use SidebarProvider */}
+        <SystemInfoProvider>
           {' '}
-          {/* Use SidebarProvider */}
-          <SystemInfoProvider>
-            {' '}
-            {/* Use SystemInfoProvider */}
-            <div className="app">
-              <Sidebar />
-              <main className="main-content">
-                <Routes>
-                  <Route path="/dashboard" element={<DashboardView />} />
-                  <Route path="/cleaner" element={<CleanerView />} />
-                  <Route path="/reminder" element={<ReminderView />} />
-                  <Route path="/chat" element={<ChatView />} />
-                  <Route path="/settings" element={<SettingsView />} />
-                  <Route path="/registry" element={<RegistryCleanerView />} />
-                  <Route
-                    path="/ai-optimization"
-                    element={<AIOptimizationView />}
-                  />
-                  <Route
-                    path="/memory-optimizer"
-                    element={<MemoryOptimizerView />}
-                  />
-                  <Route path="/" element={<DashboardView />} />{' '}
-                  {/* Default route */}
-                </Routes>
-              </main>
-              <Toaster />
-            </div>
-          </SystemInfoProvider>
-        </SidebarProvider>
-      </ThemeProvider>
+          {/* Use SystemInfoProvider */}
+          <div className="flex h-screen">
+            <Sidebar />
+            <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+              <button
+                className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-secondary-bg text-primary-text shadow-lg"
+                onClick={toggleSidebar}
+                aria-label="Toggle sidebar"
+              >
+                <Menu size={24} />
+              </button>
+              <Routes>
+                <Route path="/dashboard" element={<DashboardView />} />
+                <Route path="/cleaner" element={<CleanerView />} />
+                <Route path="/reminder" element={<ReminderView />} />
+                <Route path="/chat" element={<ChatView />} />
+                <Route path="/settings" element={<SettingsView />} />
+                <Route path="/registry" element={<RegistryCleanerView />} />
+                <Route
+                  path="/ai-optimization"
+                  element={<AIOptimizationView />}
+                />
+                <Route
+                  path="/memory-optimizer"
+                  element={<MemoryOptimizerView />}
+                />
+                <Route path="/" element={<DashboardView />} />{' '}
+                {/* Default route */}
+              </Routes>
+            </main>
+            <Toaster />
+          </div>
+        </SystemInfoProvider>
+      </SidebarProvider>
     </BrowserRouter>
   );
 };

@@ -151,9 +151,9 @@ const DashboardView: React.FC = () => {
   }
 
   return (
-    <div className="dashboard-view">
+    <div className="flex flex-col p-4 sm:p-6 lg:p-8">
       <PageHeader title={DASHBOARD_TITLE} />
-      <div className="usage-cards">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
         <UsageCard
           title={USAGE_CARD_OS_TITLE}
           model={systemInfo?.os || ''}
@@ -186,19 +186,25 @@ const DashboardView: React.FC = () => {
         />
       </div>
 
-      <Card className="chart-container">
-        <h3>{HISTORICAL_CPU_USAGE_TITLE}</h3>
-        <div className="chart-wrapper">
-          <MemoizedCpuChart data={cpuChartData} options={chartOptions} />
-        </div>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="chart-container p-4">
+          <h3 className="text-lg font-semibold mb-4">
+            {HISTORICAL_CPU_USAGE_TITLE}
+          </h3>
+          <div className="h-64">
+            <MemoizedCpuChart data={cpuChartData} options={chartOptions} />
+          </div>
+        </Card>
 
-      <Card className="chart-container">
-        <h3>{HISTORICAL_MEMORY_USAGE_TITLE}</h3>
-        <div className="chart-wrapper">
-          <MemoizedMemChart data={memChartData} options={chartOptions} />
-        </div>
-      </Card>
+        <Card className="chart-container p-4">
+          <h3 className="text-lg font-semibold mb-4">
+            {HISTORICAL_MEMORY_USAGE_TITLE}
+          </h3>
+          <div className="h-64">
+            <MemoizedMemChart data={memChartData} options={chartOptions} />
+          </div>
+        </Card>
+      </div>
     </div>
   );
 };

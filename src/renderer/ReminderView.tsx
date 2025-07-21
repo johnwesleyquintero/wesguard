@@ -216,27 +216,48 @@ const ReminderView: React.FC = () => {
       <PageHeader title="Reminders" />
 
       <Card className={styles['add-reminder-section']}>
-        <h3>Add New Reminder</h3>
-        <input
-          type="number"
-          value={newReminderMinutes}
-          onChange={(e) => setNewReminderMinutes(e.target.value)}
-          placeholder="Minutes"
-          min="1"
-          className={styles.input}
-        />
-        <input
-          type="text"
-          value={newReminderMessage}
-          onChange={(e) => setNewReminderMessage(e.target.value)}
-          placeholder="Message"
-          className={styles.input}
-        />
-        <label className={styles['sound-toggle']}>
+        <h3 className="text-lg font-semibold mb-4">Add New Reminder</h3>
+        <div className="mb-4">
+          <label
+            htmlFor="reminder-minutes"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Minutes:
+          </label>
+          <input
+            id="reminder-minutes"
+            type="number"
+            value={newReminderMinutes}
+            onChange={(e) => setNewReminderMinutes(e.target.value)}
+            placeholder="Minutes"
+            min="1"
+            className="form-input mt-1"
+          />
+          {/* {minutesError && <p className="mt-2 text-sm text-red-600">{minutesError}</p>} */}
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="reminder-message"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Message:
+          </label>
+          <input
+            id="reminder-message"
+            type="text"
+            value={newReminderMessage}
+            onChange={(e) => setNewReminderMessage(e.target.value)}
+            placeholder="Message"
+            className="form-input mt-1"
+          />
+          {/* {messageError && <p className="mt-2 text-sm text-red-600">{messageError}</p>} */}
+        </div>
+        <label className="flex items-center text-sm font-medium text-gray-700 cursor-pointer">
           <input
             type="checkbox"
             checked={newReminderSound}
             onChange={(e) => setNewReminderSound(e.target.checked)}
+            className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 mr-2"
           />
           Play Sound
         </label>

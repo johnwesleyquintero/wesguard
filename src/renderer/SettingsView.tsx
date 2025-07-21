@@ -22,15 +22,22 @@ const SettingsView: React.FC = () => {
       <Card className={styles['settings-section']}>
         <h3>System Metrics</h3>
         <div className={styles['setting-item']}>
-          <label htmlFor="update-interval">Update Interval (seconds):</label>
+          <label
+            htmlFor="update-interval"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Update Interval (seconds):
+          </label>
           <input
             id="update-interval"
             type="number"
             value={localInterval}
             onChange={handleIntervalChange}
             min="1"
-            className={styles.input}
+            className="form-input mt-1"
           />
+          {/* Example of validation feedback */}
+          {/* {intervalError && <p className="mt-2 text-sm text-red-600">{intervalError}</p>} */}
         </div>
       </Card>
 
