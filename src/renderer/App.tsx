@@ -15,11 +15,14 @@ import { SystemInfoProvider } from './context/SystemInfoProvider'; // Import new
 import { GlobalStyles } from './styles/GlobalStyles';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './styles/theme';
+import { useSystemInfoContext } from './context/SystemInfoContext'; // Import context hook
 
 const App: React.FC = () => {
+  const { themeMode } = useSystemInfoContext(); // Get themeMode from context
+
   return (
     <BrowserRouter>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={themeMode === 'light' ? theme.light : theme.dark}>
         <GlobalStyles />
         <SidebarProvider>
           {' '}

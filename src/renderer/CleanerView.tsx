@@ -103,10 +103,18 @@ const CleanerView: React.FC = () => {
       )}
 
       {showConfirmDialog && (
-        <div className="confirm-dialog-overlay">
+        <div
+          className="confirm-dialog-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-dialog-title"
+          aria-describedby="confirm-dialog-description"
+        >
           <Card className="confirm-dialog">
-            <h3>{CLEANER_CONFIRM_DIALOG_TITLE}</h3>
-            <p>{CLEANER_CONFIRM_DIALOG_MESSAGE}</p>
+            <h3 id="confirm-dialog-title">{CLEANER_CONFIRM_DIALOG_TITLE}</h3>
+            <p id="confirm-dialog-description">
+              {CLEANER_CONFIRM_DIALOG_MESSAGE}
+            </p>
             <div className="dialog-actions">
               <Button onClick={confirmClean} variant="danger">
                 {CLEANER_CONFIRM_BUTTON}

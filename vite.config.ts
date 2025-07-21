@@ -20,11 +20,6 @@ export default defineConfig({
       renderer: {},
     }),
   ],
-  css: {
-    postcss: {
-      plugins: [require('tailwindcss'), require('autoprefixer')],
-    },
-  },
   build: {
     rollupOptions: {
       external: ['systeminformation'],

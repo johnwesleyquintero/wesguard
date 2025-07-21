@@ -14,6 +14,7 @@ module.exports = {
     "scripts",
     "preload.cjs",
     "postcss.config.js",
+    "postcss.config.cjs",
     "tailwind.config.js",
   ],
   parser: "@typescript-eslint/parser",

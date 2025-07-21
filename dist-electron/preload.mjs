@@ -1,60 +1,54 @@
 "use strict";
-const require$$0 = require("electron");
-const { contextBridge, ipcRenderer } = require$$0;
-contextBridge.exposeInMainWorld("electronAPI", {
-  // System Info API
-  getSystemInfo: () => ipcRenderer.send("get-system-info"),
-  onSystemInfoResponse: (callback) => {
-    const listener = (_event, value) => callback(value);
-    ipcRenderer.on("systemInfoResponse", listener);
-    return () => {
-      ipcRenderer.removeListener("systemInfoResponse", listener);
-    };
+const s = require("electron"),
+  { contextBridge: o, ipcRenderer: e } = s;
+o.exposeInMainWorld("electronAPI", {
+  getSystemInfo: () => e.send("get-system-info"),
+  onSystemInfoResponse: (i) => {
+    const t = (n, r) => i(r);
+    return (
+      e.on("systemInfoResponse", t),
+      () => {
+        e.removeListener("systemInfoResponse", t);
+      }
+    );
   },
-  onUpdateMetrics: (callback) => {
-    const listener = (_event, value) => callback(value);
-    ipcRenderer.on("updateMetrics", listener);
-    return () => {
-      ipcRenderer.removeListener("updateMetrics", listener);
-    };
+  onUpdateMetrics: (i) => {
+    const t = (n, r) => i(r);
+    return (
+      e.on("updateMetrics", t),
+      () => {
+        e.removeListener("updateMetrics", t);
+      }
+    );
   },
-  // Cleaner API
   cleaner: {
-    analyzeJunkFiles: () => ipcRenderer.invoke("analyze-junk-files"),
-    executeCleaning: (filesToDelete) =>
-      ipcRenderer.invoke("execute-cleaning", filesToDelete),
-    getDiskAndNetworkMetrics: () =>
-      ipcRenderer.invoke("get-disk-and-network-metrics"),
+    analyzeJunkFiles: () => e.invoke("analyze-junk-files"),
+    executeCleaning: (i) => e.invoke("execute-cleaning", i),
+    getDiskAndNetworkMetrics: () => e.invoke("get-disk-and-network-metrics"),
   },
-  // Reminder API
   reminder: {
-    showReminderNotification: (title, body, sound) =>
-      ipcRenderer.send("show-reminder-notification", title, body, sound),
+    showReminderNotification: (i, t, n) =>
+      e.send("show-reminder-notification", i, t, n),
   },
-  // Settings API
   settings: {
-    setSystemMetricsInterval: (interval) =>
-      ipcRenderer.send("set-system-metrics-interval", interval),
+    setSystemMetricsInterval: (i) => e.send("set-system-metrics-interval", i),
   },
-  // Registry API
   registry: {
-    scan: () => ipcRenderer.invoke("scan-registry"),
-    backup: (backup) => ipcRenderer.invoke("backup-registry", backup),
-    clean: (items) => ipcRenderer.invoke("clean-registry", items),
-    restore: (backup) => ipcRenderer.invoke("restore-registry", backup),
+    scan: () => e.invoke("scan-registry"),
+    backup: (i) => e.invoke("backup-registry", i),
+    clean: (i) => e.invoke("clean-registry", i),
+    restore: (i) => e.invoke("restore-registry", i),
   },
-  // AI Optimization API
   aiOptimization: {
-    initDataDir: () => ipcRenderer.invoke("ai-init-data-dir"),
-    logPerformance: (data) => ipcRenderer.invoke("ai-log-performance", data),
-    logCrash: (data) => ipcRenderer.invoke("ai-log-crash", data),
-    getSuggestions: () => ipcRenderer.invoke("ai-get-suggestions"),
+    initDataDir: () => e.invoke("ai-init-data-dir"),
+    logPerformance: (i) => e.invoke("ai-log-performance", i),
+    logCrash: (i) => e.invoke("ai-log-crash", i),
+    getSuggestions: () => e.invoke("ai-get-suggestions"),
   },
-  // Memory Optimizer API
   memoryOptimizer: {
-    initDataDir: () => ipcRenderer.invoke("memory-init-data-dir"),
-    getCurrentUsage: () => ipcRenderer.invoke("memory-get-current-usage"),
-    optimize: () => ipcRenderer.invoke("memory-optimize"),
-    getHistory: () => ipcRenderer.invoke("memory-get-history"),
+    initDataDir: () => e.invoke("memory-init-data-dir"),
+    getCurrentUsage: () => e.invoke("memory-get-current-usage"),
+    optimize: () => e.invoke("memory-optimize"),
+    getHistory: () => e.invoke("memory-get-history"),
   },
 });

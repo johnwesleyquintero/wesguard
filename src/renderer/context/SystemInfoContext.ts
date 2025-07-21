@@ -1,10 +1,15 @@
 import { createContext, useContext } from 'react';
 import { SystemInfo } from '../types';
 
+// Define the type for Theme Mode
+export type ThemeMode = 'light' | 'dark';
+
 // Define the type for System Info Context
 interface SystemInfoContextType {
   systemInfo: SystemInfo | null;
   isLoading: boolean;
+  themeMode?: ThemeMode; // Added for theme management
+  toggleTheme?: () => void; // Added for theme management
 }
 
 // Define the type for Sidebar Context
