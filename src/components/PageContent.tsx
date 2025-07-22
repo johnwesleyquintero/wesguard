@@ -1,19 +1,19 @@
 import React from "react";
-import { cn } from "@/lib/utils"; // Assuming cn is available at this path
+import clsx from "clsx";
 
 interface PageContentProps {
   children: React.ReactNode;
-  className?: string; // For any additional classes
-  padding?: string; // To pass padding classes like "p-4 md:p-6 lg:p-8"
+  className?: string;
+  padding?: string;
 }
 
 const PageContent: React.FC<PageContentProps> = ({
   children,
   className,
-  padding,
+  padding = "p-4 sm:p-6 lg:p-8",
 }) => {
   return (
-    <main className={cn(`flex-1 overflow-y-auto ${padding || ""}`, className)}>
+    <main className={clsx("flex-1 overflow-y-auto", padding, className)}>
       {children}
     </main>
   );

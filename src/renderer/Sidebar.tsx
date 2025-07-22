@@ -10,18 +10,56 @@ import {
   MessageSquare,
   Settings,
   FileJson,
-  Zap, // For AI Optimization
-  HardDrive, // For Memory Optimizer
+  Zap,
+  HardDrive,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useSidebarContext } from "./context/SystemInfoContext";
+import { useTheme } from "./hooks/useTheme";
+
+const navLinks = [
+  {
+    to: "/dashboard",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    ariaLabel: "Dashboard",
+  },
+  { to: "/cleaner", label: "Cleaner", icon: Trash2, ariaLabel: "Cleaner" },
+  {
+    to: "/ai-optimization",
+    label: "AI Optimization",
+    icon: Zap,
+    ariaLabel: "AI Optimization",
+  },
+  {
+    to: "/memory-optimizer",
+    label: "Memory Optimizer",
+    icon: HardDrive,
+    ariaLabel: "Memory Optimizer",
+  },
+  { to: "/registry", label: "Registry", icon: FileJson, ariaLabel: "Registry" },
+  { to: "/reminder", label: "Reminder", icon: Bell, ariaLabel: "Reminder" },
+  {
+    to: "/chat",
+    label: "WesGuardAI",
+    icon: MessageSquare,
+    ariaLabel: "WesGuard AI Chat",
+  },
+  { to: "/settings", label: "Settings", icon: Settings, ariaLabel: "Settings" },
+];
 
 const Sidebar: React.FC = () => {
   const { isSidebarCollapsed, toggleSidebar } = useSidebarContext();
 
-  const baseNavLinkClasses =
-    "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50";
-  const activeNavLinkClasses =
-    "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50";
+  const getNavLinkClassName = ({ isActive }: { isActive: boolean }) =>
+    `flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50 ${
+      isActive
+        ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50"
+        : ""
+    }`;
+
+  const { theme, setTheme } = useTheme();
 
   return (
     <aside
@@ -34,101 +72,49 @@ const Sidebar: React.FC = () => {
           <Shield className="h-6 w-6 text-blue-600" />
           {!isSidebarCollapsed && <span>WesGuard</span>}
         </div>
-        <button
-          className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-50"
-          onClick={toggleSidebar}
-          aria-label={
-            isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
-          }
-        >
-          {isSidebarCollapsed ? (
-            <ChevronRight className="h-5 w-5" />
-          ) : (
-            <ChevronLeft className="h-5 w-5" />
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-50"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={
+              theme === "dark"
+                ? "Switch to light theme"
+                : "Switch to dark theme"
+            }
+          >
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </button>
+          <button
+            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-50"
+            onClick={toggleSidebar}
+            aria-label={
+              isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+            }
+          >
+            {isSidebarCollapsed ? (
+              <ChevronRight className="h-5 w-5" />
+            ) : (
+              <ChevronLeft className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </div>
       <nav className="flex-1 space-y-1 py-4" aria-label="Main navigation">
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
-          }
-          aria-label="Dashboard"
-        >
-          <LayoutDashboard className="h-5 w-5" />
-          {!isSidebarCollapsed && <span>Dashboard</span>}
-        </NavLink>
-        <NavLink
-          to="/cleaner"
-          className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
-          }
-          aria-label="Cleaner"
-        >
-          <Trash2 className="h-5 w-5" />
-          {!isSidebarCollapsed && <span>Cleaner</span>}
-        </NavLink>
-        <NavLink
-          to="/ai-optimization"
-          className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
-          }
-          aria-label="AI Optimization"
-        >
-          <Zap className="h-5 w-5" />
-          {!isSidebarCollapsed && <span>AI Optimization</span>}
-        </NavLink>
-        <NavLink
-          to="/memory-optimizer"
-          className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
-          }
-          aria-label="Memory Optimizer"
-        >
-          <HardDrive className="h-5 w-5" />
-          {!isSidebarCollapsed && <span>Memory Optimizer</span>}
-        </NavLink>
-        <NavLink
-          to="/registry"
-          className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
-          }
-          aria-label="Registry"
-        >
-          <FileJson className="h-5 w-5" />
-          {!isSidebarCollapsed && <span>Registry</span>}
-        </NavLink>
-        <NavLink
-          to="/reminder"
-          className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
-          }
-          aria-label="Reminder"
-        >
-          <Bell className="h-5 w-5" />
-          {!isSidebarCollapsed && <span>Reminder</span>}
-        </NavLink>
-        <NavLink
-          to="/chat"
-          className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
-          }
-          aria-label="WesGuard AI Chat"
-        >
-          <MessageSquare className="h-5 w-5" />
-          {!isSidebarCollapsed && <span>WesGuardAI</span>}
-        </NavLink>
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
-          }
-          aria-label="Settings"
-        >
-          <Settings className="h-5 w-5" />
-          {!isSidebarCollapsed && <span>Settings</span>}
-        </NavLink>
+        {navLinks.map(({ to, label, icon: Icon, ariaLabel }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={getNavLinkClassName}
+            aria-label={ariaLabel}
+          >
+            <Icon className="h-5 w-5" />
+            {!isSidebarCollapsed && <span>{label}</span>}
+          </NavLink>
+        ))}
       </nav>
     </aside>
   );

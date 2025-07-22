@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import UsageCard from "./UsageCard";
 import useSystemInfo from "./hooks/useSystemInfo";
 import { useSystemInfoContext } from "./context/SystemInfoContext";
@@ -31,6 +31,7 @@ import {
   CPU_CHART_LABEL,
   MEMORY_CHART_LABEL,
   SYSTEM_USAGE_OVER_TIME_TITLE,
+  DASHBOARD_LOADING,
 } from "./constants";
 
 ChartJS.register(
@@ -99,53 +100,56 @@ const DashboardView: React.FC = () => {
     ],
   };
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "top" as const,
-        labels: {
-          color: "#e0e0e0",
-        },
-      },
-      title: {
-        display: true,
-        text: SYSTEM_USAGE_OVER_TIME_TITLE,
-        color: "#e0e0e0",
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          color: "#e0e0e0",
-          autoSkip: true,
-          maxTicksLimit: 10,
-        },
-        grid: {
-          color: "#333",
-        },
-      },
-      y: {
-        ticks: {
-          color: "#e0e0e0",
-          callback: function (value: string | number) {
-            return `${value}%`;
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "top" as const,
+          labels: {
+            color: "#e0e0e0",
           },
         },
-        grid: {
-          color: "#333",
+        title: {
+          display: true,
+          text: SYSTEM_USAGE_OVER_TIME_TITLE,
+          color: "#e0e0e0",
         },
-        min: 0,
-        max: 100,
       },
-    },
-  };
+      scales: {
+        x: {
+          ticks: {
+            color: "#e0e0e0",
+            autoSkip: true,
+            maxTicksLimit: 10,
+          },
+          grid: {
+            color: "#333",
+          },
+        },
+        y: {
+          ticks: {
+            color: "#e0e0e0",
+            callback: function (value: string | number) {
+              return `${value}%`;
+            },
+          },
+          grid: {
+            color: "#333",
+          },
+          min: 0,
+          max: 100,
+        },
+      },
+    }),
+    [],
+  );
 
   if (isLoading) {
     return (
       <div className="dashboard-view">
-        <LoadingIndicator message="Loading system information..." />
+        <LoadingIndicator message={DASHBOARD_LOADING} />
       </div>
     );
   }

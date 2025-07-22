@@ -32,3 +32,4 @@ export const CLEANER_CONFIRM_BUTTON = "Yes, Clean";
 export const CLEANER_CANCEL_BUTTON = "Cancel";
 export const CLEANER_ANALYZE_AGAIN_BUTTON = "Analyze Again";
 export const CLEANER_TOAST_NO_FILES_SELECTED = "Please select files to clean.";
+export const DASHBOARD_LOADING = "Loading system information...";
