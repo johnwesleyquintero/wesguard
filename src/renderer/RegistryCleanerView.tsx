@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useRegistryCleaner } from './hooks/useRegistryCleaner';
-import { Shield, RotateCcw, Check } from 'lucide-react';
-import { Button } from './components/Button';
-import { Card } from './components/Card';
-import type { RegistryBackup, RegistryItem } from './types';
-import PageHeader from './components/PageHeader';
-import { Results } from './components/RegistryCleaner/Results';
+import React, { useEffect, useState } from "react";
+import { useRegistryCleaner } from "./hooks/useRegistryCleaner";
+import { Shield, RotateCcw, Wrench } from "lucide-react";
+import { Button } from "./components/Button";
+import { Card } from "./components/Card";
+import EmptyState from "./components/EmptyState";
+import type { RegistryBackup, RegistryItem } from "./types";
+import LoadingIndicator from "./components/LoadingIndicator";
+import PageHeader from "./components/PageHeader";
+import { Results } from "./components/RegistryCleaner/Results";
 
 export const RegistryCleanerView: React.FC = () => {
   const {
@@ -19,10 +21,14 @@ export const RegistryCleanerView: React.FC = () => {
   const [restoring, setRestoring] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [ignoredIssues, setIgnoredIssues] = useState<string[]>([]);
+  const [hasScanned, setHasScanned] = useState(false);
 
   useEffect(() => {
-    scanRegistry();
-  }, [scanRegistry]);
+    if (!hasScanned) {
+      scanRegistry();
+      setHasScanned(true);
+    }
+  }, [scanRegistry, hasScanned]);
 
   const handleClean = async (itemsToClean: RegistryItem[]) => {
     if (itemsToClean.length === 0) return;
@@ -55,35 +61,41 @@ export const RegistryCleanerView: React.FC = () => {
         <div className="header-actions">
           <Button
             onClick={() => scanRegistry()}
-            disabled={scanning}
+            disabled={scanning || restoring}
             variant="primary"
           >
-            {scanning ? 'Scanning...' : 'Scan Registry'}
+            {scanning ? "Scanning..." : "Scan Registry"}
           </Button>
         </div>
       </div>
 
-      {showResults ? (
+      {scanning || restoring ? (
+        <LoadingIndicator
+          message={
+            scanning
+              ? "Scanning registry for issues..."
+              : "Restoring registry from backup..."
+          }
+        />
+      ) : showResults ? (
         <Results
           issues={issues.filter((issue) => !ignoredIssues.includes(issue.path))}
           onClean={handleClean}
           onBack={() => setShowResults(false)}
           onIgnore={handleIgnore}
         />
-      ) : (
+      ) : hasScanned &&
+        issues.filter((issue) => !ignoredIssues.includes(issue.path)).length >
+          0 ? (
         <>
-          {issues.filter((issue) => !ignoredIssues.includes(issue.path))
-            .length > 0 && (
-            <Button onClick={() => setShowResults(true)}>
-              View{' '}
-              {
-                issues.filter((issue) => !ignoredIssues.includes(issue.path))
-                  .length
-              }{' '}
-              Issues
-            </Button>
-          )}
-
+          <Button onClick={() => setShowResults(true)}>
+            View{" "}
+            {
+              issues.filter((issue) => !ignoredIssues.includes(issue.path))
+                .length
+            }{" "}
+            Issues
+          </Button>
           {backups.length > 0 && (
             <Card className="registry-backups">
               <h3>Backup History</h3>
@@ -93,33 +105,40 @@ export const RegistryCleanerView: React.FC = () => {
                     <div className="backup-info">
                       <Shield size={16} />
                       <span>
-                        Backup from{' '}
+                        Backup from{" "}
                         {new Date(backup.timestamp).toLocaleString()}
                       </span>
                     </div>
                     <Button
                       onClick={() => handleRestore(backup)}
-                      disabled={restoring}
+                      disabled={restoring || scanning}
                       variant="secondary"
                     >
                       <RotateCcw size={16} />
-                      {restoring ? 'Restoring...' : 'Restore'}
+                      {restoring ? "Restoring..." : "Restore"}
                     </Button>
                   </div>
                 ))}
               </div>
             </Card>
           )}
-
-          {!scanning &&
-            issues.filter((issue) => !ignoredIssues.includes(issue.path))
-              .length === 0 && (
-              <div className="no-issues">
-                <Check size={24} className="success-icon" />
-                <p>No registry issues found</p>
-              </div>
-            )}
         </>
+      ) : (
+        <EmptyState
+          icon={<Wrench size={48} />}
+          message={
+            hasScanned
+              ? "No registry issues found. Your system is optimized!"
+              : 'Click "Scan Registry" to find and fix registry issues.'
+          }
+          callToAction={
+            !hasScanned && (
+              <Button onClick={() => scanRegistry()} variant="primary">
+                Scan Registry
+              </Button>
+            )
+          }
+        />
       )}
     </div>
   );

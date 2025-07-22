@@ -1,46 +1,55 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Send, MessageSquare, Trash2 } from 'lucide-react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Button } from './components/Button';
-import { Card } from './components/Card';
-import PageHeader from './components/PageHeader';
+import React, { useState, useEffect, useRef } from "react";
+import { Send, MessageSquare, Trash2, KeyRound } from "lucide-react";
+
+import { Button } from "./components/Button";
+import { Card } from "./components/Card";
+import PageHeader from "./components/PageHeader";
+import ValidatedInput from "./components/ValidatedInput";
+import LoadingIndicator from "./components/LoadingIndicator";
+import EmptyState from "./components/EmptyState";
+import useApiKey from "./hooks/useApiKey";
 
 interface ChatMessage {
   id: string;
-  type: 'user' | 'ai' | 'system';
+  type: "user" | "ai" | "system";
   content: string;
   timestamp: Date;
 }
 
 const ChatView: React.FC = () => {
-  const [apiKey, setApiKey] = useState('');
-  const [isApiKeySet, setIsApiKeySet] = useState(false);
+  const {
+    apiKey,
+    setApiKey,
+    isApiKeySet,
+    apiKeyStatus,
+    apiKeyError,
+    handleApiKeySubmit,
+    genAI,
+  } = useApiKey();
   const [customInstructions, setCustomInstructions] = useState(
-    'You are WesGuardAI, a helpful assistant integrated into the WesGuard PC optimization tool. Help users with their daily tasks, answer questions, and provide assistance with productivity and system optimization.'
+    "You are WesGuardAI, a helpful assistant integrated into the WesGuard PC optimization tool. Help users with their daily tasks, answer questions, and provide assistance with productivity and system optimization.",
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
+  const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKeyStatus, setApiKeyStatus] = useState<'' | 'connected' | 'error'>(
-    ''
-  );
-  const [apiKeyError, setApiKeyError] = useState<string | null>(null);
+  const [customInstructionsError, setCustomInstructionsError] = useState<
+    string | null
+  >(null);
   const [isApiConfigCollapsed, setIsApiConfigCollapsed] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const genAI = useRef<GoogleGenerativeAI | null>(null);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Load saved data from localStorage on component mount
   useEffect(() => {
     const savedInstructions = localStorage.getItem(
-      'wesguard-custom-instructions'
+      "wesguard-custom-instructions",
     );
-    const savedMessages = localStorage.getItem('wesguard-chat-messages');
+    const savedMessages = localStorage.getItem("wesguard-chat-messages");
 
     if (savedInstructions) {
       setCustomInstructions(savedInstructions);
@@ -51,17 +60,17 @@ const ChatView: React.FC = () => {
         const parsedMessages = JSON.parse(savedMessages).map(
           (msg: {
             id: string;
-            type: 'user' | 'ai' | 'system';
+            type: "user" | "ai" | "system";
             content: string;
             timestamp: string;
           }) => ({
             ...msg,
             timestamp: new Date(msg.timestamp),
-          })
+          }),
         );
         setMessages(parsedMessages);
       } catch (error) {
-        console.error('Error parsing saved messages:', error);
+        console.error("Error parsing saved messages:", error);
       }
     }
   }, []);
@@ -69,67 +78,55 @@ const ChatView: React.FC = () => {
   // Save messages to localStorage whenever messages change
   useEffect(() => {
     if (messages.length > 0) {
-      localStorage.setItem('wesguard-chat-messages', JSON.stringify(messages));
+      localStorage.setItem("wesguard-chat-messages", JSON.stringify(messages));
     }
   }, [messages]);
-  const handleApiKeySubmit = async () => {
-    if (!apiKey.trim()) {
-      setApiKeyStatus('error');
-      return;
-    }
-    setApiKeyError(null);
 
-    try {
-      // Test the API key by making a simple request
-      const testAI = new GoogleGenerativeAI(apiKey.trim());
-      const model = testAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-      // Make a test request
-      await model.generateContent('Hello');
-
-      // If successful, set the API key (in-memory only)
-      genAI.current = testAI;
-      setIsApiKeySet(true);
-      setApiKeyStatus('connected');
-
-      // Add welcome message
+  // Add welcome message when API key is set
+  useEffect(() => {
+    if (isApiKeySet && messages.length === 0) {
       const welcomeMessage: ChatMessage = {
         id: Date.now().toString(),
-        type: 'system',
-        content: 'WesGuardAI is now connected and ready to help!',
+        type: "system",
+        content: "WesGuardAI is now connected and ready to help!",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, welcomeMessage]);
-    } catch (error) {
-      console.error('API key validation failed:', error);
-      setApiKeyError((error as Error).message);
-      setApiKeyStatus('error');
-      setIsApiKeySet(false);
+    }
+  }, [isApiKeySet, messages.length]);
+
+  const handleCustomInstructionsChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ): void => {
+    const value = e.target.value;
+    setCustomInstructions(value);
+    localStorage.setItem("wesguard-custom-instructions", value);
+    if (value.trim().length < 10) {
+      setCustomInstructionsError(
+        "Custom instructions should be at least 10 characters long.",
+      );
+    } else {
+      setCustomInstructionsError(null);
     }
   };
 
-  const handleCustomInstructionsChange = (value: string) => {
-    setCustomInstructions(value);
-    localStorage.setItem('wesguard-custom-instructions', value);
-  };
-
-  const sendMessage = async () => {
+  const sendMessage = async (): Promise<void> => {
     if (!inputMessage.trim() || !genAI.current || isLoading) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      type: 'user',
+      type: "user",
       content: inputMessage.trim(),
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInputMessage('');
+    setInputMessage("");
     setIsLoading(true);
 
     try {
       const model = genAI.current.getGenerativeModel({
-        model: 'gemini-1.5-flash',
+        model: "gemini-1.5-flash",
       });
 
       // Prepare the prompt with custom instructions and context
@@ -145,20 +142,20 @@ Please provide a helpful response.`;
 
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        type: 'ai',
+        type: "ai",
         content: aiResponseText,
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
 
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        type: 'system',
+        type: "system",
         content:
-          'Sorry, I encountered an error while processing your message. Please check your API key and try again.',
+          "Sorry, I encountered an error while processing your message. Please check your API key and try again.",
         timestamp: new Date(),
       };
 
@@ -168,20 +165,20 @@ Please provide a helpful response.`;
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handleKeyPress = (e: React.KeyboardEvent): void => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      void sendMessage();
     }
   };
 
-  const clearChat = () => {
+  const clearChat = (): void => {
     setMessages([]);
-    localStorage.removeItem('wesguard-chat-messages');
+    localStorage.removeItem("wesguard-chat-messages");
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formatTime = (date: Date): string => {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
@@ -197,73 +194,69 @@ Please provide a helpful response.`;
               variant="ghost"
               onClick={() => setIsApiConfigCollapsed(!isApiConfigCollapsed)}
             >
-              {isApiConfigCollapsed ? 'Show' : 'Hide'}
+              {isApiConfigCollapsed ? "Show" : "Hide"}
             </Button>
           </div>
           {!isApiConfigCollapsed && (
             <>
-              <div className="mb-4">
-                <label
-                  htmlFor="api-key"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Gemini API Key:
-                </label>
-                <input
-                  id="api-key"
-                  type="password"
-                  className="form-input mt-1"
-                  placeholder="Enter your Gemini API Key"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  disabled={isApiKeySet}
-                />
-                {/* {apiKeyError && <p className="mt-2 text-sm text-red-600">{apiKeyError}</p>} */}
-                <Button
-                  onClick={handleApiKeySubmit}
-                  disabled={isApiKeySet}
-                  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
-                  {isApiKeySet ? 'Connected' : 'Connect'}
-                </Button>
-              </div>
+              <ValidatedInput
+                id="api-key"
+                label="Gemini API Key:"
+                type="password"
+                placeholder="Enter your Gemini API Key"
+                value={apiKey}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setApiKey(e.target.value)
+                }
+                disabled={isApiKeySet}
+                error={apiKeyError}
+              />
+              <Button
+                onClick={handleApiKeySubmit}
+                disabled={isApiKeySet}
+                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                {isApiKeySet ? "Connected" : "Connect"}
+              </Button>
 
-              {apiKeyStatus && (
-                <div
-                  className={`mt-2 text-sm ${
-                    apiKeyStatus === 'connected'
-                      ? 'text-green-600'
-                      : 'text-red-600'
-                  }`}
-                >
-                  {apiKeyStatus === 'connected' &&
-                    '✓ API Key connected successfully'}
-                  {apiKeyStatus === 'error' &&
-                    '✗ Invalid API Key or connection failed'}
-                  {apiKeyError && (
-                    <div className="text-red-500 text-xs mt-1">
-                      {apiKeyError}
-                    </div>
-                  )}
+              {apiKeyStatus === "connected" && (
+                <div className="mt-2 text-sm text-green-600 flex items-center">
+                  <KeyRound size={16} className="mr-1" /> API Key connected
+                  successfully!
+                </div>
+              )}
+              {apiKeyStatus === "error" && (
+                <div className="mt-2 text-sm text-red-600">
+                  <EmptyState
+                    icon={<KeyRound size={48} />}
+                    message={
+                      apiKeyError ||
+                      "Invalid API Key or connection failed. Please check your key and try again."
+                    }
+                    callToAction={
+                      <Button onClick={() => setIsApiConfigCollapsed(false)}>
+                        Configure API Key
+                      </Button>
+                    }
+                  />
                 </div>
               )}
 
               {/* Custom Instructions Section */}
-              <div className="mb-4">
-                <h4 className="text-lg font-semibold mb-2">
-                  Custom Instructions
-                </h4>
-                <textarea
-                  className="form-input mt-1"
-                  placeholder="Customize how WesGuardAI should behave and respond..."
-                  value={customInstructions}
-                  onChange={(e) =>
-                    handleCustomInstructionsChange(e.target.value)
-                  }
-                  rows={5}
-                ></textarea>
-                {/* {customInstructionsError && <p className="mt-2 text-sm text-red-600">{customInstructionsError}</p>} */}
-              </div>
+              <h4 className="text-lg font-semibold mb-2">
+                Custom Instructions
+              </h4>
+              <ValidatedInput
+                id="custom-instructions"
+                isTextArea
+                placeholder="Customize how WesGuardAI should behave and respond..."
+                value={customInstructions}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  handleCustomInstructionsChange(e)
+                }
+                rows={5}
+                error={customInstructionsError}
+              />
             </>
           )}
         </Card>
@@ -285,35 +278,36 @@ Please provide a helpful response.`;
           </div>
 
           <div className="chat-messages space-y-4">
-            {messages.length === 0 ? (
-              <div className="chat-empty-state text-center text-gray-500 py-10">
-                <MessageSquare
-                  size={48}
-                  className="mx-auto mb-4 text-gray-400"
-                />
-                <h3 className="text-xl font-semibold mb-2">
-                  Welcome to WesGuardAI
-                </h3>
-                <p className="text-gray-600">
-                  Start a conversation with your AI assistant. I can help you
-                  with daily tasks, answer questions, and provide assistance
-                  with productivity and system optimization.
-                </p>
-              </div>
+            {!isApiKeySet && apiKeyStatus !== "error" ? (
+              <EmptyState
+                icon={<KeyRound size={48} />}
+                message="Please connect your Gemini API key to start chatting with WesGuardAI."
+                callToAction={
+                  <Button onClick={() => setIsApiConfigCollapsed(false)}>
+                    Configure API Key
+                  </Button>
+                }
+              />
+            ) : messages.length === 0 && isApiKeySet ? (
+              <EmptyState
+                icon={<MessageSquare size={48} />}
+                message="Welcome to WesGuardAI! Start a conversation with your AI assistant."
+                callToAction={null}
+              />
             ) : (
               messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`chat-message p-3 rounded-lg ${
-                    message.type === 'user'
-                      ? 'bg-blue-100 text-blue-800 ml-auto'
-                      : message.type === 'ai'
-                        ? 'bg-gray-100 text-gray-800 mr-auto'
-                        : 'bg-yellow-100 text-yellow-800 text-center'
-                  } max-w-3/4`}
+                  className={`chat-message ${
+                    message.type === "user"
+                      ? "user-message"
+                      : message.type === "ai"
+                        ? "ai-message"
+                        : "system-message"
+                  }`}
                 >
-                  <div>{message.content}</div>
-                  <div className="message-timestamp text-xs text-gray-500 mt-1 text-right">
+                  <div className="message-content">{message.content}</div>
+                  <div className="message-timestamp">
                     {formatTime(message.timestamp)}
                   </div>
                 </div>
@@ -321,14 +315,7 @@ Please provide a helpful response.`;
             )}
 
             {isLoading && (
-              <div className="typing-indicator flex items-center text-gray-500">
-                <span>WesGuardAI is typing</span>
-                <div className="typing-dots ml-2 flex space-x-1">
-                  <div className="typing-dot w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="typing-dot w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
-                  <div className="typing-dot w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></div>
-                </div>
-              </div>
+              <LoadingIndicator message="WesGuardAI is typing..." />
             )}
 
             <div ref={messagesEndRef} />
@@ -341,11 +328,13 @@ Please provide a helpful response.`;
             className="form-input flex-grow mr-4 resize-none"
             placeholder={
               isApiKeySet
-                ? 'Type your message here... (Press Enter to send, Shift+Enter for new line)'
-                : 'Please connect your Gemini API key first'
+                ? "Type your message here... (Press Enter to send, Shift+Enter for new line)"
+                : "Please connect your Gemini API key first"
             }
             value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setInputMessage(e.target.value)
+            }
             onKeyPress={handleKeyPress}
             disabled={!isApiKeySet || isLoading}
             rows={1}

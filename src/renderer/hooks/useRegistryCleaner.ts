@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import type { RegistryItem, RegistryBackup } from '../types';
+import { useState, useCallback } from "react";
+import type { RegistryItem, RegistryBackup } from "../types";
 
 export const useRegistryCleaner = () => {
   const [scanning, setScanning] = useState(false);
@@ -14,7 +14,7 @@ export const useRegistryCleaner = () => {
       const result = await window.electronAPI.registry.scan();
       setIssues(result);
     } catch (error) {
-      console.error('Failed to scan registry:', error);
+      console.error("Failed to scan registry:", error);
     } finally {
       setScanning(false);
     }
@@ -31,7 +31,7 @@ export const useRegistryCleaner = () => {
       setBackups((prev) => [...prev, backup]);
       return true;
     } catch (error) {
-      console.error('Failed to create backup:', error);
+      console.error("Failed to create backup:", error);
       return false;
     }
   }, [issues]);
@@ -43,7 +43,7 @@ export const useRegistryCleaner = () => {
         if (backup) {
           const backupCreated = await createBackup();
           if (!backupCreated) {
-            throw new Error('Failed to create backup before cleaning');
+            throw new Error("Failed to create backup before cleaning");
           }
         }
 
@@ -54,17 +54,17 @@ export const useRegistryCleaner = () => {
         setIssues((prev) =>
           prev.filter(
             (item) =>
-              !selectedItems.some((selected) => selected.path === item.path)
-          )
+              !selectedItems.some((selected) => selected.path === item.path),
+          ),
         );
 
         return true;
       } catch (error) {
-        console.error('Failed to clean registry:', error);
+        console.error("Failed to clean registry:", error);
         return false;
       }
     },
-    [createBackup]
+    [createBackup],
   );
 
   // Restore from backup
@@ -73,7 +73,7 @@ export const useRegistryCleaner = () => {
       await window.electronAPI.registry.restore(backup);
       return true;
     } catch (error) {
-      console.error('Failed to restore backup:', error);
+      console.error("Failed to restore backup:", error);
       return false;
     }
   }, []);

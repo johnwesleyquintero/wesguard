@@ -1,6 +1,6 @@
-import React from 'react';
-import PageHeader from '../PageHeader';
-import { CLEANER_ANALYSIS_COMPLETE_TITLE } from '../../constants';
+import React from "react";
+import PageHeader from "../PageHeader";
+import { CLEANER_ANALYSIS_COMPLETE_TITLE } from "../../constants";
 
 interface AnalysisResultsHeaderProps {
   error: string | null;
@@ -21,12 +21,12 @@ const AnalysisResultsHeader: React.FC<AnalysisResultsHeaderProps> = ({
       {error && <p className="text-center text-red-500 mb-4">Error: {error}</p>}
       {junkFilesCount > 0 && (
         <p className="text-center text-lg">
-          Found{' '}
+          Found{" "}
           <span className="text-accent-500 font-bold">
             {formatBytes(recoverableSpace)}
-          </span>{' '}
-          of recoverable space across{' '}
-          <span className="text-accent-500 font-bold">{junkFilesCount}</span>{' '}
+          </span>{" "}
+          of recoverable space across{" "}
+          <span className="text-accent-500 font-bold">{junkFilesCount}</span>{" "}
           files.
         </p>
       )}

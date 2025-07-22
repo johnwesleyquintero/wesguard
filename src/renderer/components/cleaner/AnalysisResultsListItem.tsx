@@ -1,5 +1,5 @@
-import React from 'react';
-import { JunkFile } from '../../types';
+import React from "react";
+import { JunkFile } from "../../types";
 
 interface AnalysisResultsListItemProps {
   file: JunkFile;
@@ -20,13 +20,13 @@ const AnalysisResultsListItem: React.FC<AnalysisResultsListItemProps> = ({
     <div
       key={`${file.path}-${file.lastModified}`}
       className={`grid grid-cols-[20px_2fr_3fr_1.5fr_1fr] gap-x-2 px-4 py-2 items-center border-b border-dashed border-gray-700 last:border-b-0 cursor-pointer ${
-        selected ? 'bg-blue-700/20' : ''
+        selected ? "bg-blue-700/20" : ""
       }`}
       role="row"
       tabIndex={0}
       onClick={() => onFileSelect(file.path)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           onFileSelect(file.path);
         }
       }}

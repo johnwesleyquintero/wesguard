@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React from "react";
+import { NavLink } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
@@ -12,21 +12,21 @@ import {
   FileJson,
   Zap, // For AI Optimization
   HardDrive, // For Memory Optimizer
-} from 'lucide-react';
-import { useSidebarContext } from './context/SystemInfoContext';
+} from "lucide-react";
+import { useSidebarContext } from "./context/SystemInfoContext";
 
 const Sidebar: React.FC = () => {
   const { isSidebarCollapsed, toggleSidebar } = useSidebarContext();
 
   const baseNavLinkClasses =
-    'flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50';
+    "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50";
   const activeNavLinkClasses =
-    'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50';
+    "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50";
 
   return (
     <aside
       className={`flex flex-col border-r bg-white p-4 dark:bg-gray-950 ${
-        isSidebarCollapsed ? 'w-16' : 'w-64'
+        isSidebarCollapsed ? "w-16" : "w-64"
       } hidden md:flex transition-all duration-300`}
     >
       <div className="flex h-16 items-center justify-between px-4">
@@ -38,7 +38,7 @@ const Sidebar: React.FC = () => {
           className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-50"
           onClick={toggleSidebar}
           aria-label={
-            isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'
+            isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
           }
         >
           {isSidebarCollapsed ? (
@@ -52,7 +52,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ''}`
+            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
           }
           aria-label="Dashboard"
         >
@@ -62,7 +62,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/cleaner"
           className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ''}`
+            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
           }
           aria-label="Cleaner"
         >
@@ -72,7 +72,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/ai-optimization"
           className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ''}`
+            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
           }
           aria-label="AI Optimization"
         >
@@ -82,7 +82,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/memory-optimizer"
           className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ''}`
+            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
           }
           aria-label="Memory Optimizer"
         >
@@ -92,7 +92,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/registry"
           className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ''}`
+            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
           }
           aria-label="Registry"
         >
@@ -102,7 +102,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/reminder"
           className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ''}`
+            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
           }
           aria-label="Reminder"
         >
@@ -112,7 +112,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/chat"
           className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ''}`
+            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
           }
           aria-label="WesGuard AI Chat"
         >
@@ -122,7 +122,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/settings"
           className={({ isActive }) =>
-            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ''}`
+            `${baseNavLinkClasses} ${isActive ? activeNavLinkClasses : ""}`
           }
           aria-label="Settings"
         >

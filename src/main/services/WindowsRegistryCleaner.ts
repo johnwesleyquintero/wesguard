@@ -1,58 +1,58 @@
-import { app } from 'electron';
-import Registry from 'winreg';
-import fs from 'fs-extra';
-import path from 'path';
+import { app } from "electron";
+import Registry from "winreg";
+import fs from "fs-extra";
+import path from "path";
 import type {
   RegistryItem,
   RegistryBackup,
   RegistryValueType,
-} from '../../renderer/types';
-import { IRegistryCleaner } from './IRegistryCleaner';
+} from "../../renderer/types";
+import { IRegistryCleaner } from "./IRegistryCleaner";
 
 interface IWinReg {
   values(
     callback: (
       err: Error | null,
-      result: Array<{ name: string; type: string; value: string }>
-    ) => void
+      result: Array<{ name: string; type: string; value: string }>,
+    ) => void,
   ): void;
   remove(name: string, callback: (err: Error | null) => void): void;
   set(
     name: string,
     type: string,
     value: string,
-    callback: (err: Error | null) => void
+    callback: (err: Error | null) => void,
   ): void;
 }
 
 const SCAN_KEYS = [
-  'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run',
-  'HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run',
-  'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run',
-  'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run32',
-  'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall',
-  'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall',
-  'HKCU\\Software',
-  'HKCR\\CLSID',
+  "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+  "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+  "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run",
+  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run32",
+  "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+  "HKCU\\Software",
+  "HKCR\\CLSID",
 ];
 
 export class WindowsRegistryCleaner implements IRegistryCleaner {
   private async getRegistryKey(keyPath: string): Promise<IWinReg> {
     return new Registry({
-      hive: keyPath.startsWith('HKCU') ? Registry.HKCU : Registry.HKLM,
-      key: keyPath.substring(keyPath.indexOf('\\') + 1),
+      hive: keyPath.startsWith("HKCU") ? Registry.HKCU : Registry.HKLM,
+      key: keyPath.substring(keyPath.indexOf("\\") + 1),
     });
   }
 
   private async getRegistryValues(
     regKey: IWinReg,
-    keyPath: string
+    keyPath: string,
   ): Promise<RegistryItem[]> {
     return new Promise((resolve, reject) => {
       regKey.values(
         (
           err: Error | null,
-          result: Array<{ name: string; type: string; value: string }>
+          result: Array<{ name: string; type: string; value: string }>,
         ) => {
           if (err) reject(err);
           else {
@@ -63,23 +63,23 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
                 value: item.value,
                 type: item.type as RegistryValueType,
                 isInvalid: false,
-              }))
+              })),
             );
           }
-        }
+        },
       );
     });
   }
 
   private async validateRegistryItem(item: RegistryItem): Promise<boolean> {
-    if (item.type !== 'REG_SZ' && item.type !== 'REG_EXPAND_SZ') {
+    if (item.type !== "REG_SZ" && item.type !== "REG_EXPAND_SZ") {
       return false;
     }
 
     const filePath = item.value
-      .replace(/"/g, '')
-      .split(' ')[0]
-      .replace(/%([^%]+)%/g, (_, name) => process.env[name] || '');
+      .replace(/"/g, "")
+      .split(" ")[0]
+      .replace(/%([^%]+)%/g, (_, name) => process.env[name] || "");
 
     if (!filePath) return false;
 
@@ -113,7 +113,7 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
   }
 
   async backupRegistry(backup: RegistryBackup): Promise<void> {
-    const backupDir = path.join(app.getPath('userData'), 'registry-backups');
+    const backupDir = path.join(app.getPath("userData"), "registry-backups");
     await fs.mkdir(backupDir, { recursive: true });
 
     const backupPath = path.join(backupDir, `backup-${backup.timestamp}.json`);
@@ -123,12 +123,12 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
   async cleanRegistry(items: RegistryItem[]): Promise<void> {
     for (const item of items) {
       try {
-        const keyPath = item.path.substring(0, item.path.lastIndexOf('\\'));
-        const valueName = item.path.substring(item.path.lastIndexOf('\\') + 1);
+        const keyPath = item.path.substring(0, item.path.lastIndexOf("\\"));
+        const valueName = item.path.substring(item.path.lastIndexOf("\\") + 1);
 
         const regKey = new Registry({
-          hive: keyPath.startsWith('HKCU') ? Registry.HKCU : Registry.HKLM,
-          key: keyPath.substring(keyPath.indexOf('\\') + 1),
+          hive: keyPath.startsWith("HKCU") ? Registry.HKCU : Registry.HKLM,
+          key: keyPath.substring(keyPath.indexOf("\\") + 1),
         });
 
         await new Promise<void>((resolve, reject) => {
@@ -147,12 +147,12 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
   async restoreRegistry(backup: RegistryBackup): Promise<void> {
     for (const item of backup.items) {
       try {
-        const keyPath = item.path.substring(0, item.path.lastIndexOf('\\'));
-        const valueName = item.path.substring(item.path.lastIndexOf('\\') + 1);
+        const keyPath = item.path.substring(0, item.path.lastIndexOf("\\"));
+        const valueName = item.path.substring(item.path.lastIndexOf("\\") + 1);
 
         const regKey = new Registry({
-          hive: keyPath.startsWith('HKCU') ? Registry.HKCU : Registry.HKLM,
-          key: keyPath.substring(keyPath.indexOf('\\') + 1),
+          hive: keyPath.startsWith("HKCU") ? Registry.HKCU : Registry.HKLM,
+          key: keyPath.substring(keyPath.indexOf("\\") + 1),
         });
 
         await new Promise<void>((resolve, reject) => {

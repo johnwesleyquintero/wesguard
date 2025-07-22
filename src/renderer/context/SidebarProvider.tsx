@@ -1,5 +1,5 @@
-import React, { useState, ReactNode, useCallback } from 'react';
-import { SidebarContext } from './SystemInfoContext'; // Import SidebarContext
+import React, { useState, ReactNode, useCallback } from "react";
+import { SidebarContext } from "./SystemInfoContext"; // Import SidebarContext
 
 interface SidebarProviderProps {
   children: ReactNode;

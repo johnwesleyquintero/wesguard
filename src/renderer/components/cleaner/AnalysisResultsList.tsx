@@ -1,13 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import { FixedSizeList as List } from 'react-window';
-import { JunkFile } from '../../types';
+import React, { useState, useMemo } from "react";
+import { FixedSizeList as List } from "react-window";
+import { JunkFile } from "../../types";
 import {
   CLEANER_FILES_TO_CLEAN_HEADER,
   CLEANER_SELECT_ALL,
-} from '../../constants';
-import AnalysisResultsListItem from './AnalysisResultsListItem';
+} from "../../constants";
+import AnalysisResultsListItem from "./AnalysisResultsListItem";
 
-type SortKey = 'name' | 'size' | 'lastModified';
+type SortKey = "name" | "size" | "lastModified";
 
 interface AnalysisResultsListProps {
   junkFiles: JunkFile[];
@@ -24,26 +24,26 @@ const AnalysisResultsList: React.FC<AnalysisResultsListProps> = ({
   onFileSelect,
   onSelectAll,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortKey, setSortKey] = useState<SortKey>('name');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const sortedAndFilteredFiles = useMemo(() => {
     const files = [...junkFiles].filter(
       (file) =>
         file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        file.path.toLowerCase().includes(searchTerm.toLowerCase())
+        file.path.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
     files.sort((a, b) => {
-      if (sortKey === 'name') {
-        return sortDirection === 'asc'
+      if (sortKey === "name") {
+        return sortDirection === "asc"
           ? a.name.localeCompare(b.name)
           : b.name.localeCompare(a.name);
-      } else if (sortKey === 'size') {
-        return sortDirection === 'asc' ? a.size - b.size : b.size - a.size;
-      } else if (sortKey === 'lastModified') {
-        return sortDirection === 'asc'
+      } else if (sortKey === "size") {
+        return sortDirection === "asc" ? a.size - b.size : b.size - a.size;
+      } else if (sortKey === "lastModified") {
+        return sortDirection === "asc"
           ? new Date(a.lastModified).getTime() -
               new Date(b.lastModified).getTime()
           : new Date(b.lastModified).getTime() -
@@ -56,18 +56,18 @@ const AnalysisResultsList: React.FC<AnalysisResultsListProps> = ({
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortKey(key);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   const getSortIndicator = (key: SortKey) => {
     if (sortKey === key) {
-      return sortDirection === 'asc' ? ' ▲' : ' ▼';
+      return sortDirection === "asc" ? " ▲" : " ▼";
     }
-    return '';
+    return "";
   };
 
   const Row = ({
@@ -103,7 +103,7 @@ const AnalysisResultsList: React.FC<AnalysisResultsListProps> = ({
           onChange={(e) => {
             setSearchTerm(e.target.value);
           }}
-          className="px-3 py-1 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto mt-2 sm:mt-0"
+          className="px-3 py-1 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring w-full sm:w-auto mt-2 sm:mt-0"
           aria-label="Search files"
         />
         <label
@@ -119,7 +119,7 @@ const AnalysisResultsList: React.FC<AnalysisResultsListProps> = ({
             }
             onChange={onSelectAll}
             aria-label={CLEANER_SELECT_ALL}
-            className="form-checkbox h-4 w-4 text-blue-600 rounded"
+            className="form-checkbox h-4 w-4 text-primary rounded"
           />
           {CLEANER_SELECT_ALL}
         </label>
@@ -130,29 +130,29 @@ const AnalysisResultsList: React.FC<AnalysisResultsListProps> = ({
           role="rowgroup"
         >
           <div role="row" className="contents">
-            {' '}
+            {" "}
             {/* Use contents to keep grid flow */}
-            <div className="hidden sm:block" role="columnheader"></div>{' '}
+            <div className="hidden sm:block" role="columnheader"></div>{" "}
             {/* Empty div for checkbox column on larger screens */}
             <div
               role="columnheader"
               tabIndex={0}
-              onClick={() => handleSort('name')}
+              onClick={() => handleSort("name")}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleSort('name');
+                if (e.key === "Enter" || e.key === " ") {
+                  handleSort("name");
                 }
               }}
               aria-sort={
-                sortKey === 'name'
-                  ? sortDirection === 'asc'
-                    ? 'ascending'
-                    : 'descending'
-                  : 'none'
+                sortKey === "name"
+                  ? sortDirection === "asc"
+                    ? "ascending"
+                    : "descending"
+                  : "none"
               }
               className="cursor-pointer hover:text-blue-400 col-span-full sm:col-span-1"
             >
-              Name{getSortIndicator('name')}
+              Name{getSortIndicator("name")}
             </div>
             <div role="columnheader" className="col-span-full sm:col-span-1">
               Path
@@ -160,42 +160,42 @@ const AnalysisResultsList: React.FC<AnalysisResultsListProps> = ({
             <div
               role="columnheader"
               tabIndex={0}
-              onClick={() => handleSort('lastModified')}
+              onClick={() => handleSort("lastModified")}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleSort('lastModified');
+                if (e.key === "Enter" || e.key === " ") {
+                  handleSort("lastModified");
                 }
               }}
               aria-sort={
-                sortKey === 'lastModified'
-                  ? sortDirection === 'asc'
-                    ? 'ascending'
-                    : 'descending'
-                  : 'none'
+                sortKey === "lastModified"
+                  ? sortDirection === "asc"
+                    ? "ascending"
+                    : "descending"
+                  : "none"
               }
               className="cursor-pointer hover:text-blue-400 col-span-full sm:col-span-1"
             >
-              Last Modified{getSortIndicator('lastModified')}
+              Last Modified{getSortIndicator("lastModified")}
             </div>
             <div
               role="columnheader"
               tabIndex={0}
-              onClick={() => handleSort('size')}
+              onClick={() => handleSort("size")}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleSort('size');
+                if (e.key === "Enter" || e.key === " ") {
+                  handleSort("size");
                 }
               }}
               aria-sort={
-                sortKey === 'size'
-                  ? sortDirection === 'asc'
-                    ? 'ascending'
-                    : 'descending'
-                  : 'none'
+                sortKey === "size"
+                  ? sortDirection === "asc"
+                    ? "ascending"
+                    : "descending"
+                  : "none"
               }
               className="cursor-pointer hover:text-blue-400 col-span-full sm:col-span-1"
             >
-              Size{getSortIndicator('size')}
+              Size{getSortIndicator("size")}
             </div>
           </div>
         </div>

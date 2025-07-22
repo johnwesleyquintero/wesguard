@@ -1,10 +1,10 @@
 export type RegistryValueType =
-  | 'REG_SZ'
-  | 'REG_EXPAND_SZ'
-  | 'REG_DWORD'
-  | 'REG_QWORD'
-  | 'REG_MULTI_SZ'
-  | 'REG_BINARY';
+  | "REG_SZ"
+  | "REG_EXPAND_SZ"
+  | "REG_DWORD"
+  | "REG_QWORD"
+  | "REG_MULTI_SZ"
+  | "REG_BINARY";
 
 export interface RegistryItem {
   path: string;
@@ -23,10 +23,10 @@ export interface ElectronAPI {
   // System Info
   getSystemInfo: () => void;
   onSystemInfoResponse: (
-    callback: (info: { os: string; cpu: string }) => void
+    callback: (info: { os: string; cpu: string }) => void,
   ) => () => void;
   onUpdateMetrics: (
-    callback: (metrics: { cpu: number; mem: number }) => void
+    callback: (metrics: { cpu: number; mem: number }) => void,
   ) => () => void;
   setSystemMetricsInterval: (interval: number) => void; // Moved from settings
 
@@ -37,7 +37,7 @@ export interface ElectronAPI {
       totalSize: number;
     }>;
     executeCleaning: (
-      filesToDelete: string[]
+      filesToDelete: string[],
     ) => Promise<{ success: boolean; message?: string; error?: string }>;
     getDiskUsage: () => Promise<
       { diskUsage: number; totalDisk: number } | { error: string }
@@ -52,7 +52,7 @@ export interface ElectronAPI {
     showReminderNotification: (
       title: string,
       body: string,
-      sound: boolean
+      sound: boolean,
     ) => void;
   };
 

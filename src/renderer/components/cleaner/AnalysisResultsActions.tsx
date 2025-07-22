@@ -1,7 +1,7 @@
-import React from 'react';
-import { Button } from '../Button';
-import { JunkFile } from '../../types';
-import { CLEANER_ANALYZE_AGAIN_BUTTON } from '../../constants';
+import React from "react";
+import { Button } from "../Button";
+import { JunkFile } from "../../types";
+import { CLEANER_ANALYZE_AGAIN_BUTTON } from "../../constants";
 
 interface AnalysisResultsActionsProps {
   selectedFiles: string[];
@@ -28,9 +28,7 @@ const AnalysisResultsActions: React.FC<AnalysisResultsActionsProps> = ({
         onClick={onCleanClick}
         disabled={selectedFiles.length === 0}
         variant="primary"
-        aria-label={`Clean selected files, total size ${formatBytes(
-          selectedSize
-        )}`}
+        aria-label={`Clean selected files, total size ${formatBytes(selectedSize)}`}
       >
         Clean Selected ({formatBytes(selectedSize)})
       </Button>

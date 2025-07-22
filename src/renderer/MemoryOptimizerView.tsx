@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from './components/Button';
-import { Card } from './components/Card';
-import PageHeader from './components/PageHeader';
-import { Line } from 'react-chartjs-2';
+import React, { useState, useEffect, useCallback } from "react";
+import { Button } from "./components/Button";
+import { Card } from "./components/Card";
+import PageHeader from "./components/PageHeader";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,7 +12,7 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
+} from "chart.js";
 
 ChartJS.register(
   CategoryScale,
@@ -21,7 +21,7 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 interface MemoryUsageData {
@@ -34,7 +34,7 @@ interface MemoryUsageData {
 
 const MemoryOptimizerView: React.FC = () => {
   const [currentUsage, setCurrentUsage] = useState<MemoryUsageData | null>(
-    null
+    null,
   );
   const [optimizationSuggestions, setOptimizationSuggestions] = useState<
     string[]
@@ -52,9 +52,9 @@ const MemoryOptimizerView: React.FC = () => {
       const result = await window.electronAPI.memoryOptimizer.getCurrentUsage();
       setCurrentUsage(result);
     } catch (err: unknown) {
-      console.error('Failed to fetch current memory usage:', err);
+      console.error("Failed to fetch current memory usage:", err);
       setError(
-        `Failed to load current memory usage: ${(err as Error).message || 'Unknown error'}. Please try again.`
+        `Failed to load current memory usage: ${(err as Error).message || "Unknown error"}. Please try again.`,
       );
     } finally {
       setIsFetchingUsage(false);
@@ -71,12 +71,12 @@ const MemoryOptimizerView: React.FC = () => {
         // Re-fetch current usage after optimization attempt
         await fetchCurrentUsage();
       } else {
-        setError(result.error || 'Failed to optimize memory.');
+        setError(result.error || "Failed to optimize memory.");
       }
     } catch (err: unknown) {
-      console.error('Failed to optimize memory:', err);
+      console.error("Failed to optimize memory:", err);
       setError(
-        `Failed to optimize memory: ${(err as Error).message || 'Unknown error'}. Please try again.`
+        `Failed to optimize memory: ${(err as Error).message || "Unknown error"}. Please try again.`,
       );
     } finally {
       setIsOptimizing(false);
@@ -89,9 +89,9 @@ const MemoryOptimizerView: React.FC = () => {
       const result = await window.electronAPI.memoryOptimizer.getHistory();
       setHistory(result);
     } catch (err: unknown) {
-      console.error('Failed to fetch memory history:', err);
+      console.error("Failed to fetch memory history:", err);
       setError(
-        `Failed to fetch memory history: ${(err as Error).message || 'Unknown error'}.`
+        `Failed to fetch memory history: ${(err as Error).message || "Unknown error"}.`,
       );
     } finally {
       setIsFetchingHistory(false);
@@ -102,7 +102,7 @@ const MemoryOptimizerView: React.FC = () => {
     try {
       await window.electronAPI.memoryOptimizer.initDataDir();
     } catch (err) {
-      console.error('Failed to initialize memory data directory:', err);
+      console.error("Failed to initialize memory data directory:", err);
     }
   }, []);
 
@@ -131,16 +131,16 @@ const MemoryOptimizerView: React.FC = () => {
   const chartData = {
     labels: history.slice(-10).map((entry) =>
       new Date(entry.timestamp).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     ),
     datasets: [
       {
-        label: 'Memory Usage (%)',
+        label: "Memory Usage (%)",
         data: history.slice(-10).map((entry) => entry.usedPercentage),
         fill: false,
-        borderColor: 'rgb(75, 192, 192)',
+        borderColor: "rgb(75, 192, 192)",
         tension: 0.1,
       },
     ],
@@ -151,11 +151,11 @@ const MemoryOptimizerView: React.FC = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const,
+        position: "top" as const,
       },
       title: {
         display: true,
-        text: 'Memory Usage History',
+        text: "Memory Usage History",
       },
     },
     scales: {
@@ -164,13 +164,13 @@ const MemoryOptimizerView: React.FC = () => {
         max: 100,
         title: {
           display: true,
-          text: 'Used Percentage (%)',
+          text: "Used Percentage (%)",
         },
       },
       x: {
         title: {
           display: true,
-          text: 'Time',
+          text: "Time",
         },
       },
     },
@@ -197,7 +197,7 @@ const MemoryOptimizerView: React.FC = () => {
       </Card>
 
       <Button onClick={optimizeMemory} disabled={isOptimizing}>
-        {isOptimizing ? 'Optimizing...' : 'Optimize Memory'}
+        {isOptimizing ? "Optimizing..." : "Optimize Memory"}
       </Button>
 
       {optimizationSuggestions.length > 0 && (
@@ -206,7 +206,7 @@ const MemoryOptimizerView: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {optimizationSuggestions.map((suggestion, index) => (
               <Card key={index} className="p-4 flex items-center space-x-3">
-                <span className="text-green-500 text-xl">💡</span>{' '}
+                <span className="text-green-500 text-xl">💡</span>{" "}
                 {/* Example icon */}
                 <p>{suggestion}</p>
               </Card>
@@ -218,7 +218,7 @@ const MemoryOptimizerView: React.FC = () => {
       {history.length > 0 && (
         <Card className="memory-history">
           <h3>Memory Usage History (Last 10 entries):</h3>
-          <div style={{ height: '300px' }}>
+          <div style={{ height: "300px" }}>
             <Line
               data={chartData}
               options={chartOptions}
@@ -241,8 +241,8 @@ const MemoryOptimizerView: React.FC = () => {
                   <tr key={index}>
                     <td>
                       {new Date(entry.timestamp).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </td>
                     <td>{entry.usedPercentage.toFixed(2)}%</td>

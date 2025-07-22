@@ -1,11 +1,11 @@
-import React from 'react';
-import { Button } from '../Button';
-import { Card } from '../Card';
-import PageHeader from '../PageHeader';
+import React from "react";
+import { Button } from "../Button";
+import { Card } from "../Card";
+import PageHeader from "../PageHeader";
 import {
   CLEANER_CLEANING_COMPLETE_TITLE,
   CLEANER_CLEAN_AGAIN_BUTTON,
-} from '../../constants';
+} from "../../constants";
 
 interface CleaningCompleteProps {
   recoverableSpace: number;

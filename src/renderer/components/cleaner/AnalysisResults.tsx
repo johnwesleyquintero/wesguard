@@ -1,12 +1,12 @@
-import React from 'react';
-import { Card } from '../Card';
-import { JunkFile } from '../../types';
-import { CLEANER_NO_FILES_FOUND } from '../../constants';
+import React from "react";
+import { Card } from "../Card";
+import { JunkFile } from "../../types";
+import { CLEANER_NO_FILES_FOUND } from "../../constants";
 import {
   AnalysisResultsHeader,
   AnalysisResultsList,
   AnalysisResultsActions,
-} from './';
+} from "./";
 
 interface AnalysisResultsProps {
   error: string | null;

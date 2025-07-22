@@ -1,8 +1,8 @@
-import { createContext, useContext } from 'react';
-import { SystemInfo } from '../types';
+import { createContext, useContext } from "react";
+import { SystemInfo } from "../hooks/useSystemInfo";
 
 // Define the type for Theme Mode
-export type ThemeMode = 'light' | 'dark';
+export type ThemeMode = "light" | "dark";
 
 // Define the type for System Info Context
 interface SystemInfoContextType {
@@ -25,7 +25,7 @@ export const SystemInfoContext = createContext<
 
 // Create Sidebar Context
 export const SidebarContext = createContext<SidebarContextType | undefined>(
-  undefined
+  undefined,
 );
 
 // Custom hook for System Info Context
@@ -33,7 +33,7 @@ export const useSystemInfoContext = () => {
   const context = useContext(SystemInfoContext);
   if (context === undefined) {
     throw new Error(
-      'useSystemInfoContext must be used within a SystemInfoProvider'
+      "useSystemInfoContext must be used within a SystemInfoProvider",
     );
   }
   return context;
@@ -43,7 +43,7 @@ export const useSystemInfoContext = () => {
 export const useSidebarContext = () => {
   const context = useContext(SidebarContext);
   if (context === undefined) {
-    throw new Error('useSidebarContext must be used within a SidebarProvider');
+    throw new Error("useSidebarContext must be used within a SidebarProvider");
   }
   return context;
 };

@@ -6,7 +6,7 @@ import type {
   JunkFile,
   MemoryUsage,
   MemoryOptimizationHistory,
-} from './renderer/types';
+} from "./renderer/types";
 
 export {};
 
@@ -15,25 +15,15 @@ declare global {
     electronAPI: {
       getSystemInfo: () => void;
       onSystemInfoResponse: (
-        callback: (info: { os: string; cpu: string }) => void
+        callback: (info: { os: string; cpu: string }) => void,
       ) => () => void;
       onUpdateMetrics: (
-        callback: (metrics: { cpu: number; mem: number }) => void
+        callback: (metrics: { cpu: number; mem: number }) => void,
       ) => () => void;
-      getDiskUsage: () => Promise<{
-        diskUsage: number;
-        totalDisk: number;
-        error?: string;
-      }>;
-      getNetworkActivity: () => Promise<{
-        netRx: number;
-        netTx: number;
-        error?: string;
-      }>;
       showReminderNotification: (
         title: string,
         body: string,
-        sound: boolean
+        sound: boolean,
       ) => void;
       setSystemMetricsInterval: (interval: number) => void;
       aiOptimization: {
@@ -65,14 +55,21 @@ declare global {
           error?: string;
         }>;
         executeCleaning: (
-          filesToDelete: string[]
+          filesToDelete: string[],
         ) => Promise<{ success: boolean; error?: string; message?: string }>;
+        getDiskAndNetworkMetrics: () => Promise<{
+          diskUsage: number;
+          totalDisk: number;
+          netRx: number;
+          netTx: number;
+          error?: string;
+        }>;
       };
       reminder: {
         showReminderNotification: (
           title: string,
           body: string,
-          sound: boolean
+          sound: boolean,
         ) => void;
       };
     };

@@ -1,5 +1,4 @@
-import React from 'react'; // Removed CSSProperties and CustomStyle as they are no longer needed
-// Removed import styles from './components/UsageCard.module.css';
+import React from "react";
 
 interface UsageCardProps {
   title: string;
@@ -15,30 +14,28 @@ const UsageCard: React.FC<UsageCardProps> = ({
   isLoading,
 }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col items-center justify-center">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 text-center">
-        {title}
-      </h3>
+    <div className="bg-secondary p-5 rounded-lg shadow-lg flex flex-col justify-between min-h-[150px]">
+      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
       {isLoading ? (
-        <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+        <p className="text-muted-foreground">Loading...</p>
       ) : (
         <>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 text-center">
+          <p className="text-sm text-muted-foreground mb-4 flex-grow flex items-center">
             {model}
           </p>
           {usagePercentage !== null && (
-            <div className="w-full max-w-xs">
+            <div className="w-full">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                <span className="text-xs font-medium text-foreground">
                   Usage
                 </span>
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                <span className="text-xs font-medium text-foreground">
                   {usagePercentage.toFixed(2)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+              <div className="bg-muted rounded-lg h-[15px] overflow-hidden relative mt-2">
                 <div
-                  className="bg-blue-600 h-2.5 rounded-full"
+                  className="bg-primary h-full rounded-lg transition-[width] duration-300 ease-in-out"
                   style={{ width: `${usagePercentage}%` }}
                   role="progressbar"
                   aria-valuenow={usagePercentage ?? 0}
@@ -46,6 +43,9 @@ const UsageCard: React.FC<UsageCardProps> = ({
                   aria-valuemax={100}
                   aria-label={title}
                 ></div>
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm font-medium text-primary-foreground">
+                  {usagePercentage.toFixed(2)}%
+                </span>
               </div>
             </div>
           )}

@@ -1,6 +1,6 @@
-import React from 'react';
-import type { RegistryItem } from '../../types';
-import { Button } from '../Button';
+import React from "react";
+import type { RegistryItem } from "../../types";
+import { Button } from "../Button";
 
 interface ResultsProps {
   issues: RegistryItem[];
@@ -20,7 +20,7 @@ export const Results: React.FC<ResultsProps> = ({
 
   const handleToggle = (path: string) => {
     setSelected((prev) =>
-      prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path]
+      prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path],
     );
   };
 
@@ -31,7 +31,7 @@ export const Results: React.FC<ResultsProps> = ({
 
   const handleClean = () => {
     const selectedItems = issues.filter(
-      (issue) => selected.includes(issue.path) && !ignored.includes(issue.path)
+      (issue) => selected.includes(issue.path) && !ignored.includes(issue.path),
     );
     onClean(selectedItems);
   };
@@ -45,40 +45,49 @@ export const Results: React.FC<ResultsProps> = ({
           <li
             key={issue.path}
             className={`p-4 border rounded-lg shadow-sm ${
+              issue.isInvalid
+                ? "border-destructive bg-destructive/10"
+                : "border-gray-200 bg-white"
+            } ${
               selected.includes(issue.path)
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 bg-white'
-            } ${ignored.includes(issue.path) ? 'opacity-50 line-through' : ''}`}
+                ? "ring-2 ring"
+                : "hover:border-gray-300"
+            } ${ignored.includes(issue.path) ? "opacity-50 line-through" : ""}`}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start">
                 <input
                   type="checkbox"
                   checked={selected.includes(issue.path)}
                   onChange={() => handleToggle(issue.path)}
-                  className="mr-3 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                  className="mr-3 mt-1 h-5 w-5 text-primary rounded focus:ring"
                   disabled={ignored.includes(issue.path)}
                 />
-                <div>
-                  <strong className="text-lg text-gray-800">
+                <div className="flex-grow">
+                  <strong className="text-lg text-gray-800 block">
                     {issue.name}
                   </strong>
-                  <p className="text-sm text-gray-500">{issue.path}</p>
-                  <p className="text-sm text-gray-500">
-                    Value: {issue.value || 'N/A'}
+                  <p className="text-sm text-gray-500 break-all">
+                    Path: {issue.path}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Type: {issue.type || 'N/A'}
+                    Value: {issue.value || "N/A"}
                   </p>
-                  <p className="text-sm text-red-500">
-                    Reason: {issue.isInvalid ? 'Invalid entry' : 'N/A'}
+                  <p className="text-sm text-gray-500">
+                    Type: {issue.type || "N/A"}
                   </p>
+                  {issue.isInvalid && (
+                    <p className="text-sm text-destructive font-medium mt-1">
+                      Reason: Invalid entry
+                    </p>
+                  )}
                 </div>
               </div>
               <Button
                 onClick={() => handleIgnore(issue)}
                 disabled={ignored.includes(issue.path)}
-                className="ml-4 px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600 disabled:opacity-50"
+                variant="ghost"
+                size="small"
               >
                 Ignore
               </Button>
@@ -90,14 +99,11 @@ export const Results: React.FC<ResultsProps> = ({
         <Button
           onClick={handleClean}
           disabled={selected.length === 0}
-          className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+          variant="primary"
         >
-          Clean Selected
+          Clean Selected ({selected.length})
         </Button>
-        <Button
-          onClick={onBack}
-          className="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
-        >
+        <Button onClick={onBack} variant="secondary">
           Back
         </Button>
       </div>

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card } from '../Card';
-import { Lightbulb } from 'lucide-react';
+import React from "react";
+import { Card } from "../Card";
+import { Lightbulb } from "lucide-react";
 
 interface SuggestionCardProps {
   suggestion: string;

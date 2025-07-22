@@ -1,15 +1,17 @@
-import { useState, useEffect, useCallback } from 'react';
-import { formatBytes } from '../../../src/utils/formatters';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { formatBytes } from "../../../src/utils/formatters";
 
 export interface SystemInfo {
   os: string;
   cpu: string;
   disk?: string; // Add disk information
+  totalMemory?: string; // Add total memory information
 }
 
 interface Metrics {
   cpu: number;
-  mem: number;
+  mem: number; // Memory usage percentage
+  usedMemory?: number; // Used memory in bytes
   diskUsage?: number; // Add disk usage percentage
   netRx?: number; // Network received bytes/s
   netTx?: number; // Network transmitted bytes/s
@@ -23,47 +25,42 @@ interface HistoricalData {
 const MAX_HISTORY_POINTS = 60; // Keep history for 60 seconds (assuming 1-second interval)
 
 const useSystemInfo = (interval: number = 2000) => {
-  const [systemInfo, setSystemInfo] = useState<SystemInfo>({ os: '', cpu: '' });
+  const [systemInfo, setSystemInfo] = useState<SystemInfo>({ os: "", cpu: "" });
   const [metrics, setMetrics] = useState<Metrics>({ cpu: 0, mem: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [historicalData, setHistoricalData] = useState<HistoricalData>({
     cpu: [],
     mem: [],
   });
-  const [isFetching, setIsFetching] = useState(true); // New state to control fetching
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchDiskAndNetwork = useCallback(async () => {
     try {
-      const diskResponse = await window.electronAPI.getDiskUsage();
-      const networkResponse = await window.electronAPI.getNetworkActivity();
+      const metricsResponse =
+        await window.electronAPI.cleaner.getDiskAndNetworkMetrics();
 
-      if (diskResponse.error) {
-        console.error('Error fetching disk usage:', diskResponse.error);
-      } else {
-        setMetrics((prev) => ({
-          ...prev,
-          diskUsage: diskResponse.diskUsage,
-        }));
-        setSystemInfo((prev) => ({
-          ...prev,
-          disk: formatBytes(diskResponse.totalDisk),
-        }));
-      }
-
-      if (networkResponse.error) {
+      if (metricsResponse.error) {
         console.error(
-          'Error fetching network activity:',
-          networkResponse.error
+          "Error fetching disk and network metrics:",
+          metricsResponse.error,
         );
       } else {
         setMetrics((prev) => ({
           ...prev,
-          netRx: networkResponse.netRx,
-          netTx: networkResponse.netTx,
+          diskUsage: metricsResponse.diskUsage,
+          netRx: metricsResponse.netRx,
+          netTx: metricsResponse.netTx,
+        }));
+        setSystemInfo((prev) => ({
+          ...prev,
+          disk: metricsResponse.totalDisk
+            ? formatBytes(metricsResponse.totalDisk)
+            : undefined,
         }));
       }
     } catch (error) {
-      console.error('Error fetching disk/network data:', error);
+      console.error("Error fetching disk/network data:", error);
     }
   }, []);
 
@@ -73,42 +70,60 @@ const useSystemInfo = (interval: number = 2000) => {
   }, [fetchDiskAndNetwork]);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    const startFetching = () => {
-      if (isFetching) {
-        intervalId = setInterval(fetchDiskAndNetwork, interval);
+    const startPolling = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
+      intervalRef.current = setInterval(fetchDiskAndNetwork, interval);
     };
 
-    const stopFetching = () => {
-      clearInterval(intervalId);
+    const stopPolling = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        setIsFetching(false);
-        stopFetching();
+      if (document.visibilityState === "hidden") {
+        stopPolling();
       } else {
-        setIsFetching(true);
-        startFetching();
+        startPolling();
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    // Set up initial polling based on visibility
+    if (document.visibilityState === "visible") {
+      startPolling();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     if (window.electronAPI) {
-      const handleSystemInfo = (info: SystemInfo & { error?: string }) => {
+      const handleSystemInfo = (
+        info: SystemInfo & { error?: string; totalMemory?: number },
+      ) => {
         if (info.error) {
-          console.error('Error from main process (system info):', info.error);
+          console.error("Error from main process (system info):", info.error);
         } else {
-          setSystemInfo(info);
+          setSystemInfo({
+            ...info,
+            totalMemory: info.totalMemory
+              ? formatBytes(info.totalMemory)
+              : undefined,
+          });
         }
         setIsLoading(false);
       };
 
-      const handleUpdateMetrics = (newMetrics: Metrics) => {
-        setMetrics(newMetrics);
+      const handleUpdateMetrics = (
+        newMetrics: Metrics & { usedMemory?: number },
+      ) => {
+        setMetrics((prev) => ({
+          ...prev,
+          ...newMetrics,
+          usedMemory: newMetrics.usedMemory,
+        }));
         setHistoricalData((prev) => {
           const timestamp = Date.now();
           const newCpuHistory = [
@@ -130,30 +145,27 @@ const useSystemInfo = (interval: number = 2000) => {
         });
       };
 
-      // Initial fetch
+      // Initial fetch for system info (not polled)
       window.electronAPI.getSystemInfo();
 
-      // Set up listeners
+      // Set up listeners for system info and metrics updates
       const removeSystemInfoListener =
         window.electronAPI.onSystemInfoResponse(handleSystemInfo);
       const removeUpdateMetricsListener =
         window.electronAPI.onUpdateMetrics(handleUpdateMetrics);
 
-      // Initial fetch and start polling
-      startFetching();
-
       // Cleanup listeners and interval on unmount
       return () => {
         removeSystemInfoListener();
         removeUpdateMetricsListener();
-        stopFetching();
+        stopPolling(); // Ensure interval is cleared on unmount
         document.removeEventListener(
-          'visibilitychange',
-          handleVisibilityChange
+          "visibilitychange",
+          handleVisibilityChange,
         );
       };
     }
-  }, [interval, isFetching, fetchDiskAndNetwork]); // Depend on interval, isFetching, and fetchDiskAndNetwork
+  }, [interval, fetchDiskAndNetwork]); // Dependencies: interval and fetchDiskAndNetwork
 
   return {
     systemInfo,

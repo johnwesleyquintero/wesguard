@@ -1,12 +1,12 @@
-import React from 'react';
-import { Button } from '../Button';
-import { Card } from '../Card';
-import PageHeader from '../PageHeader';
+import React from "react";
+import { Button } from "../Button";
+import { Card } from "../Card";
+import PageHeader from "../PageHeader";
 import {
   CLEANER_TITLE,
   CLEANER_IDLE_MESSAGE,
   CLEANER_ANALYZE_BUTTON,
-} from '../../constants';
+} from "../../constants";
 
 interface AnalysisIdleProps {
   onAnalyze: () => void;
