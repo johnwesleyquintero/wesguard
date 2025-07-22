@@ -1,25 +1,29 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import DashboardView from "./DashboardView";
-import CleanerView from "./CleanerView";
-import ReminderView from "./ReminderView";
-import ChatView from "./ChatView";
-import SettingsView from "./SettingsView";
-import { RegistryCleanerView } from "./RegistryCleanerView";
-import AIOptimizationView from "./AIOptimizationView";
-import MemoryOptimizerView from "./MemoryOptimizerView";
-import {
-  useSystemInfoContext,
-  useSidebarContext,
-} from "./context/SystemInfoContext"; // Import context hooks
-import { Menu } from "lucide-react"; // Import Menu icon
+import PageContent from "../components/PageContent"; // Import PageContent component
+import SidebarToggleButton from "../components/SidebarToggleButton"; // Import SidebarToggleButton
+import { useSystemInfoContext } from "./context/SystemInfoContext"; // Import context hooks
 import { ErrorBoundary } from "./components/ErrorBoundary"; // Import ErrorBoundary
+import LoadingIndicator from "./components/LoadingIndicator"; // Import LoadingIndicator
+
+// Lazy load view components
+const DashboardView = lazy(() => import("./DashboardView"));
+const CleanerView = lazy(() => import("./CleanerView"));
+const ReminderView = lazy(() => import("./ReminderView"));
+const ChatView = lazy(() => import("./ChatView"));
+const SettingsView = lazy(() => import("./SettingsView"));
+const RegistryCleanerView = lazy(() =>
+  import("./RegistryCleanerView").then((module) => ({
+    default: module.RegistryCleanerView,
+  })),
+);
+const AIOptimizationView = lazy(() => import("./AIOptimizationView"));
+const MemoryOptimizerView = lazy(() => import("./MemoryOptimizerView"));
 
 const App: React.FC = () => {
   const { themeMode } = useSystemInfoContext(); // Get themeMode from context
-  const { toggleSidebar } = useSidebarContext(); // Get toggleSidebar from context
 
   // Apply dark class to html element based on themeMode
   React.useEffect(() => {
@@ -34,32 +38,31 @@ const App: React.FC = () => {
     <BrowserRouter>
       <div className="flex h-screen">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-          <button
-            className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-secondary-bg text-primary-text shadow-lg"
-            onClick={toggleSidebar}
-            aria-label="Toggle sidebar"
-          >
-            <Menu size={24} />
-          </button>
+        <PageContent padding="p-4 md:p-6 lg:p-8">
+          <SidebarToggleButton />
           <ErrorBoundary>
-            <Routes>
-              <Route path="/dashboard" element={<DashboardView />} />
-              <Route path="/cleaner" element={<CleanerView />} />
-              <Route path="/reminder" element={<ReminderView />} />
-              <Route path="/chat" element={<ChatView />} />
-              <Route path="/settings" element={<SettingsView />} />
-              <Route path="/registry" element={<RegistryCleanerView />} />
-              <Route path="/ai-optimization" element={<AIOptimizationView />} />
-              <Route
-                path="/memory-optimizer"
-                element={<MemoryOptimizerView />}
-              />
-              <Route path="/" element={<DashboardView />} />{" "}
-              {/* Default route */}
-            </Routes>
+            <Suspense fallback={<LoadingIndicator />}>
+              <Routes>
+                <Route path="/dashboard" element={<DashboardView />} />
+                <Route path="/cleaner" element={<CleanerView />} />
+                <Route path="/reminder" element={<ReminderView />} />
+                <Route path="/chat" element={<ChatView />} />
+                <Route path="/settings" element={<SettingsView />} />
+                <Route path="/registry" element={<RegistryCleanerView />} />
+                <Route
+                  path="/ai-optimization"
+                  element={<AIOptimizationView />}
+                />
+                <Route
+                  path="/memory-optimizer"
+                  element={<MemoryOptimizerView />}
+                />
+                <Route path="/" element={<DashboardView />} />{" "}
+                {/* Default route */}
+              </Routes>
+            </Suspense>
           </ErrorBoundary>
-        </main>
+        </PageContent>
         <Toaster />
       </div>
     </BrowserRouter>
