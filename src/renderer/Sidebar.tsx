@@ -2,12 +2,9 @@ import React from "react";
 import {
   ChevronLeft,
   ChevronRight,
-  LayoutDashboard,
-  Trash2,
   Bell,
   Shield,
   MessageSquare,
-  Settings, // Import Settings icon
 } from "lucide-react";
 
 interface SidebarProps {
@@ -34,20 +31,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
       <nav className="nav">
         <button
-          className={`nav-button ${activeView === "dashboard" ? "active" : ""}`}
-          onClick={() => setActiveView("dashboard")}
-        >
-          <LayoutDashboard />
-          {!isSidebarCollapsed && <span>Dashboard</span>}
-        </button>
-        <button
-          className={`nav-button ${activeView === "cleaner" ? "active" : ""}`}
-          onClick={() => setActiveView("cleaner")}
-        >
-          <Trash2 /> {/* Changed from Broom to Trash2 */}
-          {!isSidebarCollapsed && <span>Cleaner</span>}
-        </button>
-        <button
           className={`nav-button ${activeView === "reminder" ? "active" : ""}`}
           onClick={() => setActiveView("reminder")}
         >
@@ -60,13 +43,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <MessageSquare />
           {!isSidebarCollapsed && <span>WesGuardAI</span>}
-        </button>
-        <button
-          className={`nav-button ${activeView === "settings" ? "active" : ""}`}
-          onClick={() => setActiveView("settings")}
-        >
-          <Settings />
-          {!isSidebarCollapsed && <span>Settings</span>}
         </button>
       </nav>
     </aside>

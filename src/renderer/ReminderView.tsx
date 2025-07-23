@@ -242,8 +242,8 @@ const ReminderView: React.FC = () => {
         ) : (
           <>
             <div className="saved-reminders-info">
-              <Save className="highlight" /> Auto-saved: Your reminders
-              are automatically saved and will be available when you restart the
+              <Save className="highlight" /> Auto-saved: Your reminders are
+              automatically saved and will be available when you restart the
               application.
             </div>
             {reminders.map((reminder) => (
