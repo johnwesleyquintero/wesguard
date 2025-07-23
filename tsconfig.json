@@ -17,7 +17,8 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "class-variance-authority": ["node_modules/class-variance-authority/dist/index.mjs"]
     },
 
     /* Linting */
@@ -28,7 +29,10 @@
 
   },
   "include": [
-    "src",
+    "src/renderer",
+    "src/components",
+    "src/renderer.d.ts",
+    "src/types",
     "main.js",
     "preload.js",
     "jest.config.ts",

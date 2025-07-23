@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import { Component, ErrorInfo, ReactNode } from "react";
 import { Button } from "./Button";
 import { Card } from "./Card";
 
@@ -25,8 +25,8 @@ class ErrorBoundary extends Component<Props, State> {
 
   public static getDerivedStateFromError(error: Error): Partial<State> {
     console.error(error);
-    return { 
-      hasError: true, 
+    return {
+      hasError: true,
       error,
       errorId: `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     };
@@ -34,24 +34,18 @@ class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
-    
+
     this.setState({
       error,
       errorInfo,
     });
-    
+
     // Call optional error handler
     this.props.onError?.(error, errorInfo);
-    
-    // Log to AI optimization service if available
-    if (window.electronAPI?.aiOptimization) {
-      window.electronAPI.aiOptimization.logCrash({
-        timestamp: new Date().toISOString(),
-        appName: "WesGuard",
-        message: error.message,
-        stackTrace: error.stack,
-        severity: "high",
-      });
+
+    // Log crash to electronAPI if available
+    if (window.electronAPI?.logCrash) {
+      window.electronAPI.logCrash(error.message, error.stack || "");
     }
   }
 
@@ -80,12 +74,13 @@ class ErrorBoundary extends Component<Props, State> {
       userAgent: navigator.userAgent,
       url: window.location.href,
     };
-    
+
     // In a real app, you would send this to your error reporting service
     console.log("Error Report:", errorReport);
-    
+
     // Copy to clipboard for user to report
-    navigator.clipboard.writeText(JSON.stringify(errorReport, null, 2))
+    navigator.clipboard
+      .writeText(JSON.stringify(errorReport, null, 2))
       .then(() => alert("Error report copied to clipboard"))
       .catch(() => console.error("Failed to copy error report"));
   };
@@ -94,7 +89,7 @@ class ErrorBoundary extends Component<Props, State> {
       if (this.props.fallback) {
         return this.props.fallback;
       }
-      
+
       return (
         <div className="flex items-center justify-center min-h-screen p-4">
           <Card className="max-w-2xl w-full p-6">
@@ -104,10 +99,10 @@ class ErrorBoundary extends Component<Props, State> {
                 Something went wrong
               </h1>
               <p className="text-muted-foreground mb-6">
-                We're sorry, but something unexpected happened. The error has been logged 
-                and our team will investigate.
+                We're sorry, but something unexpected happened. The error has
+                been logged and our team will investigate.
               </p>
-              
+
               {process.env.NODE_ENV === "development" && this.state.error && (
                 <details className="mb-6 text-left">
                   <summary className="cursor-pointer font-semibold mb-2">
@@ -128,7 +123,7 @@ class ErrorBoundary extends Component<Props, State> {
                   </div>
                 </details>
               )}
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button onClick={this.handleRetry} variant="default">
                   Try Again
@@ -136,14 +131,14 @@ class ErrorBoundary extends Component<Props, State> {
                 <Button onClick={this.handleReportError} variant="outline">
                   Report Error
                 </Button>
-                <Button 
-                  onClick={() => window.location.reload()} 
+                <Button
+                  onClick={() => window.location.reload()}
                   variant="secondary"
                 >
                   Reload Page
                 </Button>
               </div>
-              
+
               <p className="text-xs text-muted-foreground mt-4">
                 Error ID: {this.state.errorId}
               </p>

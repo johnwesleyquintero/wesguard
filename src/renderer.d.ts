@@ -30,8 +30,9 @@ declare global {
         optimizeAI: () => Promise<void>;
         getSuggestions: () => Promise<AISuggestion[]>;
         initDataDir: () => Promise<void>;
-        logPerformance: (data: AIPerformanceLog) => Promise<void>;
       };
+      logPerformance: (data: AIPerformanceLog) => Promise<void>;
+      logCrash: (error: string, stack: string) => Promise<void>;
       registry: {
         scan: () => Promise<RegistryItem[]>;
         backup: (backup: RegistryBackup) => Promise<void>;
@@ -58,6 +59,13 @@ declare global {
           filesToDelete: string[],
         ) => Promise<{ success: boolean; error?: string; message?: string }>;
         getDiskAndNetworkMetrics: () => Promise<{
+          diskUsage: number;
+          totalDisk: number;
+          netRx: number;
+          netTx: number;
+          error?: string;
+        }>;
+        fetchDiskAndNetwork: () => Promise<{
           diskUsage: number;
           totalDisk: number;
           netRx: number;

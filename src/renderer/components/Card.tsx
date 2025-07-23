@@ -1,11 +1,10 @@
 import React from "react";
-import { VariantProps } from "class-variance-authority";
 import { cardVariants } from "../../lib/variants";
 import { cn } from "../../lib/utils";
 
-export interface CardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {}
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "flat";
+}
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, ...props }, ref) => {

@@ -12,8 +12,8 @@ export interface SystemInfo {
 }
 
 interface Metrics {
-  cpu: number;
-  mem: number; // Memory usage percentage
+  cpu?: number; // Make optional
+  mem?: number; // Make optional
   usedMemory?: number; // Used memory in bytes
   diskUsage?: number; // Add disk usage percentage
   netRx?: number; // Network received bytes/s
@@ -54,6 +54,26 @@ const useSystemInfo = (interval: number = 2000) => {
   const maxRetries = 3;
 
   // Debounced function to prevent excessive API calls
+  const checkPerformanceAlerts = useCallback(
+    (metricsData: Metrics) => {
+      const alerts: string[] = [];
+
+      if (
+        metricsData.diskUsage &&
+        metricsData.diskUsage > PERFORMANCE_THRESHOLD.DISK_HIGH
+      ) {
+        alerts.push(
+          `Disk usage is critically high at ${metricsData.diskUsage.toFixed(1)}%`,
+        );
+      }
+
+      // Add more performance checks as needed
+      setPerformanceAlerts(alerts);
+    },
+    [PERFORMANCE_THRESHOLD],
+  );
+
+  // Debounced function to prevent excessive API calls
   const debouncedFetchMetrics = useCallback(
     debounce(async () => {
       try {
@@ -70,14 +90,14 @@ const useSystemInfo = (interval: number = 2000) => {
           netRx: metricsResponse.netRx,
           netTx: metricsResponse.netTx,
         }));
-        
+
         setSystemInfo((prev) => ({
           ...prev,
           disk: metricsResponse.totalDisk
             ? formatBytes(metricsResponse.totalDisk)
             : undefined,
         }));
-        
+
         // Update historical data for disk and network
         setHistoricalData((prev) => {
           const timestamp = Date.now();
@@ -87,81 +107,44 @@ const useSystemInfo = (interval: number = 2000) => {
           ];
           const newNetworkHistory = [
             ...prev.network,
-            { timestamp, rx: metricsResponse.netRx || 0, tx: metricsResponse.netTx || 0 },
+            {
+              timestamp,
+              rx: metricsResponse.netRx || 0,
+              tx: metricsResponse.netTx || 0,
+            },
           ];
 
           // Keep only the last MAX_HISTORY_POINTS
-          while (newDiskHistory.length > MAX_HISTORY_POINTS) newDiskHistory.shift();
-          while (newNetworkHistory.length > MAX_HISTORY_POINTS) newNetworkHistory.shift();
+          while (newDiskHistory.length > MAX_HISTORY_POINTS)
+            newDiskHistory.shift();
+          while (newNetworkHistory.length > MAX_HISTORY_POINTS)
+            newNetworkHistory.shift();
 
-          return { 
-            ...prev, 
+          return {
+            ...prev,
             disk: newDiskHistory,
             network: newNetworkHistory,
           };
         });
-        
+
         // Check for performance alerts
         checkPerformanceAlerts(metricsResponse);
-        
+
         setError(null);
         retryCountRef.current = 0;
       } catch (error) {
         console.error("Error fetching disk/network data:", error);
         retryCountRef.current++;
-        
+
         if (retryCountRef.current >= maxRetries) {
-          setError(`Failed to fetch system metrics after ${maxRetries} attempts`);
+          setError(
+            `Failed to fetch system metrics after ${maxRetries} attempts`,
+          );
         }
       }
     }, 500), // Debounce by 500ms
-    []
+    [checkPerformanceAlerts],
   );
-
-  const checkPerformanceAlerts = useCallback((metricsData: any) => {
-    const alerts: string[] = [];
-    
-    if (metricsData.diskUsage > PERFORMANCE_THRESHOLD.DISK_HIGH) {
-      alerts.push(`Disk usage is critically high at ${metricsData.diskUsage.toFixed(1)}%`);
-    }
-    
-    // Add more performance checks as needed
-    setPerformanceAlerts(alerts);
-  }, []);
-
-  const fetchDiskAndNetwork = useCallback(async () => {
-    try {
-      const metricsResponse =
-        await window.electronAPI.cleaner.getDiskAndNetworkMetrics();
-
-      if (metricsResponse.error) {
-        throw new Error(metricsResponse.error);
-      } else {
-        setMetrics((prev) => ({
-          ...prev,
-          diskUsage: metricsResponse.diskUsage,
-          netRx: metricsResponse.netRx,
-          netTx: metricsResponse.netTx,
-        }));
-        setSystemInfo((prev) => ({
-          ...prev,
-          disk: metricsResponse.totalDisk
-            ? formatBytes(metricsResponse.totalDisk)
-            : undefined,
-        }));
-        
-        setError(null);
-        retryCountRef.current = 0;
-      }
-    } catch (error) {
-      console.error("Error fetching disk/network data:", error);
-      retryCountRef.current++;
-      
-      if (retryCountRef.current >= maxRetries) {
-        setError(`Failed to fetch system metrics after ${maxRetries} attempts`);
-      }
-    }
-  }, []);
 
   // Initial fetch for disk and network
   useEffect(() => {
@@ -195,7 +178,7 @@ const useSystemInfo = (interval: number = 2000) => {
     const handleSystemInfoWithRetry = async () => {
       let attempts = 0;
       const maxAttempts = 3;
-      
+
       while (attempts < maxAttempts) {
         try {
           window.electronAPI.getSystemInfo();
@@ -206,7 +189,9 @@ const useSystemInfo = (interval: number = 2000) => {
             setError("Failed to fetch system information");
             setIsLoading(false);
           } else {
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+            await new Promise((resolve) =>
+              setTimeout(resolve, 1000 * attempts),
+            );
           }
         }
       }
@@ -246,17 +231,17 @@ const useSystemInfo = (interval: number = 2000) => {
           ...newMetrics,
           usedMemory: newMetrics.usedMemory,
         }));
-        
+
         // Enhanced historical data tracking
         setHistoricalData((prev) => {
           const timestamp = Date.now();
           const newCpuHistory = [
             ...prev.cpu,
-            { timestamp, value: newMetrics.cpu },
+            { timestamp, value: newMetrics.cpu || 0 },
           ];
           const newMemHistory = [
             ...prev.mem,
-            { timestamp, value: newMetrics.mem },
+            { timestamp, value: newMetrics.mem || 0 },
           ];
 
           // Keep only the last MAX_HISTORY_POINTS
@@ -265,16 +250,16 @@ const useSystemInfo = (interval: number = 2000) => {
           while (newMemHistory.length > MAX_HISTORY_POINTS)
             newMemHistory.shift();
 
-          return { 
+          return {
             ...prev,
-            cpu: newCpuHistory, 
+            cpu: newCpuHistory,
             mem: newMemHistory,
           };
         });
-        
+
         // Log performance data for AI analysis
-        if (window.electronAPI.aiOptimization) {
-          window.electronAPI.aiOptimization.logPerformance({
+        if (window.electronAPI.logPerformance) {
+          window.electronAPI.logPerformance({
             timestamp: new Date().toISOString(),
             cpu: newMetrics.cpu,
             mem: newMetrics.mem,

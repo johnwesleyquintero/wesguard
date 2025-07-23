@@ -70,8 +70,8 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
       "Microsoft",
       "System32",
     ];
-    
-    if (systemCriticalPaths.some(path => item.value.includes(path))) {
+
+    if (systemCriticalPaths.some((path) => item.value.includes(path))) {
       return false;
     }
 
@@ -96,14 +96,14 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
       try {
         const regKey = this.getRegistryKey(keyPath);
         const items = await this.getRegistryValues(regKey, keyPath);
-        
+
         const validationPromises = items.map(async (item) => {
           if (await this.validateRegistryItem(item)) {
             return { ...item, isInvalid: true };
           }
           return null;
         });
-        
+
         const validatedItems = await Promise.all(validationPromises);
         return validatedItems.filter(Boolean) as RegistryItem[];
       } catch (error) {
@@ -113,7 +113,7 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
     });
 
     const results = await Promise.all(scanPromises);
-    results.forEach(result => issues.push(...result));
+    results.forEach((result) => issues.push(...result));
 
     return issues;
   }

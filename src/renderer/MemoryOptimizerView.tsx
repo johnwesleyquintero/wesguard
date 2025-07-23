@@ -113,7 +113,7 @@ const MemoryOptimizerView: React.FC = () => {
     // Optionally, set up an interval to log memory usage periodically
     const interval = setInterval(() => {
       if (currentUsage) {
-        window.electronAPI.aiOptimization.logPerformance({
+        window.electronAPI.logPerformance({
           timestamp: new Date().toISOString(),
           cpu: 0,
           mem: currentUsage.usedPercentage,
