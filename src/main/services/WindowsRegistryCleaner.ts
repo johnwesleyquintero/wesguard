@@ -2,6 +2,7 @@ import { app } from "electron";
 import Registry from "winreg";
 import fs from "fs-extra";
 import path from "path";
+import { promisify } from "util";
 import type {
   RegistryItem,
   RegistryBackup,
@@ -9,21 +10,12 @@ import type {
 } from "../../renderer/types";
 import { IRegistryCleaner } from "./IRegistryCleaner";
 
-interface IWinReg {
-  values(
-    callback: (
-      err: Error | null,
-      result: Array<{ name: string; type: string; value: string }>,
-    ) => void,
-  ): void;
-  remove(name: string, callback: (err: Error | null) => void): void;
-  set(
-    name: string,
-    type: string,
-    value: string,
-    callback: (err: Error | null) => void,
-  ): void;
-}
+// Promisify registry operations for better async/await support
+const promisifyRegistry = (regKey: Registry) => ({
+  values: promisify(regKey.values.bind(regKey)),
+  remove: promisify(regKey.remove.bind(regKey)),
+  set: promisify(regKey.set.bind(regKey)),
+});
 
 const SCAN_KEYS = [
   "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
@@ -32,12 +24,13 @@ const SCAN_KEYS = [
   "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run32",
   "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
   "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
-  "HKCU\\Software",
-  "HKCR\\CLSID",
+  // More specific paths to avoid scanning entire software registry
+  "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
 ];
 
 export class WindowsRegistryCleaner implements IRegistryCleaner {
-  private async getRegistryKey(keyPath: string): Promise<IWinReg> {
+  private getRegistryKey(keyPath: string): Registry {
     return new Registry({
       hive: keyPath.startsWith("HKCU") ? Registry.HKCU : Registry.HKLM,
       key: keyPath.substring(keyPath.indexOf("\\") + 1),
@@ -45,34 +38,40 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
   }
 
   private async getRegistryValues(
-    regKey: IWinReg,
+    regKey: Registry,
     keyPath: string,
   ): Promise<RegistryItem[]> {
-    return new Promise((resolve, reject) => {
-      regKey.values(
-        (
-          err: Error | null,
-          result: Array<{ name: string; type: string; value: string }>,
-        ) => {
-          if (err) reject(err);
-          else {
-            resolve(
-              result.map((item) => ({
-                name: item.name,
-                path: `${keyPath}\\${item.name}`,
-                value: item.value,
-                type: item.type as RegistryValueType,
-                isInvalid: false,
-              })),
-            );
-          }
-        },
-      );
-    });
+    try {
+      const promisified = promisifyRegistry(regKey);
+      const result = await promisified.values();
+      return result.map((item) => ({
+        name: item.name,
+        path: `${keyPath}\\${item.name}`,
+        value: item.value,
+        type: item.type as RegistryValueType,
+        isInvalid: false,
+      }));
+    } catch (error) {
+      console.error(`Failed to get registry values for ${keyPath}:`, error);
+      return [];
+    }
   }
 
   private async validateRegistryItem(item: RegistryItem): Promise<boolean> {
+    // Enhanced validation logic
     if (item.type !== "REG_SZ" && item.type !== "REG_EXPAND_SZ") {
+      return false;
+    }
+
+    // Skip system-critical entries
+    const systemCriticalPaths = [
+      "Windows Security",
+      "Windows Defender",
+      "Microsoft",
+      "System32",
+    ];
+    
+    if (systemCriticalPaths.some(path => item.value.includes(path))) {
       return false;
     }
 
@@ -93,21 +92,28 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
 
   async scanRegistry(): Promise<RegistryItem[]> {
     const issues: RegistryItem[] = [];
-
-    for (const keyPath of SCAN_KEYS) {
+    const scanPromises = SCAN_KEYS.map(async (keyPath) => {
       try {
-        const regKey = await this.getRegistryKey(keyPath);
+        const regKey = this.getRegistryKey(keyPath);
         const items = await this.getRegistryValues(regKey, keyPath);
-
-        for (const item of items) {
+        
+        const validationPromises = items.map(async (item) => {
           if (await this.validateRegistryItem(item)) {
-            issues.push({ ...item, isInvalid: true });
+            return { ...item, isInvalid: true };
           }
-        }
+          return null;
+        });
+        
+        const validatedItems = await Promise.all(validationPromises);
+        return validatedItems.filter(Boolean) as RegistryItem[];
       } catch (error) {
         console.error(`Failed to scan registry key ${keyPath}:`, error);
+        return [];
       }
-    }
+    });
+
+    const results = await Promise.all(scanPromises);
+    results.forEach(result => issues.push(...result));
 
     return issues;
   }
@@ -121,7 +127,7 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
   }
 
   async cleanRegistry(items: RegistryItem[]): Promise<void> {
-    for (const item of items) {
+    const cleanPromises = items.map(async (item) => {
       try {
         const keyPath = item.path.substring(0, item.path.lastIndexOf("\\"));
         const valueName = item.path.substring(item.path.lastIndexOf("\\") + 1);
@@ -131,21 +137,19 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
           key: keyPath.substring(keyPath.indexOf("\\") + 1),
         });
 
-        await new Promise<void>((resolve, reject) => {
-          regKey.remove(valueName, (err) => {
-            if (err) reject(err);
-            else resolve();
-          });
-        });
+        const promisified = promisifyRegistry(regKey);
+        await promisified.remove(valueName);
       } catch (error) {
         console.error(`Failed to clean registry entry ${item.path}:`, error);
         throw error;
       }
-    }
+    });
+
+    await Promise.all(cleanPromises);
   }
 
   async restoreRegistry(backup: RegistryBackup): Promise<void> {
-    for (const item of backup.items) {
+    const restorePromises = backup.items.map(async (item) => {
       try {
         const keyPath = item.path.substring(0, item.path.lastIndexOf("\\"));
         const valueName = item.path.substring(item.path.lastIndexOf("\\") + 1);
@@ -155,16 +159,14 @@ export class WindowsRegistryCleaner implements IRegistryCleaner {
           key: keyPath.substring(keyPath.indexOf("\\") + 1),
         });
 
-        await new Promise<void>((resolve, reject) => {
-          regKey.set(valueName, item.type, item.value, (err) => {
-            if (err) reject(err);
-            else resolve();
-          });
-        });
+        const promisified = promisifyRegistry(regKey);
+        await promisified.set(valueName, item.type, item.value);
       } catch (error) {
         console.error(`Failed to restore registry entry ${item.path}:`, error);
         throw error;
       }
-    }
+    });
+
+    await Promise.all(restorePromises);
   }
 }

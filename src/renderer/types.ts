@@ -122,4 +122,7 @@ export interface JunkFile {
   path: string;
   size: number;
   lastModified: number;
+  category?: "temp" | "cache" | "logs" | "downloads" | "other";
+  risk?: "safe" | "caution" | "review";
+  description?: string;
 }
