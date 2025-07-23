@@ -267,7 +267,7 @@ Please provide a helpful response.`;
             <h3 className="text-xl font-semibold">Chat</h3>
             {messages.length > 0 && (
               <Button
-                variant="danger"
+                variant="destructive"
                 onClick={clearChat}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center"
               >

@@ -1,11 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { formatBytes } from "../../../src/utils/formatters";
 import type { JunkFile } from "../types"; // Import JunkFile
 import { debounce } from "lodash-es";
 
 type Status = "idle" | "analyzing" | "analyzed" | "cleaning" | "cleaned";
 
-interface CleaningProgress {
+export interface CleaningProgress {
   current: number;
   total: number;
   currentFile: string;
@@ -40,12 +40,26 @@ const useJunkFileCleaner = () => {
     timeElapsed: number;
   } | null>(null);
 
-  // Debounced progress updates to prevent UI flooding
-  const debouncedProgressUpdate = useCallback(
+  // Use useRef to create a stable debounced function
+  const debouncedSetProgress = useRef(
     debounce((progressData: string | CleaningProgress) => {
       setProgress(progressData);
     }, 100),
-    [],
+  ).current;
+
+  // Clean up the debounced function on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSetProgress.cancel(); // lodash debounce has a cancel method
+    };
+  }, [debouncedSetProgress]);
+
+  // Update debouncedProgressUpdate to use the stable ref
+  const debouncedProgressUpdate = useCallback(
+    (progressData: string | CleaningProgress) => {
+      debouncedSetProgress(progressData);
+    },
+    [debouncedSetProgress],
   );
 
   const categorizeFiles = useCallback(

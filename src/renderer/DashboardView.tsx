@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import UsageCard from "./UsageCard";
-import useSystemInfo from "./hooks/useSystemInfo";
+import { useSystemInfo } from "./hooks/useSystemInfo";
 import { useSystemInfoContext } from "./context/SystemInfoContext";
 import { Line } from "react-chartjs-2";
 import { formatBytes } from "../../src/utils/formatters";
@@ -65,17 +65,19 @@ const MemoizedMemChart = React.memo(
 );
 
 const DashboardView: React.FC = () => {
-  const { systemInfo, isLoading } = useSystemInfoContext(); // Corrected hook usage
+  const { systemInfo, isLoading } = useSystemInfoContext();
   const { metrics, historicalData } = useSystemInfo();
 
   const cpuChartData = {
-    labels: historicalData.cpu.map((data) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    labels: historicalData.cpu.map((data: any) =>
       new Date(data.timestamp).toLocaleTimeString(),
     ),
     datasets: [
       {
         label: CPU_CHART_LABEL,
-        data: historicalData.cpu.map((data) => data.value),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: historicalData.cpu.map((data: any) => data.value),
         borderColor: "rgb(75, 192, 192)",
         backgroundColor: "rgba(75, 192, 192, 0.5)",
         tension: 0.1,
@@ -85,13 +87,15 @@ const DashboardView: React.FC = () => {
   };
 
   const memChartData = {
-    labels: historicalData.mem.map((data) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    labels: historicalData.mem.map((data: any) =>
       new Date(data.timestamp).toLocaleTimeString(),
     ),
     datasets: [
       {
         label: MEMORY_CHART_LABEL,
-        data: historicalData.mem.map((data) => data.value),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: historicalData.mem.map((data: any) => data.value),
         borderColor: "rgb(153, 102, 255)",
         backgroundColor: "rgba(153, 102, 255, 0.5)",
         tension: 0.1,

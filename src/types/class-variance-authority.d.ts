@@ -1,10 +1,13 @@
 declare module "class-variance-authority" {
   import type {
-    ClassProp,
     OmitUndefined,
     VariantProps as CVA_VariantProps,
   } from "class-variance-authority/dist/types";
-  export type VariantProps<T extends (...args: any) => any> =
+
+  // Redefine ClassProp to be more permissive for Tailwind CSS classes
+  type ClassProp = string | string[] | null | undefined;
+
+  export type VariantProps<T extends (...args: unknown[]) => unknown> =
     CVA_VariantProps<T>;
   export const cva: <T extends Record<string, Record<string, ClassProp>>>(
     base?: ClassProp,

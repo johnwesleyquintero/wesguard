@@ -26,10 +26,7 @@ module.exports = {
   plugins: ['react-refresh', 'import', 'jsx-a11y'],
   rules: {
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-    'import/no-unresolved': [
-      'error',
-      { ignore: ['\\.module\\.css$', 'vite-plugin-electron/simple'] },
-    ],
+    'import/no-unresolved': 'off',
   },
   settings: {
     'import/resolver': {

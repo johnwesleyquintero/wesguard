@@ -87,7 +87,7 @@ export const Results: React.FC<ResultsProps> = ({
                 onClick={() => handleIgnore(issue)}
                 disabled={ignored.includes(issue.path)}
                 variant="ghost"
-                size="small"
+                size="sm"
               >
                 Ignore
               </Button>
@@ -99,7 +99,7 @@ export const Results: React.FC<ResultsProps> = ({
         <Button
           onClick={handleClean}
           disabled={selected.length === 0}
-          variant="primary"
+          variant="default"
         >
           Clean Selected ({selected.length})
         </Button>

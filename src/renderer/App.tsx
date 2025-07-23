@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./Sidebar";
@@ -8,19 +8,15 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingIndicator from "./components/LoadingIndicator";
 import { ThemeProvider } from "./context/ThemeProvider";
 
-// Lazy load view components
-const DashboardView = lazy(() => import("./DashboardView"));
-const CleanerView = lazy(() => import("./CleanerView"));
-const ReminderView = lazy(() => import("./ReminderView"));
-const ChatView = lazy(() => import("./ChatView"));
-const SettingsView = lazy(() => import("./SettingsView"));
-const RegistryCleanerView = lazy(() =>
-  import("./RegistryCleanerView").then((module) => ({
-    default: module.RegistryCleanerView,
-  })),
-);
-const AIOptimizationView = lazy(() => import("./AIOptimizationView"));
-const MemoryOptimizerView = lazy(() => import("./MemoryOptimizerView"));
+// Direct imports for view components
+import DashboardView from "./DashboardView";
+import CleanerView from "./CleanerView";
+import ReminderView from "./ReminderView";
+import ChatView from "./ChatView";
+import SettingsView from "./SettingsView";
+import { RegistryCleanerView } from "./RegistryCleanerView";
+import AIOptimizationView from "./AIOptimizationView";
+import MemoryOptimizerView from "./MemoryOptimizerView";
 
 const App: React.FC = () => {
   return (

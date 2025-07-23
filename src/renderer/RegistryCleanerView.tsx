@@ -62,7 +62,7 @@ export const RegistryCleanerView: React.FC = () => {
           <Button
             onClick={() => scanRegistry()}
             disabled={scanning || restoring}
-            variant="primary"
+            variant="default"
           >
             {scanning ? "Scanning..." : "Scan Registry"}
           </Button>
@@ -133,7 +133,7 @@ export const RegistryCleanerView: React.FC = () => {
           }
           callToAction={
             !hasScanned && (
-              <Button onClick={() => scanRegistry()} variant="primary">
+              <Button onClick={() => scanRegistry()} variant="default">
                 Scan Registry
               </Button>
             )

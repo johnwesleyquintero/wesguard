@@ -27,7 +27,7 @@ const AnalysisResultsActions: React.FC<AnalysisResultsActionsProps> = ({
       <Button
         onClick={onCleanClick}
         disabled={selectedFiles.length === 0}
-        variant="primary"
+        variant="default"
         aria-label={`Clean selected files, total size ${formatBytes(selectedSize)}`}
       >
         Clean Selected ({formatBytes(selectedSize)})

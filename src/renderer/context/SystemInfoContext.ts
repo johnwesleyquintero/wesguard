@@ -1,13 +1,15 @@
 import { createContext, useContext } from "react";
-import { SystemInfo } from "../hooks/useSystemInfo";
+import { useSystemInfo } from "../hooks/useSystemInfo";
 
 // Define the type for Theme Mode
 export type ThemeMode = "light" | "dark";
 
 // Define the type for System Info Context
 interface SystemInfoContextType {
-  systemInfo: SystemInfo | null;
-  isLoading: boolean;
+  systemInfo: ReturnType<typeof useSystemInfo>["systemInfo"] | null;
+  metrics: ReturnType<typeof useSystemInfo>["metrics"];
+  historicalData: ReturnType<typeof useSystemInfo>["historicalData"];
+  isLoading: ReturnType<typeof useSystemInfo>["isLoading"];
   themeMode?: ThemeMode; // Added for theme management
   toggleTheme?: () => void; // Added for theme management
 }

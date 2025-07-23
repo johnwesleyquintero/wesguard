@@ -219,7 +219,7 @@ const ReminderCard: React.FC<ReminderCardProps> = ({
         <Button onClick={resetTimer} variant="secondary">
           Reset
         </Button>
-        <Button onClick={() => onDelete(reminder.id)} variant="danger">
+        <Button onClick={() => onDelete(reminder.id)} variant="destructive">
           Delete
         </Button>
       </div>
