@@ -1,8 +1,6 @@
 @import "tw-animate-css";
 @import "./styles/themes.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,15 +28,6 @@ input[type="checkbox"]:focus {
 }
 /* Global base styles that are not theme-managed or component-specific.
    Most styles have been moved to component CSS Modules or GlobalStyles.tsx. */
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
 
 /* Visually hide content but keep it accessible to screen readers */
 .sr-only {

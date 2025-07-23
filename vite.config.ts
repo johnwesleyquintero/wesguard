@@ -23,6 +23,12 @@ export default defineConfig({
   build: {
     rollupOptions: {
       external: ['systeminformation'],
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          vendor: ['class-variance-authority', 'clsx', 'tailwind-merge'],
+        },
+      },
     },
   },
 });

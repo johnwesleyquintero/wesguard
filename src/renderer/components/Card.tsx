@@ -1,27 +1,32 @@
 import React from "react";
+import { VariantProps } from "class-variance-authority";
+import { cardVariants } from "../../lib/variants";
+import { cn } from "../../lib/utils";
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode;
-  variant?: "default" | "flat";
-}
+export interface CardProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof cardVariants> {}
 
-export const Card: React.FC<CardProps> = ({
-  className,
-  children,
-  variant = "default",
-  ...props
-}) => {
-  const baseClasses = `rounded-lg p-4 text-card-foreground ${className || ""}`;
-  const defaultVariantClasses = "bg-card shadow-lg";
-  const flatVariantClasses = "bg-muted border border-border";
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, variant, ...props }, ref) => {
+    const {
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledby,
+      tabIndex,
+      ...rest
+    } = props;
+    return (
+      <div
+        className={cn(cardVariants({ variant, className }))}
+        ref={ref}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledby}
+        tabIndex={tabIndex}
+        {...rest}
+      />
+    );
+  },
+);
+Card.displayName = "Card";
 
-  const cardClasses = `${baseClasses} ${
-    variant === "flat" ? flatVariantClasses : defaultVariantClasses
-  }`;
-
-  return (
-    <div className={cardClasses} {...props}>
-      {children}
-    </div>
-  );
-};
+export { Card };

@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import PageContent from "../components/PageContent";
 import SidebarToggleButton from "../components/SidebarToggleButton";
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingIndicator from "./components/LoadingIndicator";
 import { ThemeProvider } from "./context/ThemeProvider";
 

@@ -19,7 +19,6 @@
     "@google/generative-ai": "^0.24.1",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-slot": "^1.2.3",
-    "@tailwindcss/postcss": "^4.1.11",
     "@types/winreg": "^1.2.33",
     "chart.js": "^4.5.0",
     "class-variance-authority": "^0.7.1",
@@ -37,6 +36,7 @@
     "winreg": "^1.2.5"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/fs-extra": "^11.0.4",

@@ -1,44 +1,26 @@
 import React from "react";
+import { VariantProps } from "class-variance-authority";
+import { buttonVariants } from "../../lib/variants";
+import { cn } from "../../lib/utils";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "danger" | "ghost";
-  size?: "small" | "medium" | "large";
-  ariaLabel?: string;
-}
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {}
 
-export const Button: React.FC<ButtonProps> = ({
-  variant = "primary",
-  size = "medium",
-  className,
-  children,
-  ariaLabel,
-  ...props
-}) => {
-  const baseClasses =
-    "border-none rounded-md text-base cursor-pointer transition-colors text-center";
-  const sizeClasses = {
-    small: "px-4 py-2 text-sm",
-    medium: "px-6 py-3 text-base",
-    large: "px-8 py-4 text-lg",
-  };
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, ...props }, ref) => {
+    const { "aria-label": ariaLabel, tabIndex, ...rest } = props;
+    return (
+      <button
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        aria-label={ariaLabel}
+        tabIndex={tabIndex}
+        {...rest}
+      />
+    );
+  },
+);
+Button.displayName = "Button";
 
-  const variantClasses = {
-    primary: "bg-primary hover:bg-primary-foreground text-primary-foreground",
-    secondary: "bg-secondary hover:bg-border text-secondary-foreground",
-    danger:
-      "bg-destructive hover:bg-[oklch(0.65_0.2_20)] text-primary-foreground",
-    ghost:
-      "bg-transparent text-muted-foreground border border-border hover:bg-muted hover:text-foreground",
-  };
-
-  const disabledClasses =
-    "disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-70";
-
-  const classes = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${disabledClasses} ${className || ""}`;
-
-  return (
-    <button className={classes} aria-label={ariaLabel} {...props}>
-      {children}
-    </button>
-  );
-};
+export { Button };
