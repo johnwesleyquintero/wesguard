@@ -16,10 +16,10 @@
  * node scripts/code-checker.mjs --json
  */
 
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import chalk from 'chalk';
-import { CHECKS } from './code-checker.config.mjs';
+import { exec } from "child_process";
+import { promisify } from "util";
+import chalk from "chalk";
+import { CHECKS } from "./code-checker.config.mjs";
 
 const execPromise = promisify(exec);
 
@@ -39,7 +39,7 @@ const EXIT_CODES = {
 // --- Core Logic ---
 function parseLinterOutput(output) {
   if (!output) return { errorsByFile: new Map(), generalOutput: [] };
-  const lines = output.split('\n');
+  const lines = output.split("\n");
   const errorsByFile = new Map();
   const generalOutput = [];
   const filePattern = /^(?<filePath>[^\s].*?):(?<line>\d+):(?<column>\d+)/;
@@ -74,24 +74,24 @@ async function runCommand(check) {
       success: true,
       stdout,
       stderr,
-      combinedOutput: [stdout, stderr].filter(Boolean).join('\n\n'),
+      combinedOutput: [stdout, stderr].filter(Boolean).join("\n\n"),
     };
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      const errorMessage = `Command not found: ${command.split(' ')[0]}. Please ensure it is installed and in your PATH.`;
+    if (error.code === "ENOENT") {
+      const errorMessage = `Command not found: ${command.split(" ")[0]}. Please ensure it is installed and in your PATH.`;
       return {
         name,
         command,
         success: false,
-        stdout: '',
+        stdout: "",
         stderr: errorMessage,
         combinedOutput: errorMessage,
         parsedOutput: parseLinterOutput(errorMessage),
       };
     }
-    const stdout = error.stdout || '';
-    const stderr = error.stderr || '';
-    const combinedOutput = [stdout, stderr].filter(Boolean).join('\n\n');
+    const stdout = error.stdout || "";
+    const stderr = error.stderr || "";
+    const combinedOutput = [stdout, stderr].filter(Boolean).join("\n\n");
     return {
       name,
       command,
@@ -108,27 +108,33 @@ async function runCommand(check) {
 function displayHumanReadableOutput(results) {
   const failedChecks = results.filter((r) => !r.success);
   const passedChecks = results.filter((r) => r.success);
-  console.log(chalk.bold('\n--- Code Quality Check Summary ---'));
+  console.log(chalk.bold("\n--- Code Quality Check Summary ---"));
 
   passedChecks.forEach((check) => {
     console.log(chalk.green(`✓ ${check.name} passed`));
     if (check.stderr && check.stderr.trim()) {
       console.log(
-        chalk.yellow(`  ⚠ Warnings:\n${chalk.dim(check.stderr.trim().replace(/^/gm, '    '))}`),
+        chalk.yellow(
+          `  ⚠ Warnings:\n${chalk.dim(check.stderr.trim().replace(/^/gm, "    "))}`,
+        ),
       );
     }
   });
 
-  failedChecks.forEach((check) => console.error(chalk.red(`✗ ${check.name} failed`)));
+  failedChecks.forEach((check) =>
+    console.error(chalk.red(`✗ ${check.name} failed`)),
+  );
 
   if (failedChecks.length > 0) {
-    console.error(chalk.bold.red('\nSome checks failed. See details below.'));
-    const prompt = `The following code quality checks failed. Your task is to provide the necessary code changes or commands to fix these issues.\n\n### Summary of Failures:\n${failedChecks.map((check) => `- **Check:** ${check.name}\n- **Command:** \`${check.command}\`\n- **Error Output:**\n\`\`\`\n${check.combinedOutput.trim()}\n\`\`\``).join('\n\n')}\n\nPlease analyze the error output for each failed check and provide a plan or code patch to resolve the problems.`;
-    console.log(chalk.bold.cyan('\n--- AI Task Prompt for Failed Checks ---\n'));
+    console.error(chalk.bold.red("\nSome checks failed. See details below."));
+    const prompt = `The following code quality checks failed. Your task is to provide the necessary code changes or commands to fix these issues.\n\n### Summary of Failures:\n${failedChecks.map((check) => `- **Check:** ${check.name}\n- **Command:** \`${check.command}\`\n- **Error Output:**\n\`\`\`\n${check.combinedOutput.trim()}\n\`\`\``).join("\n\n")}\n\nPlease analyze the error output for each failed check and provide a plan or code patch to resolve the problems.`;
+    console.log(
+      chalk.bold.cyan("\n--- AI Task Prompt for Failed Checks ---\n"),
+    );
     console.log(prompt);
-    console.log(chalk.bold.cyan('\n------------------------------------'));
+    console.log(chalk.bold.cyan("\n------------------------------------"));
   } else {
-    console.log(chalk.bold.green('\n✨ All checks passed successfully!'));
+    console.log(chalk.bold.green("\n✨ All checks passed successfully!"));
   }
 }
 
@@ -150,8 +156,9 @@ function displayJsonOutput(results) {
 
 // --- Main Orchestration ---
 async function main() {
-  const useJsonOutput = process.argv.includes('--json');
-  if (!useJsonOutput) console.log(chalk.bold('\nRunning Code Quality Checks...'));
+  const useJsonOutput = process.argv.includes("--json");
+  if (!useJsonOutput)
+    console.log(chalk.bold("\nRunning Code Quality Checks..."));
 
   try {
     const results = await Promise.all(CHECKS.map((check) => runCommand(check)));
@@ -162,7 +169,7 @@ async function main() {
 
     process.exit(allPassed ? EXIT_CODES.SUCCESS : EXIT_CODES.CHECK_FAILED);
   } catch (error) {
-    console.error(chalk.bold.red('\nAn unexpected error occurred:'), error);
+    console.error(chalk.bold.red("\nAn unexpected error occurred:"), error);
     process.exit(EXIT_CODES.UNEXPECTED_ERROR);
   }
 }

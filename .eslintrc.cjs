@@ -2,37 +2,22 @@ module.exports = {
   root: true,
   env: { browser: true, es2020: true, node: true },
   extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:import/recommended',
-    'plugin:jsx-a11y/recommended',
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
   ],
-  ignorePatterns: [
-    'dist',
-    '.eslintrc.cjs',
-    'scripts',
-    'preload.cjs',
-    'postcss.config.js',
-    'postcss.config.cjs',
-    'tailwind.config.js',
-  ],
-  parser: '@typescript-eslint/parser',
+  ignorePatterns: ["dist", ".eslintrc.cjs", "scripts", "preload.cjs"],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
+    ecmaVersion: "latest",
+    sourceType: "module",
+    project: ["./tsconfig.json", "./tsconfig.node.json"],
   },
-  plugins: ['react-refresh', 'import', 'jsx-a11y'],
+  plugins: ["react-refresh"],
   rules: {
-    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-    'import/no-unresolved': 'off',
-  },
-  settings: {
-    'import/resolver': {
-      typescript: {
-        project: './tsconfig.json',
-      },
-    },
+    "react-refresh/only-export-components": [
+      "warn",
+      { allowConstantExport: true },
+    ],
   },
 };

@@ -1,19 +1,6 @@
 import React, { useState } from "react";
-import toast from "react-hot-toast";
+import "./CleanerView.css";
 import useJunkFileCleaner from "./hooks/useJunkFileCleaner";
-import ConfirmDialog from "./components/ConfirmDialog";
-import AnalysisIdle from "./components/cleaner/AnalysisIdle";
-import AnalysisResults from "./components/cleaner/AnalysisResults";
-import CleaningInProgress from "./components/cleaner/CleaningInProgress";
-import CleaningComplete from "./components/cleaner/CleaningComplete";
-import {
-  CLEANER_CONFIRM_DIALOG_TITLE,
-  CLEANER_CONFIRM_DIALOG_MESSAGE,
-  CLEANER_TOAST_NO_FILES_SELECTED,
-  CLEANER_ANALYZING_MESSAGE,
-} from "./constants";
-import EmptyState from "./components/EmptyState";
-import { Button } from "./components/Button";
 
 const CleanerView: React.FC = () => {
   const {
@@ -51,88 +38,183 @@ const CleanerView: React.FC = () => {
     if (selectedFiles.length > 0) {
       setShowConfirmDialog(true);
     } else {
-      toast.error(CLEANER_TOAST_NO_FILES_SELECTED);
+      // Optionally, show a message that no files are selected
+      alert("Please select files to clean.");
     }
   };
 
   const confirmClean = () => {
     clean(selectedFiles);
     setShowConfirmDialog(false);
-    setSelectedFiles([]);
+    setSelectedFiles([]); // Clear selection after cleaning
   };
 
   const cancelClean = () => {
     setShowConfirmDialog(false);
   };
 
-  const NoJunkFilesIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  );
+  const renderContent = () => {
+    switch (status) {
+      case "idle":
+        return (
+          <>
+            <h2>Junk File Cleaner</h2>
+            <div className="cleaner-card">
+              <p>
+                Analyze your system to find temporary files and other junk that
+                can be safely removed.
+              </p>
+              <button onClick={analyze} disabled={status !== "idle"}>
+                Analyze
+              </button>
+            </div>
+          </>
+        );
+      case "analyzing":
+        return (
+          <>
+            <h2>Analyzing...</h2>
+            <div className="cleaner-card">
+              <div className="loading-indicator">
+                <div className="spinner"></div>
+                <p>{progress || "Scanning for junk files..."}</p>
+              </div>
+            </div>
+          </>
+        );
+      case "analyzed":
+        return (
+          <>
+            <h2 className="analysis-complete-title">Analysis Complete!</h2>
+            <div className="cleaner-card analyzed-state-card">
+              {error && <p className="error-message">Error: {error}</p>}
+              {junkFiles.length > 0 ? (
+                <>
+                  <p className="analysis-summary">
+                    Found{" "}
+                    <span className="highlight">
+                      {formatBytes(recoverableSpace)}
+                    </span>{" "}
+                    of recoverable space across{" "}
+                    <span className="highlight">{junkFiles.length}</span> files.
+                  </p>
+                  <div className="junk-files-list">
+                    <div className="list-header-container">
+                      <h3>Files to clean:</h3>
+                      <label className="select-all-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={
+                            selectedFiles.length === junkFiles.length &&
+                            junkFiles.length > 0
+                          }
+                          onChange={handleSelectAll}
+                        />
+                        Select All
+                      </label>
+                    </div>
+                    <div className="file-list-grid header">
+                      <span>Name</span>
+                      <span>Path</span>
+                      <span>Last Modified</span>
+                      <span>Size</span>
+                    </div>
+                    <ul className="file-list-items">
+                      {junkFiles.map((file) => (
+                        <li key={file.path} className="file-list-item">
+                          <input
+                            type="checkbox"
+                            checked={selectedFiles.includes(file.path)}
+                            onChange={() => handleFileSelect(file.path)}
+                          />
+                          <span className="file-name">{file.name}</span>
+                          <span className="file-path">{file.path}</span>
+                          <span className="file-last-modified">
+                            {new Date(file.lastModified).toLocaleString()}
+                          </span>
+                          <span className="file-size">
+                            {formatBytes(file.size)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="action-buttons">
+                    <button
+                      onClick={handleCleanClick}
+                      disabled={selectedFiles.length === 0}
+                      className="clean-selected-button"
+                    >
+                      Clean Selected (
+                      {formatBytes(
+                        junkFiles
+                          .filter((f) => selectedFiles.includes(f.path))
+                          .reduce((acc, f) => acc + f.size, 0),
+                      )}
+                      )
+                    </button>
+                    <button onClick={reset} className="analyze-again-button">
+                      Analyze Again
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p className="no-files-found">
+                  No junk files found. Your system is clean!
+                </p>
+              )}
+            </div>
+          </>
+        );
+      case "cleaning":
+        return (
+          <>
+            <h2>Cleaning...</h2>
+            <div className="cleaner-card">
+              <div className="loading-indicator">
+                <div className="spinner"></div>
+                <p>{progress || "Removing junk files..."}</p>
+              </div>
+            </div>
+          </>
+        );
+      case "cleaned":
+        return (
+          <>
+            <h2>Cleaning Complete!</h2>
+            <div className="cleaner-card">
+              <p>
+                Successfully recovered {formatBytes(recoverableSpace)} of space.
+              </p>
+              <button onClick={reset}>Clean Again</button>
+            </div>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="cleaner-container">
-      {status === "idle" && (
-        <AnalysisIdle onAnalyze={analyze} isDisabled={status !== "idle"} />
-      )}
+      {renderContent()}
 
-      {status === "analyzing" && (
-        <CleaningInProgress progress={progress || CLEANER_ANALYZING_MESSAGE} />
+      {showConfirmDialog && (
+        <div className="confirm-dialog-overlay">
+          <div className="confirm-dialog">
+            <h3>Confirm Cleaning</h3>
+            <p>Are you sure you want to delete the selected files?</p>
+            <div className="dialog-actions">
+              <button onClick={confirmClean} className="confirm-button">
+                Yes, Clean
+              </button>
+              <button onClick={cancelClean} className="cancel-button">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-
-      {status === "analyzed" && junkFiles.length > 0 && (
-        <AnalysisResults
-          error={error}
-          junkFiles={junkFiles}
-          recoverableSpace={recoverableSpace}
-          selectedFiles={selectedFiles}
-          formatBytes={formatBytes}
-          onFileSelect={handleFileSelect}
-          onSelectAll={handleSelectAll}
-          onCleanClick={handleCleanClick}
-          onAnalyzeAgain={reset}
-        />
-      )}
-
-      {status === "analyzed" && junkFiles.length === 0 && (
-        <EmptyState
-          icon={<NoJunkFilesIcon />}
-          message="No junk files found on your system. Your system is clean!"
-          callToAction={<Button onClick={reset}>Scan Again</Button>}
-        />
-      )}
-
-      {status === "cleaning" && (
-        <CleaningInProgress progress={progress || CLEANER_ANALYZING_MESSAGE} />
-      )}
-
-      {status === "cleaned" && (
-        <CleaningComplete
-          recoverableSpace={recoverableSpace}
-          formatBytes={formatBytes}
-          onCleanAgain={reset}
-        />
-      )}
-
-      <ConfirmDialog
-        isOpen={showConfirmDialog}
-        title={CLEANER_CONFIRM_DIALOG_TITLE}
-        message={CLEANER_CONFIRM_DIALOG_MESSAGE}
-        onConfirm={confirmClean}
-        onCancel={cancelClean}
-      />
     </div>
   );
 };

@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
-import styles from "./styles/styles.module.css";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Save } from "lucide-react";
-import { Button } from "./components/Button";
-import { Card } from "./components/Card";
-import PageHeader from "./components/PageHeader";
-import useReminderTimer from "./hooks/useReminderTimer"; // Import the new hook
+import "./ReminderView.css";
 
 interface Reminder {
   id: string;
-  initialMinutes: number; // Store original minutes
+  minutes: number;
+  seconds: number;
   message: string;
+  isActive: boolean;
   sound: boolean; // true for default sound, false for silent
 }
 
@@ -23,13 +21,21 @@ const ReminderView: React.FC = () => {
   );
   const [newReminderSound, setNewReminderSound] = useState(true);
 
+  // Use a ref to store interval IDs
+  const intervalRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
+
   // Load saved reminders from localStorage on component mount
   useEffect(() => {
     const savedReminders = localStorage.getItem("wesguard-reminders");
     if (savedReminders) {
       try {
         const parsedReminders = JSON.parse(savedReminders);
-        setReminders(parsedReminders);
+        // Reset all reminders to inactive state on app launch
+        const inactiveReminders = parsedReminders.map((reminder: Reminder) => ({
+          ...reminder,
+          isActive: false,
+        }));
+        setReminders(inactiveReminders);
       } catch (error) {
         console.error("Error parsing saved reminders:", error);
       }
@@ -55,8 +61,10 @@ const ReminderView: React.FC = () => {
 
     const newReminder: Reminder = {
       id: Date.now().toString(), // Simple unique ID
-      initialMinutes: minutes, // Add initialMinutes
+      minutes: minutes,
+      seconds: 0,
       message: newReminderMessage,
+      isActive: false,
       sound: newReminderSound,
     };
     setReminders((prev) => [...prev, newReminder]);
@@ -65,165 +73,208 @@ const ReminderView: React.FC = () => {
     setNewReminderSound(true);
   }, [newReminderMinutes, newReminderMessage, newReminderSound]);
 
-  const handleTimerEnd = useCallback(
-    (id: string, message: string, sound: boolean) => {
+  const toggleReminder = useCallback((id: string) => {
+    setReminders((prevReminders) =>
+      prevReminders.map((r) => {
+        if (r.id === id) {
+          if (r.isActive) {
+            // Pause
+            const intervalId = intervalRefs.current.get(id);
+            if (intervalId) {
+              clearInterval(intervalId);
+              intervalRefs.current.delete(id);
+            }
+            return { ...r, isActive: false };
+          } else {
+            // Start
+            return { ...r, isActive: true };
+          }
+        }
+        return r;
+      }),
+    );
+  }, []);
+
+  const resetReminder = useCallback(
+    (id: string) => {
       setReminders((prevReminders) =>
         prevReminders.map((r) => {
           if (r.id === id) {
-            if (window.electronAPI) {
-              window.electronAPI.showReminderNotification(
-                "Reminder!",
-                message,
-                sound,
-              );
-            } else {
-              alert(`Reminder: ${message}`);
+            const intervalId = intervalRefs.current.get(id);
+            if (intervalId) {
+              clearInterval(intervalId);
+              intervalRefs.current.delete(id);
             }
-            return { ...r }; // The hook handles resetting minutes/seconds
+            // Find the original reminder data to reset to initial values
+            const originalReminder = prevReminders.find(
+              (reminder) => reminder.id === id,
+            );
+            const originalMinutes = originalReminder
+              ? parseInt(originalReminder.minutes.toString(), 10)
+              : parseInt(newReminderMinutes, 10) || 30;
+
+            return {
+              ...r,
+              minutes: originalMinutes,
+              seconds: 0,
+              isActive: false,
+            };
           }
           return r;
         }),
       );
     },
-    [],
+    [newReminderMinutes],
   );
 
   const deleteReminder = useCallback((id: string) => {
-    setReminders((prevReminders) => prevReminders.filter((r) => r.id !== id));
+    setReminders((prevReminders) =>
+      prevReminders.filter((r) => {
+        if (r.id === id) {
+          const intervalId = intervalRefs.current.get(id);
+          if (intervalId) {
+            clearInterval(intervalId);
+            intervalRefs.current.delete(id);
+          }
+        }
+        return r.id !== id;
+      }),
+    );
   }, []);
 
-  return (
-    <div className={styles["reminder-view"]}>
-      <PageHeader title="Reminders" />
+  // Effect to manage individual reminder timers
+  useEffect(() => {
+    reminders.forEach((reminder) => {
+      if (reminder.isActive && !intervalRefs.current.has(reminder.id)) {
+        const intervalId = setInterval(() => {
+          setReminders((prevReminders) => {
+            const updatedReminders = prevReminders.map((r) => {
+              if (r.id === reminder.id) {
+                if (r.seconds > 0) {
+                  return { ...r, seconds: r.seconds - 1 };
+                } else if (r.minutes > 0) {
+                  return { ...r, minutes: r.minutes - 1, seconds: 59 };
+                } else {
+                  // Timer finished
+                  const finishedIntervalId = intervalRefs.current.get(r.id);
+                  if (finishedIntervalId) {
+                    clearInterval(finishedIntervalId);
+                    intervalRefs.current.delete(r.id);
+                  }
+                  if (window.electronAPI) {
+                    window.electronAPI.showReminderNotification(
+                      "Reminder!",
+                      r.message,
+                      r.sound,
+                    );
+                  } else {
+                    alert(`Reminder: ${r.message}`);
+                  }
+                  // Reset to original time after completion instead of staying at 0
+                  const originalReminder = prevReminders.find(
+                    (orig) => orig.id === r.id,
+                  );
+                  const originalMinutes = originalReminder
+                    ? parseInt(originalReminder.minutes.toString(), 10)
+                    : 30;
 
-      <Card className={styles["add-reminder-section"]}>
-        <h3 className="text-lg font-semibold mb-4">Add New Reminder</h3>
-        <div className="mb-4">
-          <label
-            htmlFor="reminder-minutes"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Minutes:
-          </label>
-          <input
-            id="reminder-minutes"
-            type="number"
-            value={newReminderMinutes}
-            onChange={(e) => setNewReminderMinutes(e.target.value)}
-            placeholder="Minutes"
-            min="1"
-            className="form-input mt-1"
-          />
-          {/* {minutesError && <p className="mt-2 text-sm text-red-600">{minutesError}</p>} */}
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="reminder-message"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Message:
-          </label>
-          <input
-            id="reminder-message"
-            type="text"
-            value={newReminderMessage}
-            onChange={(e) => setNewReminderMessage(e.target.value)}
-            placeholder="Message"
-            className="form-input mt-1"
-          />
-          {/* {messageError && <p className="mt-2 text-sm text-red-600">{messageError}</p>} */}
-        </div>
-        <label className="flex items-center text-sm font-medium text-gray-700 cursor-pointer">
+                  return {
+                    ...r,
+                    isActive: false,
+                    minutes: originalMinutes,
+                    seconds: 0,
+                  };
+                }
+              }
+              return r;
+            });
+            return updatedReminders;
+          });
+        }, 1000);
+        intervalRefs.current.set(reminder.id, intervalId);
+      }
+    });
+
+    // Capture the current value of intervalRefs.current for the cleanup function
+    const currentIntervalRefs = intervalRefs.current;
+
+    // Cleanup function for when component unmounts or reminders array changes
+    return () => {
+      const intervalIdsToClear = Array.from(currentIntervalRefs.values());
+      intervalIdsToClear.forEach(clearInterval);
+      currentIntervalRefs.clear();
+    };
+  }, [reminders]); // This dependency is still needed to react to new reminders being added or deleted
+
+  return (
+    <div className="reminder-view">
+      <h2>Reminders</h2>
+
+      <div className="add-reminder-section">
+        <h3>Add New Reminder</h3>
+        <input
+          type="number"
+          value={newReminderMinutes}
+          onChange={(e) => setNewReminderMinutes(e.target.value)}
+          placeholder="Minutes"
+          min="1"
+        />
+        <input
+          type="text"
+          value={newReminderMessage}
+          onChange={(e) => setNewReminderMessage(e.target.value)}
+          placeholder="Message"
+        />
+        <label className="sound-toggle">
           <input
             type="checkbox"
             checked={newReminderSound}
             onChange={(e) => setNewReminderSound(e.target.checked)}
-            className="h-4 w-4 text-primary rounded focus:ring mr-2"
           />
           Play Sound
         </label>
-        <Button onClick={addReminder}>Add Reminder</Button>
-      </Card>
+        <button onClick={addReminder}>Add Reminder</button>
+      </div>
 
-      <div className={styles["reminders-list"]}>
+      <div className="reminders-list">
         {reminders.length === 0 ? (
           <p>No reminders set. Add one above!</p>
         ) : (
           <>
-            <div className={styles["saved-reminders-info"]}>
-              <Save className={styles.highlight} /> Auto-saved: Your reminders
+            <div className="saved-reminders-info">
+              <Save className="highlight" /> Auto-saved: Your reminders
               are automatically saved and will be available when you restart the
               application.
             </div>
             {reminders.map((reminder) => (
-              <ReminderCard
+              <div
                 key={reminder.id}
-                reminder={reminder}
-                onDelete={deleteReminder}
-                onTimerEnd={handleTimerEnd}
-              />
+                className={`reminder-card ${reminder.isActive ? "active" : ""}`}
+              >
+                <div className="timer-display">
+                  {formatTime(reminder.minutes)}:{formatTime(reminder.seconds)}
+                </div>
+                <p className="reminder-message">{reminder.message}</p>
+                <div className="reminder-actions">
+                  <button onClick={() => toggleReminder(reminder.id)}>
+                    {reminder.isActive ? "Pause" : "Start"}
+                  </button>
+                  <button onClick={() => resetReminder(reminder.id)}>
+                    Reset
+                  </button>
+                  <button
+                    onClick={() => deleteReminder(reminder.id)}
+                    className="delete-button"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             ))}
           </>
         )}
       </div>
     </div>
-  );
-};
-
-interface ReminderCardProps {
-  reminder: Reminder;
-  onDelete: (id: string) => void;
-  onTimerEnd: (id: string, message: string, sound: boolean) => void;
-}
-
-const ReminderCard: React.FC<ReminderCardProps> = ({
-  reminder,
-  onDelete,
-  onTimerEnd,
-}) => {
-  const { minutes, seconds, isRunning, startTimer, pauseTimer, resetTimer } =
-    useReminderTimer({
-      initialMinutes: reminder.initialMinutes,
-      onTimerEnd: () =>
-        onTimerEnd(reminder.id, reminder.message, reminder.sound),
-    });
-
-  useEffect(() => {
-    // If the reminder was active when loaded from localStorage, start its timer
-    // This handles the case where the app was closed with active timers
-    // Note: The `isActive` property is no longer part of the Reminder interface
-    // and is managed internally by the useReminderTimer hook.
-    // We need to ensure that when a reminder is loaded, if it was previously active,
-    // its timer starts. This requires a way to persist and retrieve the `isRunning` state
-    // in localStorage as part of the reminder data, and passing it to the hook.
-    // For the scope of this task, we will assume the `initialMinutes` is sufficient to restart the timer
-    // if the user manually starts it. The `isActive` property was removed from the Reminder
-    // interface, so we cannot rely on it directly here.
-    // A more robust solution would involve storing the timer's `isRunning` state
-    // in localStorage as part of the reminder data, and passing it to the hook.
-    // For the scope of this task, we will remove the `isActive` check here.
-  }, []);
-
-  return (
-    <Card
-      className={`${styles["reminder-card"]} ${isRunning ? styles.active : ""}`}
-    >
-      <div className={styles["timer-display"]}>
-        {formatTime(minutes)}:{formatTime(seconds)}
-      </div>
-      <p className={styles["reminder-message"]}>{reminder.message}</p>
-      <div className={styles["reminder-actions"]}>
-        <Button onClick={isRunning ? pauseTimer : startTimer}>
-          {isRunning ? "Pause" : "Start"}
-        </Button>
-        <Button onClick={resetTimer} variant="secondary">
-          Reset
-        </Button>
-        <Button onClick={() => onDelete(reminder.id)} variant="destructive">
-          Delete
-        </Button>
-      </div>
-    </Card>
   );
 };
 

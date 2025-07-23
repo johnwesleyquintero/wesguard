@@ -1,0 +1,274 @@
+.reminder-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  color: #e0e0e0; /* Text Primary */
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.reminder-view h2 {
+  color: #ffffff; /* White for headings */
+  margin-bottom: 25px;
+  font-size: 2em;
+}
+
+.add-reminder-section {
+  background-color: #20203a; /* Secondary Background */
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px; /* Max width for add section */
+  box-sizing: border-box;
+}
+
+.add-reminder-section h3 {
+  color: #ffffff; /* White for section headings */
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.3em;
+}
+
+.add-reminder-section input[type="number"],
+.add-reminder-section input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #3a3a5a; /* Border/Divider */
+  border-radius: 8px;
+  background-color: #2c2c4a; /* Tertiary Background */
+  color: #e0e0e0; /* Text Primary */
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.add-reminder-section input::placeholder {
+  color: #b0b0b0; /* Text Secondary */
+}
+
+.add-reminder-section input:focus {
+  outline: none;
+  border-color: #6a5acd; /* Highlight/Accent Color on focus */
+  box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.5);
+}
+
+.add-reminder-section button {
+  background-color: #6a5acd; /* Highlight/Accent Color */
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 200px; /* Limit button width */
+}
+
+.add-reminder-section button:hover {
+  background-color: #5a4a9d; /* Hover/Active Accent */
+}
+
+.sound-toggle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #e0e0e0; /* Text Primary */
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.sound-toggle input[type="checkbox"] {
+  margin-right: 10px;
+  accent-color: #6a5acd; /* Highlight/Accent Color */
+  width: 18px;
+  height: 18px;
+}
+
+.reminders-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 900px; /* Max width for reminders list */
+}
+
+.saved-reminders-info {
+  background-color: #2c2c4a;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #b0b0b0;
+  font-size: 0.9em;
+  border-left: 4px solid #6a5acd;
+}
+
+.saved-reminders-info .highlight {
+  color: #6a5acd;
+  font-weight: bold;
+}
+
+.reminder-card {
+  background-color: #20203a; /* Secondary Background */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: border 0.3s ease;
+}
+
+.reminder-card.active {
+  border: 2px solid #6a5acd; /* Highlight/Accent Color */
+}
+
+.timer-display {
+  font-size: 3.5em; /* Slightly larger timer */
+  font-weight: bold;
+  color: #6a5acd; /* Highlight/Accent Color */
+  margin-bottom: 10px;
+}
+
+.reminder-message {
+  font-size: 1.1em;
+  color: #e0e0e0; /* Text Primary */
+  margin-bottom: 20px;
+}
+
+.reminder-actions button {
+  background-color: #6a5acd; /* Highlight/Accent Color */
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0 5px;
+}
+
+.reminder-actions button:hover {
+  background-color: #5a4a9d; /* Hover/Active Accent */
+}
+
+.reminder-actions .delete-button {
+  background-color: #ff6b6b; /* Error/Warning Color */
+}
+
+.reminder-actions .delete-button:hover {
+  background-color: #e05252;
+}
+
+.reminder-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.reminder-actions button {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.reminder-actions button:hover {
+  background-color: #6366f1;
+}
+
+.reminder-actions .delete-button {
+  background-color: #dc2626; /* Red for delete */
+}
+
+.reminder-actions .delete-button:hover {
+  background-color: #ef4444;
+}
+
+.controls input[type="number"],
+.controls input[type="text"] {
+  background-color: #1f2937; /* bg-gray-800 */
+  border: 1px solid #374151; /* border-gray-700 */
+  color: #f9fafb; /* text-gray-50 */
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  width: 150px;
+  box-sizing: border-box;
+}
+
+.controls input[type="number"]:focus,
+.controls input[type="text"]:focus {
+  outline: none;
+  border-color: #4f46e5; /* indigo-600 */
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.5); /* indigo-600 with opacity */
+}
+
+.controls button {
+  background-color: #4f46e5; /* bg-indigo-600 */
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.controls button:hover {
+  background-color: #6366f1; /* bg-indigo-500 */
+}
+
+.controls button:active {
+  background-color: #4338ca; /* bg-indigo-700 */
+}
+
+/* Notification styles (if still needed for fallback, though Electron's native notifications are preferred) */
+/* .notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4f46e5;
+  color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1000;
+}
+
+.notification p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.notification button {
+  background-color: transparent;
+  color: #ffffff;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
+.notification button:hover {
+  color: #e5e7eb;
+} */

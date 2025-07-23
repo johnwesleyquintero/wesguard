@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Send, MessageSquare, Trash2, KeyRound } from "lucide-react";
-
-import { Button } from "./components/Button";
-import { Card } from "./components/Card";
-import PageHeader from "./components/PageHeader";
-import ValidatedInput from "./components/ValidatedInput";
-import LoadingIndicator from "./components/LoadingIndicator";
-import EmptyState from "./components/EmptyState";
-import useApiKey from "./hooks/useApiKey";
+import { Send, MessageSquare, Trash2 } from "lucide-react";
+import "./ChatView.css";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface ChatMessage {
   id: string;
@@ -17,27 +11,22 @@ interface ChatMessage {
 }
 
 const ChatView: React.FC = () => {
-  const {
-    apiKey,
-    setApiKey,
-    isApiKeySet,
-    apiKeyStatus,
-    apiKeyError,
-    handleApiKeySubmit,
-    genAI,
-  } = useApiKey();
+  const [apiKey, setApiKey] = useState("");
+  const [isApiKeySet, setIsApiKeySet] = useState(false);
   const [customInstructions, setCustomInstructions] = useState(
     "You are WesGuardAI, a helpful assistant integrated into the WesGuard PC optimization tool. Help users with their daily tasks, answer questions, and provide assistance with productivity and system optimization.",
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [customInstructionsError, setCustomInstructionsError] = useState<
-    string | null
-  >(null);
+  const [apiKeyStatus, setApiKeyStatus] = useState<"" | "connected" | "error">(
+    "",
+  );
+  const [apiKeyError, setApiKeyError] = useState<string | null>(null);
   const [isApiConfigCollapsed, setIsApiConfigCollapsed] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const genAI = useRef<GoogleGenerativeAI | null>(null);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -46,10 +35,18 @@ const ChatView: React.FC = () => {
 
   // Load saved data from localStorage on component mount
   useEffect(() => {
+    const savedApiKey = localStorage.getItem("wesguard-gemini-api-key");
     const savedInstructions = localStorage.getItem(
       "wesguard-custom-instructions",
     );
     const savedMessages = localStorage.getItem("wesguard-chat-messages");
+
+    if (savedApiKey) {
+      setApiKey(savedApiKey);
+      setIsApiKeySet(true);
+      setApiKeyStatus("connected");
+      genAI.current = new GoogleGenerativeAI(savedApiKey);
+    }
 
     if (savedInstructions) {
       setCustomInstructions(savedInstructions);
@@ -82,9 +79,28 @@ const ChatView: React.FC = () => {
     }
   }, [messages]);
 
-  // Add welcome message when API key is set
-  useEffect(() => {
-    if (isApiKeySet && messages.length === 0) {
+  const handleApiKeySubmit = async () => {
+    if (!apiKey.trim()) {
+      setApiKeyStatus("error");
+      return;
+    }
+    setApiKeyError(null);
+
+    try {
+      // Test the API key by making a simple request
+      const testAI = new GoogleGenerativeAI(apiKey.trim());
+      const model = testAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      // Make a test request
+      await model.generateContent("Hello");
+
+      // If successful, save the API key
+      genAI.current = testAI;
+      setIsApiKeySet(true);
+      setApiKeyStatus("connected");
+      localStorage.setItem("wesguard-gemini-api-key", apiKey.trim());
+
+      // Add welcome message
       const welcomeMessage: ChatMessage = {
         id: Date.now().toString(),
         type: "system",
@@ -92,25 +108,20 @@ const ChatView: React.FC = () => {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, welcomeMessage]);
-    }
-  }, [isApiKeySet, messages.length]);
-
-  const handleCustomInstructionsChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ): void => {
-    const value = e.target.value;
-    setCustomInstructions(value);
-    localStorage.setItem("wesguard-custom-instructions", value);
-    if (value.trim().length < 10) {
-      setCustomInstructionsError(
-        "Custom instructions should be at least 10 characters long.",
-      );
-    } else {
-      setCustomInstructionsError(null);
+    } catch (error) {
+      console.error("API key validation failed:", error);
+      setApiKeyError((error as Error).message);
+      setApiKeyStatus("error");
+      setIsApiKeySet(false);
     }
   };
 
-  const sendMessage = async (): Promise<void> => {
+  const handleCustomInstructionsChange = (value: string) => {
+    setCustomInstructions(value);
+    localStorage.setItem("wesguard-custom-instructions", value);
+  };
+
+  const sendMessage = async () => {
     if (!inputMessage.trim() || !genAI.current || isLoading) return;
 
     const userMessage: ChatMessage = {
@@ -165,148 +176,116 @@ Please provide a helpful response.`;
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent): void => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      void sendMessage();
+      sendMessage();
     }
   };
 
-  const clearChat = (): void => {
+  const clearChat = () => {
     setMessages([]);
     localStorage.removeItem("wesguard-chat-messages");
   };
 
-  const formatTime = (date: Date): string => {
+  const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
     <div className="chat-view">
-      <PageHeader title="WesGuardAI Chat" />
+      <h2>WesGuardAI Chat</h2>
 
       <div className="chat-container">
         {/* API Key Setup Section */}
-        <Card className="api-setup-section">
+        <div className="api-setup-section">
           <div className="api-setup-header">
             <h3>Gemini API Configuration</h3>
-            <Button
-              variant="ghost"
+            <button
+              className="collapse-button"
               onClick={() => setIsApiConfigCollapsed(!isApiConfigCollapsed)}
             >
               {isApiConfigCollapsed ? "Show" : "Hide"}
-            </Button>
+            </button>
           </div>
           {!isApiConfigCollapsed && (
             <>
-              <ValidatedInput
-                id="api-key"
-                label="Gemini API Key:"
-                type="password"
-                placeholder="Enter your Gemini API Key"
-                value={apiKey}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setApiKey(e.target.value)
-                }
-                disabled={isApiKeySet}
-                error={apiKeyError}
-              />
-              <Button
-                onClick={handleApiKeySubmit}
-                disabled={isApiKeySet}
-                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                {isApiKeySet ? "Connected" : "Connect"}
-              </Button>
+              <div className="api-key-input-group">
+                <input
+                  type="password"
+                  className="api-key-input"
+                  placeholder="Enter your Gemini API Key"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  disabled={isApiKeySet}
+                />
+                <button
+                  className="api-key-button"
+                  onClick={handleApiKeySubmit}
+                  disabled={isApiKeySet}
+                >
+                  {isApiKeySet ? "Connected" : "Connect"}
+                </button>
+              </div>
 
-              {apiKeyStatus === "connected" && (
-                <div className="mt-2 text-sm text-green-600 flex items-center">
-                  <KeyRound size={16} className="mr-1" /> API Key connected
-                  successfully!
-                </div>
-              )}
-              {apiKeyStatus === "error" && (
-                <div className="mt-2 text-sm text-red-600">
-                  <EmptyState
-                    icon={<KeyRound size={48} />}
-                    message={
-                      apiKeyError ||
-                      "Invalid API Key or connection failed. Please check your key and try again."
-                    }
-                    callToAction={
-                      <Button onClick={() => setIsApiConfigCollapsed(false)}>
-                        Configure API Key
-                      </Button>
-                    }
-                  />
+              {apiKeyStatus && (
+                <div className={`api-key-status ${apiKeyStatus}`}>
+                  {apiKeyStatus === "connected" &&
+                    "✓ API Key connected successfully"}
+                  {apiKeyStatus === "error" &&
+                    "✗ Invalid API Key or connection failed"}
+                  {apiKeyError && (
+                    <div className="api-key-error-details">{apiKeyError}</div>
+                  )}
                 </div>
               )}
 
               {/* Custom Instructions Section */}
-              <h4 className="text-lg font-semibold mb-2">
-                Custom Instructions
-              </h4>
-              <ValidatedInput
-                id="custom-instructions"
-                isTextArea
-                placeholder="Customize how WesGuardAI should behave and respond..."
-                value={customInstructions}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  handleCustomInstructionsChange(e)
-                }
-                rows={5}
-                error={customInstructionsError}
-              />
+              <div className="custom-instructions-section">
+                <h4>Custom Instructions</h4>
+                <textarea
+                  className="custom-instructions-textarea"
+                  placeholder="Customize how WesGuardAI should behave and respond..."
+                  value={customInstructions}
+                  onChange={(e) =>
+                    handleCustomInstructionsChange(e.target.value)
+                  }
+                />
+              </div>
             </>
           )}
-        </Card>
+        </div>
 
         {/* Chat Messages Container */}
-        <Card className="chat-messages-container p-4">
-          <div className="chat-header flex justify-between items-center mb-4">
-            <h3 className="text-xl font-semibold">Chat</h3>
+        <div className="chat-messages-container">
+          <div className="chat-header">
+            <h3>Chat</h3>
             {messages.length > 0 && (
-              <Button
-                variant="destructive"
-                onClick={clearChat}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center"
-              >
-                <Trash2 size={16} className="mr-2" />
+              <button className="clear-chat-button" onClick={clearChat}>
+                <Trash2 size={16} />
                 Clear Chat
-              </Button>
+              </button>
             )}
           </div>
 
-          <div className="chat-messages space-y-4">
-            {!isApiKeySet && apiKeyStatus !== "error" ? (
-              <EmptyState
-                icon={<KeyRound size={48} />}
-                message="Please connect your Gemini API key to start chatting with WesGuardAI."
-                callToAction={
-                  <Button onClick={() => setIsApiConfigCollapsed(false)}>
-                    Configure API Key
-                  </Button>
-                }
-              />
-            ) : messages.length === 0 && isApiKeySet ? (
-              <EmptyState
-                icon={<MessageSquare size={48} />}
-                message="Welcome to WesGuardAI! Start a conversation with your AI assistant."
-                callToAction={null}
-              />
+          <div className="chat-messages">
+            {messages.length === 0 ? (
+              <div className="chat-empty-state">
+                <MessageSquare size={48} />
+                <h3>Welcome to WesGuardAI</h3>
+                <p>
+                  Start a conversation with your AI assistant. I can help you
+                  with daily tasks, answer questions, and provide assistance
+                  with productivity and system optimization.
+                </p>
+              </div>
             ) : (
               messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`chat-message ${
-                    message.type === "user"
-                      ? "user-message"
-                      : message.type === "ai"
-                        ? "ai-message"
-                        : "system-message"
-                  }`}
+                  className={`chat-message ${message.type}`}
                 >
-                  <div className="message-content">{message.content}</div>
+                  <div>{message.content}</div>
                   <div className="message-timestamp">
                     {formatTime(message.timestamp)}
                   </div>
@@ -315,38 +294,43 @@ Please provide a helpful response.`;
             )}
 
             {isLoading && (
-              <LoadingIndicator message="WesGuardAI is typing..." />
+              <div className="typing-indicator">
+                <span>WesGuardAI is typing</span>
+                <div className="typing-dots">
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                </div>
+              </div>
             )}
 
             <div ref={messagesEndRef} />
           </div>
-        </Card>
+        </div>
 
         {/* Chat Input */}
-        <div className="chat-input-container flex items-center p-4 border-t border-gray-200 bg-white">
+        <div className="chat-input-container">
           <textarea
-            className="form-input flex-grow mr-4 resize-none"
+            className="chat-input"
             placeholder={
               isApiKeySet
                 ? "Type your message here... (Press Enter to send, Shift+Enter for new line)"
                 : "Please connect your Gemini API key first"
             }
             value={inputMessage}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setInputMessage(e.target.value)
-            }
+            onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={!isApiKeySet || isLoading}
             rows={1}
           />
-          <Button
+          <button
+            className="send-button"
             onClick={sendMessage}
             disabled={!isApiKeySet || !inputMessage.trim() || isLoading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
           >
-            <Send size={18} className="mr-2" />
+            <Send size={18} />
             Send
-          </Button>
+          </button>
         </div>
       </div>
     </div>

@@ -1,12 +1,9 @@
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { app, ipcMain, BrowserWindow, Notification } from "electron";
-import path$g from "path";
+import { app, ipcMain, BrowserWindow } from "electron";
+import require$$1$2 from "path";
 import require$$0$1 from "os";
 import require$$1$1 from "fs";
 import require$$1 from "child_process";
-import require$$4, { promisify as promisify$1 } from "util";
+import require$$4 from "util";
 import require$$5 from "https";
 import require$$6 from "http";
 import require$$0$2 from "net";
@@ -15,7 +12,6 @@ import process$1 from "node:process";
 import require$$0$3 from "constants";
 import require$$0$4 from "stream";
 import require$$5$1 from "assert";
-import { performance } from "perf_hooks";
 var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x) {
   return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
@@ -25,14 +21,14 @@ const version = "5.27.7";
 const require$$0 = {
   version
 };
-var util$l = {};
+var util$k = {};
 const os$8 = require$$0$1;
 const fs$t = require$$1$1;
-const path$f = path$g;
-const spawn$1 = require$$1.spawn;
+const path$e = require$$1$2;
+const spawn = require$$1.spawn;
 const exec$g = require$$1.exec;
 const execSync$b = require$$1.execSync;
-const util$k = require$$4;
+const util$j = require$$4;
 let _platform$h = process.platform;
 const _linux$g = _platform$h === "linux" || _platform$h === "android";
 const _darwin$g = _platform$h === "darwin";
@@ -105,14 +101,14 @@ function unique(obj) {
   let uniques = [];
   let stringify2 = {};
   for (let i = 0; i < obj.length; i++) {
-    let keys2 = Object.keys(obj[i]);
-    keys2.sort(function(a, b) {
+    let keys = Object.keys(obj[i]);
+    keys.sort(function(a, b) {
       return a - b;
     });
     let str = "";
-    for (let j = 0; j < keys2.length; j++) {
-      str += JSON.stringify(keys2[j]);
-      str += JSON.stringify(obj[i][keys2[j]]);
+    for (let j = 0; j < keys.length; j++) {
+      str += JSON.stringify(keys[j]);
+      str += JSON.stringify(obj[i][keys[j]]);
     }
     if (!{}.hasOwnProperty.call(stringify2, str)) {
       uniques.push(obj[i]);
@@ -121,11 +117,11 @@ function unique(obj) {
   }
   return uniques;
 }
-function sortByKey(array, keys2) {
+function sortByKey(array, keys) {
   return array.sort(function(a, b) {
     let x = "";
     let y = "";
-    keys2.forEach(function(key) {
+    keys.forEach(function(key) {
       x = x + a[key];
       y = y + b[key];
     });
@@ -379,20 +375,20 @@ function powerShellProceedResults(data) {
     parts = data.split(_psCmdSeperator);
     res = parts[0];
   }
-  let remove3 = -1;
+  let remove2 = -1;
   for (let i = 0; i < _psCmds.length; i++) {
     if (_psCmds[i].id === id) {
-      remove3 = i;
+      remove2 = i;
       _psCmds[i].callback(res);
     }
   }
-  if (remove3 >= 0) {
-    _psCmds.splice(remove3, 1);
+  if (remove2 >= 0) {
+    _psCmds.splice(remove2, 1);
   }
 }
 function powerShellStart() {
   if (!_psChild) {
-    _psChild = spawn$1(_powerShell, ["-NoProfile", "-NoLogo", "-InputFormat", "Text", "-NoExit", "-Command", "-"], {
+    _psChild = spawn(_powerShell, ["-NoProfile", "-NoLogo", "-InputFormat", "Text", "-NoExit", "-Command", "-"], {
       stdio: "pipe",
       windowsHide: true,
       maxBuffer: 1024 * 2e4,
@@ -464,7 +460,7 @@ function powerShell(cmd) {
     return new Promise((resolve) => {
       process.nextTick(() => {
         try {
-          const child = spawn$1(_powerShell, ["-NoProfile", "-NoLogo", "-InputFormat", "Text", "-NoExit", "-ExecutionPolicy", "Unrestricted", "-Command", "-"], {
+          const child = spawn(_powerShell, ["-NoProfile", "-NoLogo", "-InputFormat", "Text", "-NoExit", "-ExecutionPolicy", "Unrestricted", "-Command", "-"], {
             stdio: "pipe",
             windowsHide: true,
             maxBuffer: 1024 * 2e4,
@@ -516,7 +512,7 @@ function execSafe(cmd, args, options) {
   return new Promise((resolve) => {
     process.nextTick(() => {
       try {
-        const child = spawn$1(cmd, args, options);
+        const child = spawn(cmd, args, options);
         if (child && !child.pid) {
           child.on("error", function() {
             resolve(result2);
@@ -596,7 +592,7 @@ function smartMonToolsInstalled() {
       const pathArray = execSync$b("which smartctl 2>/dev/null", execOptsLinux).toString().split("\r\n");
       _smartMonToolsInstalled = pathArray.length > 0;
     } catch (e) {
-      util$k.noop();
+      util$j.noop();
     }
   }
   return _smartMonToolsInstalled;
@@ -770,7 +766,7 @@ function hex2bin(hex) {
 function getFilesInPath(source) {
   const lstatSync = fs$t.lstatSync;
   const readdirSync = fs$t.readdirSync;
-  const join = path$f.join;
+  const join = path$e.join;
   function isDirectory(source2) {
     return lstatSync(source2).isDirectory();
   }
@@ -2506,67 +2502,67 @@ function cleanString(str) {
 }
 function noop$1() {
 }
-util$l.toInt = toInt;
-util$l.splitByNumber = splitByNumber;
-util$l.execOptsWin = execOptsWin;
-util$l.execOptsLinux = execOptsLinux;
-util$l.getCodepage = getCodepage;
-util$l.execWin = execWin;
-util$l.isFunction = isFunction;
-util$l.unique = unique;
-util$l.sortByKey = sortByKey;
-util$l.cores = cores;
-util$l.getValue = getValue;
-util$l.decodeEscapeSequence = decodeEscapeSequence;
-util$l.parseDateTime = parseDateTime;
-util$l.parseHead = parseHead;
-util$l.findObjectByKey = findObjectByKey;
-util$l.getWmic = getWmic;
-util$l.wmic = wmic;
-util$l.darwinXcodeExists = darwinXcodeExists;
-util$l.getVboxmanage = getVboxmanage;
-util$l.powerShell = powerShell;
-util$l.powerShellStart = powerShellStart;
-util$l.powerShellRelease = powerShellRelease;
-util$l.execSafe = execSafe;
-util$l.nanoSeconds = nanoSeconds;
-util$l.countUniqueLines = countUniqueLines;
-util$l.countLines = countLines;
-util$l.noop = noop$1;
-util$l.isRaspberry = isRaspberry;
-util$l.isRaspbian = isRaspbian;
-util$l.sanitizeShellString = sanitizeShellString;
-util$l.isPrototypePolluted = isPrototypePolluted;
-util$l.decodePiCpuinfo = decodePiCpuinfo;
-util$l.getRpiGpu = getRpiGpu;
-util$l.promiseAll = promiseAll;
-util$l.promisify = promisify;
-util$l.promisifySave = promisifySave;
-util$l.smartMonToolsInstalled = smartMonToolsInstalled;
-util$l.linuxVersion = linuxVersion;
-util$l.plistParser = plistParser;
-util$l.plistReader = plistReader;
-util$l.stringObj = stringObj;
-util$l.stringReplace = stringReplace;
-util$l.stringToLower = stringToLower;
-util$l.stringToString = stringToString;
-util$l.stringSubstr = stringSubstr;
-util$l.stringSubstring = stringSubstring;
-util$l.stringTrim = stringTrim;
-util$l.stringStartWith = stringStartWith;
-util$l.mathMin = mathMin;
-util$l.WINDIR = WINDIR;
-util$l.getFilesInPath = getFilesInPath;
-util$l.semverCompare = semverCompare;
-util$l.getAppleModel = getAppleModel;
-util$l.checkWebsite = checkWebsite;
-util$l.cleanString = cleanString;
-util$l.getPowershell = getPowershell;
+util$k.toInt = toInt;
+util$k.splitByNumber = splitByNumber;
+util$k.execOptsWin = execOptsWin;
+util$k.execOptsLinux = execOptsLinux;
+util$k.getCodepage = getCodepage;
+util$k.execWin = execWin;
+util$k.isFunction = isFunction;
+util$k.unique = unique;
+util$k.sortByKey = sortByKey;
+util$k.cores = cores;
+util$k.getValue = getValue;
+util$k.decodeEscapeSequence = decodeEscapeSequence;
+util$k.parseDateTime = parseDateTime;
+util$k.parseHead = parseHead;
+util$k.findObjectByKey = findObjectByKey;
+util$k.getWmic = getWmic;
+util$k.wmic = wmic;
+util$k.darwinXcodeExists = darwinXcodeExists;
+util$k.getVboxmanage = getVboxmanage;
+util$k.powerShell = powerShell;
+util$k.powerShellStart = powerShellStart;
+util$k.powerShellRelease = powerShellRelease;
+util$k.execSafe = execSafe;
+util$k.nanoSeconds = nanoSeconds;
+util$k.countUniqueLines = countUniqueLines;
+util$k.countLines = countLines;
+util$k.noop = noop$1;
+util$k.isRaspberry = isRaspberry;
+util$k.isRaspbian = isRaspbian;
+util$k.sanitizeShellString = sanitizeShellString;
+util$k.isPrototypePolluted = isPrototypePolluted;
+util$k.decodePiCpuinfo = decodePiCpuinfo;
+util$k.getRpiGpu = getRpiGpu;
+util$k.promiseAll = promiseAll;
+util$k.promisify = promisify;
+util$k.promisifySave = promisifySave;
+util$k.smartMonToolsInstalled = smartMonToolsInstalled;
+util$k.linuxVersion = linuxVersion;
+util$k.plistParser = plistParser;
+util$k.plistReader = plistReader;
+util$k.stringObj = stringObj;
+util$k.stringReplace = stringReplace;
+util$k.stringToLower = stringToLower;
+util$k.stringToString = stringToString;
+util$k.stringSubstr = stringSubstr;
+util$k.stringSubstring = stringSubstring;
+util$k.stringTrim = stringTrim;
+util$k.stringStartWith = stringStartWith;
+util$k.mathMin = mathMin;
+util$k.WINDIR = WINDIR;
+util$k.getFilesInPath = getFilesInPath;
+util$k.semverCompare = semverCompare;
+util$k.getAppleModel = getAppleModel;
+util$k.checkWebsite = checkWebsite;
+util$k.cleanString = cleanString;
+util$k.getPowershell = getPowershell;
 var system$1 = {};
 var osinfo = {};
 const os$7 = require$$0$1;
 const fs$s = require$$1$1;
-const util$j = util$l;
+const util$i = util$k;
 const exec$f = require$$1.exec;
 const execSync$a = require$$1.execSync;
 let _platform$g = process.platform;
@@ -2593,7 +2589,7 @@ function time() {
   };
   if (_darwin$f || _linux$f) {
     try {
-      const stdout = execSync$a("date +%Z && date +%z && ls -l /etc/localtime 2>/dev/null", util$j.execOptsLinux);
+      const stdout = execSync$a("date +%Z && date +%z && ls -l /etc/localtime 2>/dev/null", util$i.execOptsLinux);
       const lines = stdout.toString().split(os$7.EOL);
       if (lines.length > 3 && !lines[0]) {
         lines.shift();
@@ -2609,7 +2605,7 @@ function time() {
         timezoneName: lines[2] && lines[2].indexOf("/zoneinfo/") > 0 ? lines[2].split("/zoneinfo/")[1] || "" : ""
       };
     } catch (e) {
-      util$j.noop();
+      util$i.noop();
     }
   }
   return result2;
@@ -2704,10 +2700,10 @@ function getFQDN() {
   let fqdn = os$7.hostname;
   if (_linux$f || _darwin$f) {
     try {
-      const stdout = execSync$a("hostname -f 2>/dev/null", util$j.execOptsLinux);
+      const stdout = execSync$a("hostname -f 2>/dev/null", util$i.execOptsLinux);
       fqdn = stdout.toString().split(os$7.EOL)[0];
     } catch (e) {
-      util$j.noop();
+      util$i.noop();
     }
   }
   if (_freebsd$e || _openbsd$e || _netbsd$e) {
@@ -2715,15 +2711,15 @@ function getFQDN() {
       const stdout = execSync$a("hostname 2>/dev/null");
       fqdn = stdout.toString().split(os$7.EOL)[0];
     } catch (e) {
-      util$j.noop();
+      util$i.noop();
     }
   }
   if (_windows$g) {
     try {
-      const stdout = execSync$a("echo %COMPUTERNAME%.%USERDNSDOMAIN%", util$j.execOptsWin);
+      const stdout = execSync$a("echo %COMPUTERNAME%.%USERDNSDOMAIN%", util$i.execOptsWin);
       fqdn = stdout.toString().replace(".%USERDNSDOMAIN%", "").split(os$7.EOL)[0];
     } catch (e) {
-      util$j.noop();
+      util$i.noop();
     }
   }
   return fqdn;
@@ -2770,7 +2766,7 @@ function osInfo(callback) {
           }
           result2.release = (releaseVersion || release.DISTRIB_RELEASE || release.VERSION_ID || "unknown").replace(/"/g, "");
           result2.codename = codename;
-          result2.codepage = util$j.getCodepage();
+          result2.codepage = util$i.getCodepage();
           result2.build = (release.BUILD_ID || "").replace(/"/g, "").trim();
           isUefiLinux().then((uefi) => {
             result2.uefi = uefi;
@@ -2787,11 +2783,11 @@ function osInfo(callback) {
       if (_freebsd$e || _openbsd$e || _netbsd$e) {
         exec$f("sysctl kern.ostype kern.osrelease kern.osrevision kern.hostuuid machdep.bootmethod kern.geom.confxml", function(error, stdout) {
           let lines = stdout.toString().split("\n");
-          const distro = util$j.getValue(lines, "kern.ostype");
+          const distro = util$i.getValue(lines, "kern.ostype");
           const logofile = getLogoFile(distro);
-          const release = util$j.getValue(lines, "kern.osrelease").split("-")[0];
-          const serial = util$j.getValue(lines, "kern.uuid");
-          const bootmethod = util$j.getValue(lines, "machdep.bootmethod");
+          const release = util$i.getValue(lines, "kern.osrelease").split("-")[0];
+          const serial = util$i.getValue(lines, "kern.uuid");
+          const bootmethod = util$i.getValue(lines, "machdep.bootmethod");
           const uefiConf = stdout.toString().indexOf("<type>efi</type>") >= 0;
           const uefi = bootmethod ? bootmethod.toLowerCase().indexOf("uefi") >= 0 : uefiConf ? uefiConf : null;
           result2.distro = distro || result2.distro;
@@ -2799,7 +2795,7 @@ function osInfo(callback) {
           result2.release = release || result2.release;
           result2.serial = serial || result2.serial;
           result2.codename = "";
-          result2.codepage = util$j.getCodepage();
+          result2.codepage = util$i.getCodepage();
           result2.uefi = uefi || null;
           if (callback) {
             callback(result2);
@@ -2810,10 +2806,10 @@ function osInfo(callback) {
       if (_darwin$f) {
         exec$f("sw_vers; sysctl kern.ostype kern.osrelease kern.osrevision kern.uuid", function(error, stdout) {
           let lines = stdout.toString().split("\n");
-          result2.serial = util$j.getValue(lines, "kern.uuid");
-          result2.distro = util$j.getValue(lines, "ProductName");
-          result2.release = (util$j.getValue(lines, "ProductVersion", ":", true, true) + " " + util$j.getValue(lines, "ProductVersionExtra", ":", true, true)).trim();
-          result2.build = util$j.getValue(lines, "BuildVersion");
+          result2.serial = util$i.getValue(lines, "kern.uuid");
+          result2.distro = util$i.getValue(lines, "ProductName");
+          result2.release = (util$i.getValue(lines, "ProductVersion", ":", true, true) + " " + util$i.getValue(lines, "ProductVersionExtra", ":", true, true)).trim();
+          result2.build = util$i.getValue(lines, "BuildVersion");
           result2.logofile = getLogoFile(result2.distro);
           result2.codename = "macOS";
           result2.codename = result2.release.indexOf("10.4") > -1 ? "OS X Tiger" : result2.codename;
@@ -2836,7 +2832,7 @@ function osInfo(callback) {
           result2.codename = result2.release.startsWith("16.") ? "Tahoe" : result2.codename;
           result2.codename = result2.release.startsWith("26.") ? "Tahoe" : result2.codename;
           result2.uefi = true;
-          result2.codepage = util$j.getCodepage();
+          result2.codepage = util$i.getCodepage();
           if (callback) {
             callback(result2);
           }
@@ -2860,18 +2856,18 @@ function osInfo(callback) {
         result2.release = result2.kernel;
         try {
           const workload = [];
-          workload.push(util$j.powerShell("Get-CimInstance Win32_OperatingSystem | select Caption,SerialNumber,BuildNumber,ServicePackMajorVersion,ServicePackMinorVersion | fl"));
-          workload.push(util$j.powerShell("(Get-CimInstance Win32_ComputerSystem).HypervisorPresent"));
-          workload.push(util$j.powerShell("Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SystemInformation]::TerminalServerSession"));
-          util$j.promiseAll(
+          workload.push(util$i.powerShell("Get-CimInstance Win32_OperatingSystem | select Caption,SerialNumber,BuildNumber,ServicePackMajorVersion,ServicePackMinorVersion | fl"));
+          workload.push(util$i.powerShell("(Get-CimInstance Win32_ComputerSystem).HypervisorPresent"));
+          workload.push(util$i.powerShell("Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SystemInformation]::TerminalServerSession"));
+          util$i.promiseAll(
             workload
           ).then((data) => {
             let lines = data.results[0] ? data.results[0].toString().split("\r\n") : [""];
-            result2.distro = util$j.getValue(lines, "Caption", ":").trim();
-            result2.serial = util$j.getValue(lines, "SerialNumber", ":").trim();
-            result2.build = util$j.getValue(lines, "BuildNumber", ":").trim();
-            result2.servicepack = util$j.getValue(lines, "ServicePackMajorVersion", ":").trim() + "." + util$j.getValue(lines, "ServicePackMinorVersion", ":").trim();
-            result2.codepage = util$j.getCodepage();
+            result2.distro = util$i.getValue(lines, "Caption", ":").trim();
+            result2.serial = util$i.getValue(lines, "SerialNumber", ":").trim();
+            result2.build = util$i.getValue(lines, "BuildNumber", ":").trim();
+            result2.servicepack = util$i.getValue(lines, "ServicePackMajorVersion", ":").trim() + "." + util$i.getValue(lines, "ServicePackMinorVersion", ":").trim();
+            result2.codepage = util$i.getCodepage();
             const hyperv = data.results[1] ? data.results[1].toString().toLowerCase() : "";
             result2.hypervisor = hyperv.indexOf("true") !== -1;
             const term = data.results[2] ? data.results[2].toString() : "";
@@ -2918,12 +2914,12 @@ function isUefiWindows() {
   return new Promise((resolve) => {
     process.nextTick(() => {
       try {
-        exec$f('findstr /C:"Detected boot environment" "%windir%\\Panther\\setupact.log"', util$j.execOptsWin, function(error, stdout) {
+        exec$f('findstr /C:"Detected boot environment" "%windir%\\Panther\\setupact.log"', util$i.execOptsWin, function(error, stdout) {
           if (!error) {
             const line = stdout.toString().split("\n\r")[0];
             return resolve(line.toLowerCase().indexOf("efi") >= 0);
           } else {
-            exec$f("echo %firmware_type%", util$j.execOptsWin, function(error2, stdout2) {
+            exec$f("echo %firmware_type%", util$i.execOptsWin, function(error2, stdout2) {
               if (!error2) {
                 const line = stdout2.toString() || "";
                 return resolve(line.toLowerCase().indexOf("efi") >= 0);
@@ -3018,7 +3014,7 @@ function versions(apps, callback) {
   }
   return new Promise((resolve) => {
     process.nextTick(() => {
-      if (util$j.isFunction(apps) && !callback) {
+      if (util$i.isFunction(apps) && !callback) {
         callback = apps;
         apps = "*";
       } else {
@@ -3139,7 +3135,7 @@ function versions(apps, callback) {
         if ({}.hasOwnProperty.call(appsObj.versions, "git")) {
           if (_darwin$f) {
             const gitHomebrewExists = fs$s.existsSync("/usr/local/Cellar/git") || fs$s.existsSync("/opt/homebrew/bin/git");
-            if (util$j.darwinXcodeExists() || gitHomebrewExists) {
+            if (util$i.darwinXcodeExists() || gitHomebrewExists) {
               exec$f("git --version", function(error, stdout) {
                 if (!error) {
                   let git = stdout.toString().split("\n")[0] || "";
@@ -3217,7 +3213,7 @@ function versions(apps, callback) {
             if (!error) {
               const redis = stdout.toString().split("\n")[0] || "";
               const parts = redis.split(" ");
-              appsObj.versions.redis = util$j.getValue(parts, "v", "=", true);
+              appsObj.versions.redis = util$i.getValue(parts, "v", "=", true);
             }
             functionProcessed();
           });
@@ -3236,7 +3232,7 @@ function versions(apps, callback) {
           exec$f("postconf -d | grep mail_version", function(error, stdout) {
             if (!error) {
               const postfix = stdout.toString().split("\n") || [];
-              appsObj.versions.postfix = util$j.getValue(postfix, "mail_version", "=", true);
+              appsObj.versions.postfix = util$i.getValue(postfix, "mail_version", "=", true);
             }
             functionProcessed();
           });
@@ -3279,12 +3275,12 @@ function versions(apps, callback) {
             });
           } else {
             if (_windows$g) {
-              util$j.powerShell("Get-CimInstance Win32_Service | select caption | fl").then((stdout) => {
+              util$i.powerShell("Get-CimInstance Win32_Service | select caption | fl").then((stdout) => {
                 let serviceSections = stdout.split(/\n\s*\n/);
                 serviceSections.forEach((item) => {
                   if (item.trim() !== "") {
                     let lines = item.trim().split("\r\n");
-                    let srvCaption = util$j.getValue(lines, "caption", ":", true).toLowerCase();
+                    let srvCaption = util$i.getValue(lines, "caption", ":", true).toLowerCase();
                     if (srvCaption.indexOf("postgresql") > -1) {
                       const parts = srvCaption.split(" server ");
                       if (parts.length > 1) {
@@ -3332,10 +3328,10 @@ function versions(apps, callback) {
             try {
               const stdout = execSync$a("sw_vers");
               const lines = stdout.toString().split("\n");
-              const osVersion = util$j.getValue(lines, "ProductVersion", ":");
+              const osVersion = util$i.getValue(lines, "ProductVersion", ":");
               const gitHomebrewExists1 = fs$s.existsSync("/usr/local/Cellar/python");
               const gitHomebrewExists2 = fs$s.existsSync("/opt/homebrew/bin/python");
-              if (util$j.darwinXcodeExists() && util$j.semverCompare("12.0.1", osVersion) < 0 || gitHomebrewExists1 || gitHomebrewExists2) {
+              if (util$i.darwinXcodeExists() && util$i.semverCompare("12.0.1", osVersion) < 0 || gitHomebrewExists1 || gitHomebrewExists2) {
                 const cmd2 = gitHomebrewExists1 ? "/usr/local/Cellar/python -V 2>&1" : gitHomebrewExists2 ? "/opt/homebrew/bin/python -V 2>&1" : "python -V 2>&1";
                 exec$f(cmd2, function(error, stdout2) {
                   if (!error) {
@@ -3363,7 +3359,7 @@ function versions(apps, callback) {
         if ({}.hasOwnProperty.call(appsObj.versions, "python3")) {
           if (_darwin$f) {
             const gitHomebrewExists = fs$s.existsSync("/usr/local/Cellar/python3") || fs$s.existsSync("/opt/homebrew/bin/python3");
-            if (util$j.darwinXcodeExists() || gitHomebrewExists) {
+            if (util$i.darwinXcodeExists() || gitHomebrewExists) {
               exec$f("python3 -V 2>&1", function(error, stdout) {
                 if (!error) {
                   const python = stdout.toString().split("\n")[0] || "";
@@ -3387,7 +3383,7 @@ function versions(apps, callback) {
         if ({}.hasOwnProperty.call(appsObj.versions, "pip")) {
           if (_darwin$f) {
             const gitHomebrewExists = fs$s.existsSync("/usr/local/Cellar/pip") || fs$s.existsSync("/opt/homebrew/bin/pip");
-            if (util$j.darwinXcodeExists() || gitHomebrewExists) {
+            if (util$i.darwinXcodeExists() || gitHomebrewExists) {
               exec$f("pip -V 2>&1", function(error, stdout) {
                 if (!error) {
                   const pip = stdout.toString().split("\n")[0] || "";
@@ -3413,7 +3409,7 @@ function versions(apps, callback) {
         if ({}.hasOwnProperty.call(appsObj.versions, "pip3")) {
           if (_darwin$f) {
             const gitHomebrewExists = fs$s.existsSync("/usr/local/Cellar/pip3") || fs$s.existsSync("/opt/homebrew/bin/pip3");
-            if (util$j.darwinXcodeExists() || gitHomebrewExists) {
+            if (util$i.darwinXcodeExists() || gitHomebrewExists) {
               exec$f("pip3 -V 2>&1", function(error, stdout) {
                 if (!error) {
                   const pip = stdout.toString().split("\n")[0] || "";
@@ -3464,7 +3460,7 @@ function versions(apps, callback) {
           }
         }
         if ({}.hasOwnProperty.call(appsObj.versions, "gcc")) {
-          if (_darwin$f && util$j.darwinXcodeExists() || !_darwin$f) {
+          if (_darwin$f && util$i.darwinXcodeExists() || !_darwin$f) {
             exec$f("gcc -dumpversion", function(error, stdout) {
               if (!error) {
                 appsObj.versions.gcc = stdout.toString().split("\n")[0].trim() || "";
@@ -3489,7 +3485,7 @@ function versions(apps, callback) {
           }
         }
         if ({}.hasOwnProperty.call(appsObj.versions, "virtualbox")) {
-          exec$f(util$j.getVboxmanage() + " -v 2>&1", function(error, stdout) {
+          exec$f(util$i.getVboxmanage() + " -v 2>&1", function(error, stdout) {
             if (!error) {
               const vbox = stdout.toString().split("\n")[0] || "";
               const parts = vbox.split("r");
@@ -3569,9 +3565,9 @@ function versions(apps, callback) {
         }
         if ({}.hasOwnProperty.call(appsObj.versions, "powershell")) {
           if (_windows$g) {
-            util$j.powerShell("$PSVersionTable").then((stdout) => {
+            util$i.powerShell("$PSVersionTable").then((stdout) => {
               const lines = stdout.toString().toLowerCase().split("\n").map((line) => line.replace(/ +/g, " ").replace(/ +/g, ":"));
-              appsObj.versions.powershell = util$j.getValue(lines, "psversion");
+              appsObj.versions.powershell = util$i.getValue(lines, "psversion");
               functionProcessed();
             });
           } else {
@@ -3580,7 +3576,7 @@ function versions(apps, callback) {
         }
         if ({}.hasOwnProperty.call(appsObj.versions, "dotnet")) {
           if (_windows$g) {
-            util$j.powerShell('gci "HKLM:\\SOFTWARE\\Microsoft\\NET Framework Setup\\NDP" -recurse | gp -name Version,Release -EA 0 | where { $_.PSChildName -match "^(?!S)\\p{L}"} | select PSChildName, Version, Release').then((stdout) => {
+            util$i.powerShell('gci "HKLM:\\SOFTWARE\\Microsoft\\NET Framework Setup\\NDP" -recurse | gp -name Version,Release -EA 0 | where { $_.PSChildName -match "^(?!S)\\p{L}"} | select PSChildName, Version, Release').then((stdout) => {
               const lines = stdout.toString().split("\r\n");
               let dotnet = "";
               lines.forEach((line) => {
@@ -3611,7 +3607,7 @@ function shell(callback) {
       if (_windows$g) {
         try {
           const result2 = "CMD";
-          util$j.powerShell(`Get-CimInstance -className win32_process | where-object {$_.ProcessId -eq ${process.ppid} } | select Name`).then((stdout) => {
+          util$i.powerShell(`Get-CimInstance -className win32_process | where-object {$_.ProcessId -eq ${process.ppid} } | select Name`).then((stdout) => {
             let result3 = "CMD";
             if (stdout) {
               if (stdout.toString().toLowerCase().indexOf("powershell") >= 0) {
@@ -3695,7 +3691,7 @@ function uuid$1(callback) {
                 result2.hardware = spHardware.serial_number;
               }
             } catch (e) {
-              util$j.noop();
+              util$i.noop();
             }
           }
           if (callback) {
@@ -3710,11 +3706,11 @@ cat /etc/machine-id 2> /dev/null; echo;
 echo -n "hardware: "; cat /sys/class/dmi/id/product_uuid 2> /dev/null; echo;`;
         exec$f(cmd, function(error, stdout) {
           const lines = stdout.toString().split("\n");
-          result2.os = util$j.getValue(lines, "os").toLowerCase();
-          result2.hardware = util$j.getValue(lines, "hardware").toLowerCase();
+          result2.os = util$i.getValue(lines, "os").toLowerCase();
+          result2.hardware = util$i.getValue(lines, "hardware").toLowerCase();
           if (!result2.hardware) {
             const lines2 = fs$s.readFileSync("/proc/cpuinfo", { encoding: "utf8" }).toString().split("\n");
-            const serial = util$j.getValue(lines2, "serial");
+            const serial = util$i.getValue(lines2, "serial");
             result2.hardware = serial || "";
           }
           if (callback) {
@@ -3726,8 +3722,8 @@ echo -n "hardware: "; cat /sys/class/dmi/id/product_uuid 2> /dev/null; echo;`;
       if (_freebsd$e || _openbsd$e || _netbsd$e) {
         exec$f("sysctl -i kern.hostid kern.hostuuid", function(error, stdout) {
           const lines = stdout.toString().split("\n");
-          result2.hardware = util$j.getValue(lines, "kern.hostid", ":").toLowerCase();
-          result2.os = util$j.getValue(lines, "kern.hostuuid", ":").toLowerCase();
+          result2.hardware = util$i.getValue(lines, "kern.hostid", ":").toLowerCase();
+          result2.os = util$i.getValue(lines, "kern.hostuuid", ":").toLowerCase();
           if (result2.os.indexOf("unknown") >= 0) {
             result2.os = "";
           }
@@ -3745,10 +3741,10 @@ echo -n "hardware: "; cat /sys/class/dmi/id/product_uuid 2> /dev/null; echo;`;
         if (process.arch === "ia32" && Object.prototype.hasOwnProperty.call(process.env, "PROCESSOR_ARCHITEW6432")) {
           sysdir = "%windir%\\sysnative\\cmd.exe /c %windir%\\System32";
         }
-        util$j.powerShell("Get-CimInstance Win32_ComputerSystemProduct | select UUID | fl").then((stdout) => {
+        util$i.powerShell("Get-CimInstance Win32_ComputerSystemProduct | select UUID | fl").then((stdout) => {
           let lines = stdout.split("\r\n");
-          result2.hardware = util$j.getValue(lines, "uuid", ":").toLowerCase();
-          exec$f(`${sysdir}\\reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography" /v MachineGuid`, util$j.execOptsWin, function(error, stdout2) {
+          result2.hardware = util$i.getValue(lines, "uuid", ":").toLowerCase();
+          exec$f(`${sysdir}\\reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography" /v MachineGuid`, util$i.execOptsWin, function(error, stdout2) {
             parts = stdout2.toString().split("\n\r")[0].split("REG_SZ");
             result2.os = parts.length > 1 ? parts[1].replace(/\r+|\n+|\s+/ig, "").toLowerCase() : "";
             if (callback) {
@@ -3764,11 +3760,11 @@ echo -n "hardware: "; cat /sys/class/dmi/id/product_uuid 2> /dev/null; echo;`;
 osinfo.uuid = uuid$1;
 const fs$r = require$$1$1;
 const os$6 = require$$0$1;
-const util$i = util$l;
+const util$h = util$k;
 const { uuid } = osinfo;
 const exec$e = require$$1.exec;
 const execSync$9 = require$$1.execSync;
-const execPromise = util$i.promisify(require$$1.exec);
+const execPromise = util$h.promisify(require$$1.exec);
 let _platform$f = process.platform;
 const _linux$e = _platform$f === "linux" || _platform$f === "android";
 const _darwin$e = _platform$f === "darwin";
@@ -3792,26 +3788,26 @@ function system(callback) {
       if (_linux$e || _freebsd$d || _openbsd$d || _netbsd$d) {
         exec$e("export LC_ALL=C; dmidecode -t system 2>/dev/null; unset LC_ALL", function(error, stdout) {
           let lines = stdout.toString().split("\n");
-          result2.manufacturer = cleanDefaults(util$i.getValue(lines, "manufacturer"));
-          result2.model = cleanDefaults(util$i.getValue(lines, "product name"));
-          result2.version = cleanDefaults(util$i.getValue(lines, "version"));
-          result2.serial = cleanDefaults(util$i.getValue(lines, "serial number"));
-          result2.uuid = cleanDefaults(util$i.getValue(lines, "uuid")).toLowerCase();
-          result2.sku = cleanDefaults(util$i.getValue(lines, "sku number"));
+          result2.manufacturer = cleanDefaults(util$h.getValue(lines, "manufacturer"));
+          result2.model = cleanDefaults(util$h.getValue(lines, "product name"));
+          result2.version = cleanDefaults(util$h.getValue(lines, "version"));
+          result2.serial = cleanDefaults(util$h.getValue(lines, "serial number"));
+          result2.uuid = cleanDefaults(util$h.getValue(lines, "uuid")).toLowerCase();
+          result2.sku = cleanDefaults(util$h.getValue(lines, "sku number"));
           const cmd = `echo -n "product_name: "; cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null; echo;
             echo -n "product_serial: "; cat /sys/devices/virtual/dmi/id/product_serial 2>/dev/null; echo;
             echo -n "product_uuid: "; cat /sys/devices/virtual/dmi/id/product_uuid 2>/dev/null; echo;
             echo -n "product_version: "; cat /sys/devices/virtual/dmi/id/product_version 2>/dev/null; echo;
             echo -n "sys_vendor: "; cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null; echo;`;
           try {
-            lines = execSync$9(cmd, util$i.execOptsLinux).toString().split("\n");
-            result2.manufacturer = cleanDefaults(result2.manufacturer === "" ? util$i.getValue(lines, "sys_vendor") : result2.manufacturer);
-            result2.model = cleanDefaults(result2.model === "" ? util$i.getValue(lines, "product_name") : result2.model);
-            result2.version = cleanDefaults(result2.version === "" ? util$i.getValue(lines, "product_version") : result2.version);
-            result2.serial = cleanDefaults(result2.serial === "" ? util$i.getValue(lines, "product_serial") : result2.serial);
-            result2.uuid = cleanDefaults(result2.uuid === "" ? util$i.getValue(lines, "product_uuid").toLowerCase() : result2.uuid);
+            lines = execSync$9(cmd, util$h.execOptsLinux).toString().split("\n");
+            result2.manufacturer = cleanDefaults(result2.manufacturer === "" ? util$h.getValue(lines, "sys_vendor") : result2.manufacturer);
+            result2.model = cleanDefaults(result2.model === "" ? util$h.getValue(lines, "product_name") : result2.model);
+            result2.version = cleanDefaults(result2.version === "" ? util$h.getValue(lines, "product_version") : result2.version);
+            result2.serial = cleanDefaults(result2.serial === "" ? util$h.getValue(lines, "product_serial") : result2.serial);
+            result2.uuid = cleanDefaults(result2.uuid === "" ? util$h.getValue(lines, "product_uuid").toLowerCase() : result2.uuid);
           } catch (e) {
-            util$i.noop();
+            util$h.noop();
           }
           if (!result2.serial) {
             result2.serial = "-";
@@ -3858,7 +3854,7 @@ function system(callback) {
           }
           if (!result2.virtual) {
             try {
-              const disksById = execSync$9("ls -1 /dev/disk/by-id/ 2>/dev/null; pciconf -lv  2>/dev/null", util$i.execOptsLinux).toString();
+              const disksById = execSync$9("ls -1 /dev/disk/by-id/ 2>/dev/null; pciconf -lv  2>/dev/null", util$h.execOptsLinux).toString();
               if (disksById.indexOf("_QEMU_") >= 0 || disksById.indexOf("QEMU ") >= 0) {
                 result2.virtual = true;
                 result2.virtualHost = "QEMU";
@@ -3868,23 +3864,23 @@ function system(callback) {
                 result2.virtualHost = "VirtualBox";
               }
             } catch (e) {
-              util$i.noop();
+              util$h.noop();
             }
           }
           if (_freebsd$d || _openbsd$d || _netbsd$d) {
             try {
-              const lines2 = execSync$9("sysctl -i kern.hostuuid kern.hostid hw.model", util$i.execOptsLinux).toString().split("\n");
+              const lines2 = execSync$9("sysctl -i kern.hostuuid kern.hostid hw.model", util$h.execOptsLinux).toString().split("\n");
               if (!result2.uuid) {
-                result2.uuid = util$i.getValue(lines2, "kern.hostuuid", ":").toLowerCase();
+                result2.uuid = util$h.getValue(lines2, "kern.hostuuid", ":").toLowerCase();
               }
               if (!result2.serial || result2.serial === "-") {
-                result2.serial = util$i.getValue(lines2, "kern.hostid", ":").toLowerCase();
+                result2.serial = util$h.getValue(lines2, "kern.hostid", ":").toLowerCase();
               }
               if (!result2.model || result2.model === "Computer") {
-                result2.model = util$i.getValue(lines2, "hw.model", ":").trim();
+                result2.model = util$h.getValue(lines2, "hw.model", ":").trim();
               }
             } catch (e) {
-              util$i.noop();
+              util$h.noop();
             }
           }
           if (!result2.virtual && (os$6.release().toLowerCase().indexOf("microsoft") >= 0 || os$6.release().toLowerCase().endsWith("wsl2"))) {
@@ -3896,9 +3892,9 @@ function system(callback) {
           }
           if ((_freebsd$d || _openbsd$d || _netbsd$d) && !result2.virtualHost) {
             try {
-              const procInfo = execSync$9("dmidecode -t 4", util$i.execOptsLinux);
+              const procInfo = execSync$9("dmidecode -t 4", util$h.execOptsLinux);
               const procLines = procInfo.toString().split("\n");
-              const procManufacturer = util$i.getValue(procLines, "manufacturer", ":", true);
+              const procManufacturer = util$h.getValue(procLines, "manufacturer", ":", true);
               switch (procManufacturer.toLowerCase()) {
                 case "virtualbox":
                   result2.virtualHost = "VirtualBox";
@@ -3914,7 +3910,7 @@ function system(callback) {
                   break;
               }
             } catch (e) {
-              util$i.noop();
+              util$h.noop();
             }
           }
           if (fs$r.existsSync("/.dockerenv") || fs$r.existsSync("/.dockerinit")) {
@@ -3942,18 +3938,18 @@ function system(callback) {
               }
             }
           } catch (e) {
-            util$i.noop();
+            util$h.noop();
           }
           if (result2.manufacturer === "" && result2.model === "Computer" && result2.version === "") {
             fs$r.readFile("/proc/cpuinfo", function(error2, stdout2) {
               if (!error2) {
                 let lines2 = stdout2.toString().split("\n");
-                result2.model = util$i.getValue(lines2, "hardware", ":", true).toUpperCase();
-                result2.version = util$i.getValue(lines2, "revision", ":", true).toLowerCase();
-                result2.serial = util$i.getValue(lines2, "serial", ":", true);
-                util$i.getValue(lines2, "model:", ":", true);
-                if (util$i.isRaspberry(lines2)) {
-                  const rPIRevision = util$i.decodePiCpuinfo(lines2);
+                result2.model = util$h.getValue(lines2, "hardware", ":", true).toUpperCase();
+                result2.version = util$h.getValue(lines2, "revision", ":", true).toLowerCase();
+                result2.serial = util$h.getValue(lines2, "serial", ":", true);
+                util$h.getValue(lines2, "model:", ":", true);
+                if (util$h.isRaspberry(lines2)) {
+                  const rPIRevision = util$h.decodePiCpuinfo(lines2);
                   result2.model = rPIRevision.model;
                   result2.version = rPIRevision.revisionCode;
                   result2.manufacturer = "Raspberry Pi Foundation";
@@ -3982,14 +3978,14 @@ function system(callback) {
         exec$e("ioreg -c IOPlatformExpertDevice -d 2", function(error, stdout) {
           if (!error) {
             let lines = stdout.toString().replace(/[<>"]/g, "").split("\n");
-            const model = util$i.getAppleModel(util$i.getValue(lines, "model", "=", true));
-            result2.manufacturer = util$i.getValue(lines, "manufacturer", "=", true);
+            const model = util$h.getAppleModel(util$h.getValue(lines, "model", "=", true));
+            result2.manufacturer = util$h.getValue(lines, "manufacturer", "=", true);
             result2.model = model.key;
             result2.type = macOsChassisType(model.version);
             result2.version = model.version;
-            result2.serial = util$i.getValue(lines, "ioplatformserialnumber", "=", true);
-            result2.uuid = util$i.getValue(lines, "ioplatformuuid", "=", true).toLowerCase();
-            result2.sku = util$i.getValue(lines, "board-id", "=", true) || util$i.getValue(lines, "target-sub-type", "=", true);
+            result2.serial = util$h.getValue(lines, "ioplatformserialnumber", "=", true);
+            result2.uuid = util$h.getValue(lines, "ioplatformuuid", "=", true).toLowerCase();
+            result2.sku = util$h.getValue(lines, "board-id", "=", true) || util$h.getValue(lines, "target-sub-type", "=", true);
           }
           if (callback) {
             callback(result2);
@@ -4005,14 +4001,14 @@ function system(callback) {
       }
       if (_windows$f) {
         try {
-          util$i.powerShell("Get-CimInstance Win32_ComputerSystemProduct | select Name,Vendor,Version,IdentifyingNumber,UUID | fl").then((stdout, error) => {
+          util$h.powerShell("Get-CimInstance Win32_ComputerSystemProduct | select Name,Vendor,Version,IdentifyingNumber,UUID | fl").then((stdout, error) => {
             if (!error) {
               let lines = stdout.split("\r\n");
-              result2.manufacturer = util$i.getValue(lines, "vendor", ":");
-              result2.model = util$i.getValue(lines, "name", ":");
-              result2.version = util$i.getValue(lines, "version", ":");
-              result2.serial = util$i.getValue(lines, "identifyingnumber", ":");
-              result2.uuid = util$i.getValue(lines, "uuid", ":").toLowerCase();
+              result2.manufacturer = util$h.getValue(lines, "vendor", ":");
+              result2.model = util$h.getValue(lines, "name", ":");
+              result2.version = util$h.getValue(lines, "version", ":");
+              result2.serial = util$h.getValue(lines, "identifyingnumber", ":");
+              result2.uuid = util$h.getValue(lines, "uuid", ":").toLowerCase();
               const model = result2.model.toLowerCase();
               if (model === "virtualbox" || model === "kvm" || model === "virtual machine" || model === "bochs" || model.startsWith("vmware") || model.startsWith("qemu") || model.startsWith("parallels")) {
                 result2.virtual = true;
@@ -4051,13 +4047,13 @@ function system(callback) {
                   result2.virtualHost = "Parallels";
                 }
               }
-              util$i.powerShell('Get-CimInstance MS_Systeminformation -Namespace "root/wmi" | select systemsku | fl ').then((stdout2, error2) => {
+              util$h.powerShell('Get-CimInstance MS_Systeminformation -Namespace "root/wmi" | select systemsku | fl ').then((stdout2, error2) => {
                 if (!error2) {
                   let lines2 = stdout2.split("\r\n");
-                  result2.sku = util$i.getValue(lines2, "systemsku", ":");
+                  result2.sku = util$h.getValue(lines2, "systemsku", ":");
                 }
                 if (!result2.virtual) {
-                  util$i.powerShell("Get-CimInstance Win32_bios | select Version, SerialNumber, SMBIOSBIOSVersion").then((stdout3, error3) => {
+                  util$h.powerShell("Get-CimInstance Win32_bios | select Version, SerialNumber, SMBIOSBIOSVersion").then((stdout3, error3) => {
                     if (!error3) {
                       let lines2 = stdout3.toString();
                       if (lines2.indexOf("VRTUAL") >= 0 || lines2.indexOf("A M I ") >= 0 || lines2.indexOf("VirtualBox") >= 0 || lines2.indexOf("VMWare") >= 0 || lines2.indexOf("Xen") >= 0 || lines2.indexOf("Parallels") >= 0) {
@@ -4142,13 +4138,13 @@ function bios(callback) {
         }
         exec$e(cmd, function(error, stdout) {
           let lines = stdout.toString().split("\n");
-          result2.vendor = util$i.getValue(lines, "Vendor");
-          result2.version = util$i.getValue(lines, "Version");
-          let datetime = util$i.getValue(lines, "Release Date");
-          result2.releaseDate = util$i.parseDateTime(datetime).date;
-          result2.revision = util$i.getValue(lines, "BIOS Revision");
-          result2.serial = util$i.getValue(lines, "SerialNumber");
-          let language = util$i.getValue(lines, "Currently Installed Language").split("|")[0];
+          result2.vendor = util$h.getValue(lines, "Vendor");
+          result2.version = util$h.getValue(lines, "Version");
+          let datetime = util$h.getValue(lines, "Release Date");
+          result2.releaseDate = util$h.parseDateTime(datetime).date;
+          result2.revision = util$h.getValue(lines, "BIOS Revision");
+          result2.serial = util$h.getValue(lines, "SerialNumber");
+          let language = util$h.getValue(lines, "Currently Installed Language").split("|")[0];
           if (language) {
             result2.language = language;
           }
@@ -4166,13 +4162,13 @@ function bios(callback) {
             echo -n "bios_vendor: "; cat /sys/devices/virtual/dmi/id/bios_vendor 2>/dev/null; echo;
             echo -n "bios_version: "; cat /sys/devices/virtual/dmi/id/bios_version 2>/dev/null; echo;`;
           try {
-            lines = execSync$9(cmd2, util$i.execOptsLinux).toString().split("\n");
-            result2.vendor = !result2.vendor ? util$i.getValue(lines, "bios_vendor") : result2.vendor;
-            result2.version = !result2.version ? util$i.getValue(lines, "bios_version") : result2.version;
-            datetime = util$i.getValue(lines, "bios_date");
-            result2.releaseDate = !result2.releaseDate ? util$i.parseDateTime(datetime).date : result2.releaseDate;
+            lines = execSync$9(cmd2, util$h.execOptsLinux).toString().split("\n");
+            result2.vendor = !result2.vendor ? util$h.getValue(lines, "bios_vendor") : result2.vendor;
+            result2.version = !result2.version ? util$h.getValue(lines, "bios_version") : result2.version;
+            datetime = util$h.getValue(lines, "bios_date");
+            result2.releaseDate = !result2.releaseDate ? util$h.parseDateTime(datetime).date : result2.releaseDate;
           } catch (e) {
-            util$i.noop();
+            util$h.noop();
           }
           if (callback) {
             callback(result2);
@@ -4193,7 +4189,7 @@ function bios(callback) {
                 result2.version = bootRomVersion;
               }
             } catch (e) {
-              util$i.noop();
+              util$h.noop();
             }
             if (callback) {
               callback(result2);
@@ -4211,24 +4207,24 @@ function bios(callback) {
       }
       if (_windows$f) {
         try {
-          util$i.powerShell('Get-CimInstance Win32_bios | select Description,Version,Manufacturer,@{n="ReleaseDate";e={$_.ReleaseDate.ToString("yyyy-MM-dd")}},BuildNumber,SerialNumber,SMBIOSBIOSVersion | fl').then((stdout, error) => {
+          util$h.powerShell('Get-CimInstance Win32_bios | select Description,Version,Manufacturer,@{n="ReleaseDate";e={$_.ReleaseDate.ToString("yyyy-MM-dd")}},BuildNumber,SerialNumber,SMBIOSBIOSVersion | fl').then((stdout, error) => {
             if (!error) {
               let lines = stdout.toString().split("\r\n");
-              const description = util$i.getValue(lines, "description", ":");
-              const version2 = util$i.getValue(lines, "SMBIOSBIOSVersion", ":");
+              const description = util$h.getValue(lines, "description", ":");
+              const version2 = util$h.getValue(lines, "SMBIOSBIOSVersion", ":");
               if (description.indexOf(" Version ") !== -1) {
                 result2.vendor = description.split(" Version ")[0].trim();
                 result2.version = description.split(" Version ")[1].trim();
               } else if (description.indexOf(" Ver: ") !== -1) {
-                result2.vendor = util$i.getValue(lines, "manufacturer", ":");
+                result2.vendor = util$h.getValue(lines, "manufacturer", ":");
                 result2.version = description.split(" Ver: ")[1].trim();
               } else {
-                result2.vendor = util$i.getValue(lines, "manufacturer", ":");
-                result2.version = version2 || util$i.getValue(lines, "version", ":");
+                result2.vendor = util$h.getValue(lines, "manufacturer", ":");
+                result2.version = version2 || util$h.getValue(lines, "version", ":");
               }
-              result2.releaseDate = util$i.getValue(lines, "releasedate", ":");
-              result2.revision = util$i.getValue(lines, "buildnumber", ":");
-              result2.serial = cleanDefaults(util$i.getValue(lines, "serialnumber", ":"));
+              result2.releaseDate = util$h.getValue(lines, "releasedate", ":");
+              result2.revision = util$h.getValue(lines, "buildnumber", ":");
+              result2.serial = cleanDefaults(util$h.getValue(lines, "serialnumber", ":"));
             }
             if (callback) {
               callback(result2);
@@ -4268,35 +4264,35 @@ function baseboard(callback) {
         const workload = [];
         workload.push(execPromise(cmd));
         workload.push(execPromise("export LC_ALL=C; dmidecode -t memory 2>/dev/null"));
-        util$i.promiseAll(
+        util$h.promiseAll(
           workload
         ).then((data) => {
           let lines = data.results[0] ? data.results[0].toString().split("\n") : [""];
-          result2.manufacturer = cleanDefaults(util$i.getValue(lines, "Manufacturer"));
-          result2.model = cleanDefaults(util$i.getValue(lines, "Product Name"));
-          result2.version = cleanDefaults(util$i.getValue(lines, "Version"));
-          result2.serial = cleanDefaults(util$i.getValue(lines, "Serial Number"));
-          result2.assetTag = cleanDefaults(util$i.getValue(lines, "Asset Tag"));
+          result2.manufacturer = cleanDefaults(util$h.getValue(lines, "Manufacturer"));
+          result2.model = cleanDefaults(util$h.getValue(lines, "Product Name"));
+          result2.version = cleanDefaults(util$h.getValue(lines, "Version"));
+          result2.serial = cleanDefaults(util$h.getValue(lines, "Serial Number"));
+          result2.assetTag = cleanDefaults(util$h.getValue(lines, "Asset Tag"));
           const cmd2 = `echo -n "board_asset_tag: "; cat /sys/devices/virtual/dmi/id/board_asset_tag 2>/dev/null; echo;
             echo -n "board_name: "; cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null; echo;
             echo -n "board_serial: "; cat /sys/devices/virtual/dmi/id/board_serial 2>/dev/null; echo;
             echo -n "board_vendor: "; cat /sys/devices/virtual/dmi/id/board_vendor 2>/dev/null; echo;
             echo -n "board_version: "; cat /sys/devices/virtual/dmi/id/board_version 2>/dev/null; echo;`;
           try {
-            lines = execSync$9(cmd2, util$i.execOptsLinux).toString().split("\n");
-            result2.manufacturer = cleanDefaults(!result2.manufacturer ? util$i.getValue(lines, "board_vendor") : result2.manufacturer);
-            result2.model = cleanDefaults(!result2.model ? util$i.getValue(lines, "board_name") : result2.model);
-            result2.version = cleanDefaults(!result2.version ? util$i.getValue(lines, "board_version") : result2.version);
-            result2.serial = cleanDefaults(!result2.serial ? util$i.getValue(lines, "board_serial") : result2.serial);
-            result2.assetTag = cleanDefaults(!result2.assetTag ? util$i.getValue(lines, "board_asset_tag") : result2.assetTag);
+            lines = execSync$9(cmd2, util$h.execOptsLinux).toString().split("\n");
+            result2.manufacturer = cleanDefaults(!result2.manufacturer ? util$h.getValue(lines, "board_vendor") : result2.manufacturer);
+            result2.model = cleanDefaults(!result2.model ? util$h.getValue(lines, "board_name") : result2.model);
+            result2.version = cleanDefaults(!result2.version ? util$h.getValue(lines, "board_version") : result2.version);
+            result2.serial = cleanDefaults(!result2.serial ? util$h.getValue(lines, "board_serial") : result2.serial);
+            result2.assetTag = cleanDefaults(!result2.assetTag ? util$h.getValue(lines, "board_asset_tag") : result2.assetTag);
           } catch (e) {
-            util$i.noop();
+            util$h.noop();
           }
           lines = data.results[1] ? data.results[1].toString().split("\n") : [""];
-          result2.memMax = util$i.toInt(util$i.getValue(lines, "Maximum Capacity")) * 1024 * 1024 * 1024 || null;
-          result2.memSlots = util$i.toInt(util$i.getValue(lines, "Number Of Devices")) || null;
-          if (util$i.isRaspberry()) {
-            const rpi = util$i.decodePiCpuinfo();
+          result2.memMax = util$h.toInt(util$h.getValue(lines, "Maximum Capacity")) * 1024 * 1024 * 1024 || null;
+          result2.memSlots = util$h.toInt(util$h.getValue(lines, "Number Of Devices")) || null;
+          if (util$h.isRaspberry()) {
+            const rpi = util$h.decodePiCpuinfo();
             result2.manufacturer = rpi.manufacturer;
             result2.model = "Raspberry Pi";
             result2.serial = rpi.serial;
@@ -4314,15 +4310,15 @@ function baseboard(callback) {
         const workload = [];
         workload.push(execPromise("ioreg -c IOPlatformExpertDevice -d 2"));
         workload.push(execPromise("system_profiler SPMemoryDataType"));
-        util$i.promiseAll(
+        util$h.promiseAll(
           workload
         ).then((data) => {
           let lines = data.results[0] ? data.results[0].toString().replace(/[<>"]/g, "").split("\n") : [""];
-          result2.manufacturer = util$i.getValue(lines, "manufacturer", "=", true);
-          result2.model = util$i.getValue(lines, "model", "=", true);
-          result2.version = util$i.getValue(lines, "version", "=", true);
-          result2.serial = util$i.getValue(lines, "ioplatformserialnumber", "=", true);
-          result2.assetTag = util$i.getValue(lines, "board-id", "=", true);
+          result2.manufacturer = util$h.getValue(lines, "manufacturer", "=", true);
+          result2.model = util$h.getValue(lines, "model", "=", true);
+          result2.version = util$h.getValue(lines, "version", "=", true);
+          result2.serial = util$h.getValue(lines, "ioplatformserialnumber", "=", true);
+          result2.assetTag = util$h.getValue(lines, "board-id", "=", true);
           let devices = data.results[1] ? data.results[1].toString().split("        BANK ") : [""];
           if (devices.length === 1) {
             devices = data.results[1] ? data.results[1].toString().split("        DIMM") : [""];
@@ -4350,26 +4346,26 @@ function baseboard(callback) {
           const workload = [];
           const win10plus = parseInt(os$6.release()) >= 10;
           const maxCapacityAttribute = win10plus ? "MaxCapacityEx" : "MaxCapacity";
-          workload.push(util$i.powerShell("Get-CimInstance Win32_baseboard | select Model,Manufacturer,Product,Version,SerialNumber,PartNumber,SKU | fl"));
-          workload.push(util$i.powerShell(`Get-CimInstance Win32_physicalmemoryarray | select ${maxCapacityAttribute}, MemoryDevices | fl`));
-          util$i.promiseAll(
+          workload.push(util$h.powerShell("Get-CimInstance Win32_baseboard | select Model,Manufacturer,Product,Version,SerialNumber,PartNumber,SKU | fl"));
+          workload.push(util$h.powerShell(`Get-CimInstance Win32_physicalmemoryarray | select ${maxCapacityAttribute}, MemoryDevices | fl`));
+          util$h.promiseAll(
             workload
           ).then((data) => {
             let lines = data.results[0] ? data.results[0].toString().split("\r\n") : [""];
-            result2.manufacturer = cleanDefaults(util$i.getValue(lines, "manufacturer", ":"));
-            result2.model = cleanDefaults(util$i.getValue(lines, "model", ":"));
+            result2.manufacturer = cleanDefaults(util$h.getValue(lines, "manufacturer", ":"));
+            result2.model = cleanDefaults(util$h.getValue(lines, "model", ":"));
             if (!result2.model) {
-              result2.model = cleanDefaults(util$i.getValue(lines, "product", ":"));
+              result2.model = cleanDefaults(util$h.getValue(lines, "product", ":"));
             }
-            result2.version = cleanDefaults(util$i.getValue(lines, "version", ":"));
-            result2.serial = cleanDefaults(util$i.getValue(lines, "serialnumber", ":"));
-            result2.assetTag = cleanDefaults(util$i.getValue(lines, "partnumber", ":"));
+            result2.version = cleanDefaults(util$h.getValue(lines, "version", ":"));
+            result2.serial = cleanDefaults(util$h.getValue(lines, "serialnumber", ":"));
+            result2.assetTag = cleanDefaults(util$h.getValue(lines, "partnumber", ":"));
             if (!result2.assetTag) {
-              result2.assetTag = cleanDefaults(util$i.getValue(lines, "sku", ":"));
+              result2.assetTag = cleanDefaults(util$h.getValue(lines, "sku", ":"));
             }
             lines = data.results[1] ? data.results[1].toString().split("\r\n") : [""];
-            result2.memMax = util$i.toInt(util$i.getValue(lines, maxCapacityAttribute, ":")) * (win10plus ? 1024 : 1) || null;
-            result2.memSlots = util$i.toInt(util$i.getValue(lines, "MemoryDevices", ":")) || null;
+            result2.memMax = util$h.toInt(util$h.getValue(lines, maxCapacityAttribute, ":")) * (win10plus ? 1024 : 1) || null;
+            result2.memSlots = util$h.toInt(util$h.getValue(lines, "MemoryDevices", ":")) || null;
             if (callback) {
               callback(result2);
             }
@@ -4469,12 +4465,12 @@ function chassis(callback) {
             echo -n "chassis_version: "; cat /sys/devices/virtual/dmi/id/chassis_version 2>/dev/null; echo;`;
         exec$e(cmd, function(error, stdout) {
           let lines = stdout.toString().split("\n");
-          result2.manufacturer = cleanDefaults(util$i.getValue(lines, "chassis_vendor"));
-          const ctype = parseInt(util$i.getValue(lines, "chassis_type").replace(/\D/g, ""));
+          result2.manufacturer = cleanDefaults(util$h.getValue(lines, "chassis_vendor"));
+          const ctype = parseInt(util$h.getValue(lines, "chassis_type").replace(/\D/g, ""));
           result2.type = cleanDefaults(ctype && !isNaN(ctype) && ctype < chassisTypes.length ? chassisTypes[ctype - 1] : "");
-          result2.version = cleanDefaults(util$i.getValue(lines, "chassis_version"));
-          result2.serial = cleanDefaults(util$i.getValue(lines, "chassis_serial"));
-          result2.assetTag = cleanDefaults(util$i.getValue(lines, "chassis_asset_tag"));
+          result2.version = cleanDefaults(util$h.getValue(lines, "chassis_version"));
+          result2.serial = cleanDefaults(util$h.getValue(lines, "chassis_serial"));
+          result2.assetTag = cleanDefaults(util$h.getValue(lines, "chassis_asset_tag"));
           if (callback) {
             callback(result2);
           }
@@ -4485,14 +4481,14 @@ function chassis(callback) {
         exec$e("ioreg -c IOPlatformExpertDevice -d 2", function(error, stdout) {
           if (!error) {
             let lines = stdout.toString().replace(/[<>"]/g, "").split("\n");
-            const model = util$i.getAppleModel(util$i.getValue(lines, "model", "=", true));
-            result2.manufacturer = util$i.getValue(lines, "manufacturer", "=", true);
+            const model = util$h.getAppleModel(util$h.getValue(lines, "model", "=", true));
+            result2.manufacturer = util$h.getValue(lines, "manufacturer", "=", true);
             result2.model = model.key;
             result2.type = macOsChassisType(model.model);
             result2.version = model.version;
-            result2.serial = util$i.getValue(lines, "ioplatformserialnumber", "=", true);
-            result2.assetTag = util$i.getValue(lines, "board-id", "=", true) || util$i.getValue(lines, "target-type", "=", true);
-            result2.sku = util$i.getValue(lines, "target-sub-type", "=", true);
+            result2.serial = util$h.getValue(lines, "ioplatformserialnumber", "=", true);
+            result2.assetTag = util$h.getValue(lines, "board-id", "=", true) || util$h.getValue(lines, "target-type", "=", true);
+            result2.sku = util$h.getValue(lines, "target-sub-type", "=", true);
           }
           if (callback) {
             callback(result2);
@@ -4508,20 +4504,20 @@ function chassis(callback) {
       }
       if (_windows$f) {
         try {
-          util$i.powerShell("Get-CimInstance Win32_SystemEnclosure | select Model,Manufacturer,ChassisTypes,Version,SerialNumber,PartNumber,SKU,SMBIOSAssetTag | fl").then((stdout, error) => {
+          util$h.powerShell("Get-CimInstance Win32_SystemEnclosure | select Model,Manufacturer,ChassisTypes,Version,SerialNumber,PartNumber,SKU,SMBIOSAssetTag | fl").then((stdout, error) => {
             if (!error) {
               let lines = stdout.toString().split("\r\n");
-              result2.manufacturer = cleanDefaults(util$i.getValue(lines, "manufacturer", ":"));
-              result2.model = cleanDefaults(util$i.getValue(lines, "model", ":"));
-              const ctype = parseInt(util$i.getValue(lines, "ChassisTypes", ":").replace(/\D/g, ""));
+              result2.manufacturer = cleanDefaults(util$h.getValue(lines, "manufacturer", ":"));
+              result2.model = cleanDefaults(util$h.getValue(lines, "model", ":"));
+              const ctype = parseInt(util$h.getValue(lines, "ChassisTypes", ":").replace(/\D/g, ""));
               result2.type = ctype && !isNaN(ctype) && ctype < chassisTypes.length ? chassisTypes[ctype - 1] : "";
-              result2.version = cleanDefaults(util$i.getValue(lines, "version", ":"));
-              result2.serial = cleanDefaults(util$i.getValue(lines, "serialnumber", ":"));
-              result2.assetTag = cleanDefaults(util$i.getValue(lines, "partnumber", ":"));
+              result2.version = cleanDefaults(util$h.getValue(lines, "version", ":"));
+              result2.serial = cleanDefaults(util$h.getValue(lines, "serialnumber", ":"));
+              result2.assetTag = cleanDefaults(util$h.getValue(lines, "partnumber", ":"));
               if (!result2.assetTag) {
-                result2.assetTag = cleanDefaults(util$i.getValue(lines, "SMBIOSAssetTag", ":"));
+                result2.assetTag = cleanDefaults(util$h.getValue(lines, "SMBIOSAssetTag", ":"));
               }
-              result2.sku = cleanDefaults(util$i.getValue(lines, "sku", ":"));
+              result2.sku = cleanDefaults(util$h.getValue(lines, "sku", ":"));
             }
             if (callback) {
               callback(result2);
@@ -4544,7 +4540,7 @@ const os$5 = require$$0$1;
 const exec$d = require$$1.exec;
 const execSync$8 = require$$1.execSync;
 const fs$q = require$$1$1;
-const util$h = util$l;
+const util$g = util$k;
 let _platform$e = process.platform;
 const _linux$d = _platform$e === "linux" || _platform$e === "android";
 const _darwin$d = _platform$e === "darwin";
@@ -5195,9 +5191,9 @@ function getCpu() {
         speedMin: 0,
         speedMax: 0,
         governor: "",
-        cores: util$h.cores(),
-        physicalCores: util$h.cores(),
-        performanceCores: util$h.cores(),
+        cores: util$g.cores(),
+        physicalCores: util$g.cores(),
+        performanceCores: util$g.cores(),
         efficiencyCores: 0,
         processors: 1,
         socket: "",
@@ -5211,26 +5207,26 @@ function getCpu() {
         if (_darwin$d) {
           exec$d("sysctl machdep.cpu hw.cpufrequency_max hw.cpufrequency_min hw.packages hw.physicalcpu_max hw.ncpu hw.tbfrequency hw.cpufamily hw.cpusubfamily", function(error, stdout) {
             let lines = stdout.toString().split("\n");
-            const modelline = util$h.getValue(lines, "machdep.cpu.brand_string");
+            const modelline = util$g.getValue(lines, "machdep.cpu.brand_string");
             const modellineParts = modelline.split("@");
             result2.brand = modellineParts[0].trim();
             const speed = modellineParts[1] ? modellineParts[1].trim() : "0";
             result2.speed = parseFloat(speed.replace(/GHz+/g, ""));
-            let tbFrequency = util$h.getValue(lines, "hw.tbfrequency") / 1e9;
+            let tbFrequency = util$g.getValue(lines, "hw.tbfrequency") / 1e9;
             tbFrequency = tbFrequency < 0.1 ? tbFrequency * 100 : tbFrequency;
             result2.speed = result2.speed === 0 ? tbFrequency : result2.speed;
             _cpu_speed = result2.speed;
             result2 = cpuBrandManufacturer(result2);
-            result2.speedMin = util$h.getValue(lines, "hw.cpufrequency_min") ? util$h.getValue(lines, "hw.cpufrequency_min") / 1e9 : result2.speed;
-            result2.speedMax = util$h.getValue(lines, "hw.cpufrequency_max") ? util$h.getValue(lines, "hw.cpufrequency_max") / 1e9 : result2.speed;
-            result2.vendor = util$h.getValue(lines, "machdep.cpu.vendor") || "Apple";
-            result2.family = util$h.getValue(lines, "machdep.cpu.family") || util$h.getValue(lines, "hw.cpufamily");
-            result2.model = util$h.getValue(lines, "machdep.cpu.model");
-            result2.stepping = util$h.getValue(lines, "machdep.cpu.stepping") || util$h.getValue(lines, "hw.cpusubfamily");
+            result2.speedMin = util$g.getValue(lines, "hw.cpufrequency_min") ? util$g.getValue(lines, "hw.cpufrequency_min") / 1e9 : result2.speed;
+            result2.speedMax = util$g.getValue(lines, "hw.cpufrequency_max") ? util$g.getValue(lines, "hw.cpufrequency_max") / 1e9 : result2.speed;
+            result2.vendor = util$g.getValue(lines, "machdep.cpu.vendor") || "Apple";
+            result2.family = util$g.getValue(lines, "machdep.cpu.family") || util$g.getValue(lines, "hw.cpufamily");
+            result2.model = util$g.getValue(lines, "machdep.cpu.model");
+            result2.stepping = util$g.getValue(lines, "machdep.cpu.stepping") || util$g.getValue(lines, "hw.cpusubfamily");
             result2.virtualization = true;
-            const countProcessors = util$h.getValue(lines, "hw.packages");
-            const countCores = util$h.getValue(lines, "hw.physicalcpu_max");
-            const countThreads = util$h.getValue(lines, "hw.ncpu");
+            const countProcessors = util$g.getValue(lines, "hw.packages");
+            const countCores = util$g.getValue(lines, "hw.physicalcpu_max");
+            const countThreads = util$g.getValue(lines, "hw.ncpu");
             if (os$5.arch() === "arm64") {
               result2.socket = "SOC";
               try {
@@ -5240,15 +5236,15 @@ function getCpu() {
                 result2.efficiencyCores = efficiencyCores;
                 result2.performanceCores = performanceCores;
               } catch (e) {
-                util$h.noop();
+                util$g.noop();
               }
             }
             if (countProcessors) {
               result2.processors = parseInt(countProcessors) || 1;
             }
             if (countCores && countThreads) {
-              result2.cores = parseInt(countThreads) || util$h.cores();
-              result2.physicalCores = parseInt(countCores) || util$h.cores();
+              result2.cores = parseInt(countThreads) || util$g.cores();
+              result2.physicalCores = parseInt(countCores) || util$g.cores();
             }
             cpuCache().then((res) => {
               result2.cache = res;
@@ -5266,9 +5262,9 @@ function getCpu() {
             if (!error) {
               lines = stdout.toString().split("\n");
             }
-            modelline = util$h.getValue(lines, "model name") || modelline;
-            modelline = util$h.getValue(lines, "bios model name") || modelline;
-            modelline = util$h.cleanString(modelline);
+            modelline = util$g.getValue(lines, "model name") || modelline;
+            modelline = util$g.getValue(lines, "bios model name") || modelline;
+            modelline = util$g.cleanString(modelline);
             const modellineParts = modelline.split("@");
             result2.brand = modellineParts[0].trim();
             result2.speed = modellineParts[1] ? parseFloat(modellineParts[1].trim()) : 0;
@@ -5282,51 +5278,51 @@ function getCpu() {
               }
             }
             _cpu_speed = result2.speed;
-            result2.speedMin = Math.round(parseFloat(util$h.getValue(lines, "cpu min mhz").replace(/,/g, ".")) / 10) / 100;
-            result2.speedMax = Math.round(parseFloat(util$h.getValue(lines, "cpu max mhz").replace(/,/g, ".")) / 10) / 100;
+            result2.speedMin = Math.round(parseFloat(util$g.getValue(lines, "cpu min mhz").replace(/,/g, ".")) / 10) / 100;
+            result2.speedMax = Math.round(parseFloat(util$g.getValue(lines, "cpu max mhz").replace(/,/g, ".")) / 10) / 100;
             result2 = cpuBrandManufacturer(result2);
-            result2.vendor = cpuManufacturer(util$h.getValue(lines, "vendor id"));
-            result2.family = util$h.getValue(lines, "cpu family");
-            result2.model = util$h.getValue(lines, "model:");
-            result2.stepping = util$h.getValue(lines, "stepping");
-            result2.revision = util$h.getValue(lines, "cpu revision");
-            result2.cache.l1d = util$h.getValue(lines, "l1d cache");
+            result2.vendor = cpuManufacturer(util$g.getValue(lines, "vendor id"));
+            result2.family = util$g.getValue(lines, "cpu family");
+            result2.model = util$g.getValue(lines, "model:");
+            result2.stepping = util$g.getValue(lines, "stepping");
+            result2.revision = util$g.getValue(lines, "cpu revision");
+            result2.cache.l1d = util$g.getValue(lines, "l1d cache");
             if (result2.cache.l1d) {
               result2.cache.l1d = parseInt(result2.cache.l1d) * (result2.cache.l1d.indexOf("M") !== -1 ? 1024 * 1024 : result2.cache.l1d.indexOf("K") !== -1 ? 1024 : 1);
             }
-            result2.cache.l1i = util$h.getValue(lines, "l1i cache");
+            result2.cache.l1i = util$g.getValue(lines, "l1i cache");
             if (result2.cache.l1i) {
               result2.cache.l1i = parseInt(result2.cache.l1i) * (result2.cache.l1i.indexOf("M") !== -1 ? 1024 * 1024 : result2.cache.l1i.indexOf("K") !== -1 ? 1024 : 1);
             }
-            result2.cache.l2 = util$h.getValue(lines, "l2 cache");
+            result2.cache.l2 = util$g.getValue(lines, "l2 cache");
             if (result2.cache.l2) {
               result2.cache.l2 = parseInt(result2.cache.l2) * (result2.cache.l2.indexOf("M") !== -1 ? 1024 * 1024 : result2.cache.l2.indexOf("K") !== -1 ? 1024 : 1);
             }
-            result2.cache.l3 = util$h.getValue(lines, "l3 cache");
+            result2.cache.l3 = util$g.getValue(lines, "l3 cache");
             if (result2.cache.l3) {
               result2.cache.l3 = parseInt(result2.cache.l3) * (result2.cache.l3.indexOf("M") !== -1 ? 1024 * 1024 : result2.cache.l3.indexOf("K") !== -1 ? 1024 : 1);
             }
-            const threadsPerCore = util$h.getValue(lines, "thread(s) per core") || "1";
-            const processors = util$h.getValue(lines, "socket(s)") || "1";
+            const threadsPerCore = util$g.getValue(lines, "thread(s) per core") || "1";
+            const processors = util$g.getValue(lines, "socket(s)") || "1";
             const threadsPerCoreInt = parseInt(threadsPerCore, 10);
             const processorsInt = parseInt(processors, 10) || 1;
-            const coresPerSocket = parseInt(util$h.getValue(lines, "core(s) per socket"), 10);
+            const coresPerSocket = parseInt(util$g.getValue(lines, "core(s) per socket"), 10);
             result2.physicalCores = coresPerSocket ? coresPerSocket * processorsInt : result2.cores / threadsPerCoreInt;
             result2.performanceCores = threadsPerCoreInt > 1 ? result2.cores - result2.physicalCores : result2.cores;
             result2.efficiencyCores = threadsPerCoreInt > 1 ? result2.cores - threadsPerCoreInt * result2.performanceCores : 0;
             result2.processors = processorsInt;
-            result2.governor = util$h.getValue(lines, "governor") || "";
-            if (result2.vendor === "ARM" && util$h.isRaspberry()) {
-              const rPIRevision = util$h.decodePiCpuinfo();
+            result2.governor = util$g.getValue(lines, "governor") || "";
+            if (result2.vendor === "ARM" && util$g.isRaspberry()) {
+              const rPIRevision = util$g.decodePiCpuinfo();
               result2.family = result2.manufacturer;
               result2.manufacturer = rPIRevision.manufacturer;
               result2.brand = rPIRevision.processor;
               result2.revision = rPIRevision.revisionCode;
               result2.socket = "SOC";
             }
-            if (util$h.getValue(lines, "architecture") === "riscv64") {
+            if (util$g.getValue(lines, "architecture") === "riscv64") {
               const linesRiscV = fs$q.readFileSync("/proc/cpuinfo").toString().split("\n");
-              const uarch = util$h.getValue(linesRiscV, "uarch") || "";
+              const uarch = util$g.getValue(linesRiscV, "uarch") || "";
               if (uarch.indexOf(",") > -1) {
                 const split = uarch.split(",");
                 result2.manufacturer = cpuManufacturer(split[0]);
@@ -5337,7 +5333,7 @@ function getCpu() {
             exec$d('export LC_ALL=C; dmidecode –t 4 2>/dev/null | grep "Upgrade: Socket"; unset LC_ALL', function(error2, stdout2) {
               lines2 = stdout2.toString().split("\n");
               if (lines2 && lines2.length) {
-                result2.socket = util$h.getValue(lines2, "Upgrade").replace("Socket", "").trim() || result2.socket;
+                result2.socket = util$g.getValue(lines2, "Upgrade").replace("Socket", "").trim() || result2.socket;
               }
               resolve(result2);
             });
@@ -5370,25 +5366,25 @@ function getCpu() {
             }
             _cpu_speed = result2.speed;
             result2.speedMin = result2.speed;
-            result2.speedMax = Math.round(parseFloat(util$h.getValue(lines, "max speed").replace(/Mhz/g, "")) / 10) / 100;
+            result2.speedMax = Math.round(parseFloat(util$g.getValue(lines, "max speed").replace(/Mhz/g, "")) / 10) / 100;
             result2 = cpuBrandManufacturer(result2);
-            result2.vendor = cpuManufacturer(util$h.getValue(lines, "manufacturer"));
-            let sig = util$h.getValue(lines, "signature");
+            result2.vendor = cpuManufacturer(util$g.getValue(lines, "manufacturer"));
+            let sig = util$g.getValue(lines, "signature");
             sig = sig.split(",");
             for (let i = 0; i < sig.length; i++) {
               sig[i] = sig[i].trim();
             }
-            result2.family = util$h.getValue(sig, "Family", " ", true);
-            result2.model = util$h.getValue(sig, "Model", " ", true);
-            result2.stepping = util$h.getValue(sig, "Stepping", " ", true);
+            result2.family = util$g.getValue(sig, "Family", " ", true);
+            result2.model = util$g.getValue(sig, "Model", " ", true);
+            result2.stepping = util$g.getValue(sig, "Stepping", " ", true);
             result2.revision = "";
-            const voltage = parseFloat(util$h.getValue(lines, "voltage"));
+            const voltage = parseFloat(util$g.getValue(lines, "voltage"));
             result2.voltage = isNaN(voltage) ? "" : voltage.toFixed(2);
             for (let i = 0; i < cache.length; i++) {
               lines = cache[i].split("\n");
-              let cacheType = util$h.getValue(lines, "Socket Designation").toLowerCase().replace(" ", "-").split("-");
+              let cacheType = util$g.getValue(lines, "Socket Designation").toLowerCase().replace(" ", "-").split("-");
               cacheType = cacheType.length ? cacheType[0] : "";
-              const sizeParts = util$h.getValue(lines, "Installed Size").split(" ");
+              const sizeParts = util$g.getValue(lines, "Installed Size").split(" ");
               let size = parseInt(sizeParts[0], 10);
               const unit = sizeParts.length > 1 ? sizeParts[1] : "kb";
               size = size * (unit === "kb" ? 1024 : unit === "mb" ? 1024 * 1024 : unit === "gb" ? 1024 * 1024 * 1024 : 1);
@@ -5401,9 +5397,9 @@ function getCpu() {
                 }
               }
             }
-            result2.socket = util$h.getValue(lines, "Upgrade").replace("Socket", "").trim();
-            const threadCount = util$h.getValue(lines, "thread count").trim();
-            const coreCount = util$h.getValue(lines, "core count").trim();
+            result2.socket = util$g.getValue(lines, "Upgrade").replace("Socket", "").trim();
+            const threadCount = util$g.getValue(lines, "thread count").trim();
+            const coreCount = util$g.getValue(lines, "core count").trim();
             if (coreCount && threadCount) {
               result2.cores = parseInt(threadCount, 10);
               result2.physicalCores = parseInt(coreCount, 10);
@@ -5417,14 +5413,14 @@ function getCpu() {
         if (_windows$e) {
           try {
             const workload = [];
-            workload.push(util$h.powerShell("Get-CimInstance Win32_processor | select Name, Revision, L2CacheSize, L3CacheSize, Manufacturer, MaxClockSpeed, Description, UpgradeMethod, Caption, NumberOfLogicalProcessors, NumberOfCores | fl"));
-            workload.push(util$h.powerShell("Get-CimInstance Win32_CacheMemory | select CacheType,InstalledSize,Level | fl"));
-            workload.push(util$h.powerShell("(Get-CimInstance Win32_ComputerSystem).HypervisorPresent"));
+            workload.push(util$g.powerShell("Get-CimInstance Win32_processor | select Name, Revision, L2CacheSize, L3CacheSize, Manufacturer, MaxClockSpeed, Description, UpgradeMethod, Caption, NumberOfLogicalProcessors, NumberOfCores | fl"));
+            workload.push(util$g.powerShell("Get-CimInstance Win32_CacheMemory | select CacheType,InstalledSize,Level | fl"));
+            workload.push(util$g.powerShell("(Get-CimInstance Win32_ComputerSystem).HypervisorPresent"));
             Promise.all(
               workload
             ).then((data) => {
               let lines = data[0].split("\r\n");
-              let name = util$h.getValue(lines, "name", ":") || "";
+              let name = util$g.getValue(lines, "name", ":") || "";
               if (name.indexOf("@") >= 0) {
                 result2.brand = name.split("@")[0].trim();
                 result2.speed = name.split("@")[1] ? parseFloat(name.split("@")[1].trim()) : 0;
@@ -5434,9 +5430,9 @@ function getCpu() {
                 result2.speed = 0;
               }
               result2 = cpuBrandManufacturer(result2);
-              result2.revision = util$h.getValue(lines, "revision", ":");
-              result2.vendor = util$h.getValue(lines, "manufacturer", ":");
-              result2.speedMax = Math.round(parseFloat(util$h.getValue(lines, "maxclockspeed", ":").replace(/,/g, ".")) / 10) / 100;
+              result2.revision = util$g.getValue(lines, "revision", ":");
+              result2.vendor = util$g.getValue(lines, "manufacturer", ":");
+              result2.speedMax = Math.round(parseFloat(util$g.getValue(lines, "maxclockspeed", ":").replace(/,/g, ".")) / 10) / 100;
               if (result2.speed === 0 && (result2.brand.indexOf("AMD") > -1 || result2.brand.toLowerCase().indexOf("ryzen") > -1)) {
                 result2.speed = getAMDSpeed(result2.brand);
               }
@@ -5444,7 +5440,7 @@ function getCpu() {
                 result2.speed = result2.speedMax;
               }
               result2.speedMin = result2.speed;
-              let description = util$h.getValue(lines, "description", ":").split(" ");
+              let description = util$g.getValue(lines, "description", ":").split(" ");
               for (let i = 0; i < description.length; i++) {
                 if (description[i].toLowerCase().startsWith("family") && i + 1 < description.length && description[i + 1]) {
                   result2.family = description[i + 1];
@@ -5456,7 +5452,7 @@ function getCpu() {
                   result2.stepping = description[i + 1];
                 }
               }
-              const socketId = util$h.getValue(lines, "UpgradeMethod", ":");
+              const socketId = util$g.getValue(lines, "UpgradeMethod", ":");
               if (socketTypes[socketId]) {
                 result2.socket = socketTypes[socketId];
               }
@@ -5464,15 +5460,15 @@ function getCpu() {
               if (socketByName) {
                 result2.socket = socketByName;
               }
-              const countProcessors = util$h.countLines(lines, "Caption");
-              const countThreads = util$h.getValue(lines, "NumberOfLogicalProcessors", ":");
-              const countCores = util$h.getValue(lines, "NumberOfCores", ":");
+              const countProcessors = util$g.countLines(lines, "Caption");
+              const countThreads = util$g.getValue(lines, "NumberOfLogicalProcessors", ":");
+              const countCores = util$g.getValue(lines, "NumberOfCores", ":");
               if (countProcessors) {
                 result2.processors = parseInt(countProcessors) || 1;
               }
               if (countCores && countThreads) {
-                result2.cores = parseInt(countThreads) || util$h.cores();
-                result2.physicalCores = parseInt(countCores) || util$h.cores();
+                result2.cores = parseInt(countThreads) || util$g.cores();
+                result2.physicalCores = parseInt(countCores) || util$g.cores();
               }
               if (countProcessors > 1) {
                 result2.cores = result2.cores * countProcessors;
@@ -5517,12 +5513,12 @@ function getCpuCurrentSpeedSync() {
     }
   } else if (_linux$d) {
     try {
-      const speedStrings = execSync$8('cat /proc/cpuinfo | grep "cpu MHz" | cut -d " " -f 3', util$h.execOptsLinux).toString().split("\n").filter((line) => line.length > 0);
+      const speedStrings = execSync$8('cat /proc/cpuinfo | grep "cpu MHz" | cut -d " " -f 3', util$g.execOptsLinux).toString().split("\n").filter((line) => line.length > 0);
       for (let i in speedStrings) {
         speeds.push(Math.floor(parseInt(speedStrings[i], 10) / 10) / 100);
       }
     } catch {
-      util$h.noop();
+      util$g.noop();
     }
   }
   if (speeds && speeds.length) {
@@ -5595,7 +5591,7 @@ function cpuTemperature(callback) {
       if (_linux$d) {
         try {
           const cmd2 = 'cat /sys/class/thermal/thermal_zone*/type  2>/dev/null; echo "-----"; cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null;';
-          const parts = execSync$8(cmd2, util$h.execOptsLinux).toString().split("-----\n");
+          const parts = execSync$8(cmd2, util$g.execOptsLinux).toString().split("-----\n");
           if (parts.length === 2) {
             const lines = parts[0].split("\n");
             const lines2 = parts[1].split("\n");
@@ -5610,7 +5606,7 @@ function cpuTemperature(callback) {
             }
           }
         } catch (e) {
-          util$h.noop();
+          util$g.noop();
         }
         const cmd = 'for mon in /sys/class/hwmon/hwmon*; do for label in "$mon"/temp*_label; do if [ -f $label ]; then value=${label%_*}_input; echo $(cat "$label")___$(cat "$value"); fi; done; done;';
         try {
@@ -5816,7 +5812,7 @@ function cpuTemperature(callback) {
       }
       if (_windows$e) {
         try {
-          util$h.powerShell('Get-CimInstance MSAcpi_ThermalZoneTemperature -Namespace "root/wmi" | Select CurrentTemperature').then((stdout, error) => {
+          util$g.powerShell('Get-CimInstance MSAcpi_ThermalZoneTemperature -Namespace "root/wmi" | Select CurrentTemperature').then((stdout, error) => {
             if (!error) {
               let sum = 0;
               let lines = stdout.split("\r\n").filter((line) => line.trim() !== "").filter((line, idx) => idx > 0);
@@ -5856,7 +5852,7 @@ function cpuFlags(callback) {
       let result2 = "";
       if (_windows$e) {
         try {
-          exec$d('reg query "HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0" /v FeatureSet', util$h.execOptsWin, function(error, stdout) {
+          exec$d('reg query "HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0" /v FeatureSet', util$g.execOptsWin, function(error, stdout) {
             if (!error) {
               let flag_hex = stdout.split("0x").pop().trim();
               let flag_bin_unpadded = parseInt(flag_hex, 16).toString(2);
@@ -5929,7 +5925,7 @@ function cpuFlags(callback) {
               fs$q.readFile("/proc/cpuinfo", function(error2, stdout2) {
                 if (!error2) {
                   let lines = stdout2.toString().split("\n");
-                  result2 = util$h.getValue(lines, "features", ":", true).toLowerCase();
+                  result2 = util$g.getValue(lines, "features", ":", true).toLowerCase();
                 }
                 if (callback) {
                   callback(result2);
@@ -6046,9 +6042,9 @@ function cpuCache(callback) {
           }
           for (let i = 0; i < cache.length; i++) {
             const lines = cache[i].split("\n");
-            let cacheType = util$h.getValue(lines, "Socket Designation").toLowerCase().replace(" ", "-").split("-");
+            let cacheType = util$g.getValue(lines, "Socket Designation").toLowerCase().replace(" ", "-").split("-");
             cacheType = cacheType.length ? cacheType[0] : "";
-            const sizeParts = util$h.getValue(lines, "Installed Size").split(" ");
+            const sizeParts = util$g.getValue(lines, "Installed Size").split(" ");
             let size = parseInt(sizeParts[0], 10);
             const unit = sizeParts.length > 1 ? sizeParts[1] : "kb";
             size = size * (unit === "kb" ? 1024 : unit === "mb" ? 1024 * 1024 : unit === "gb" ? 1024 * 1024 * 1024 : 1);
@@ -6102,8 +6098,8 @@ function cpuCache(callback) {
       if (_windows$e) {
         try {
           const workload = [];
-          workload.push(util$h.powerShell("Get-CimInstance Win32_processor | select L2CacheSize, L3CacheSize | fl"));
-          workload.push(util$h.powerShell("Get-CimInstance Win32_CacheMemory | select CacheType,InstalledSize,Level | fl"));
+          workload.push(util$g.powerShell("Get-CimInstance Win32_processor | select L2CacheSize, L3CacheSize | fl"));
+          workload.push(util$g.powerShell("Get-CimInstance Win32_CacheMemory | select CacheType,InstalledSize,Level | fl"));
           Promise.all(
             workload
           ).then((data) => {
@@ -6133,8 +6129,8 @@ function parseWinCache(linesProc, linesCache) {
   let lines = linesProc.split("\r\n");
   result2.l1d = 0;
   result2.l1i = 0;
-  result2.l2 = util$h.getValue(lines, "l2cachesize", ":");
-  result2.l3 = util$h.getValue(lines, "l3cachesize", ":");
+  result2.l2 = util$g.getValue(lines, "l2cachesize", ":");
+  result2.l3 = util$g.getValue(lines, "l3cachesize", ":");
   if (result2.l2) {
     result2.l2 = parseInt(result2.l2, 10) * 1024;
   } else {
@@ -6151,9 +6147,9 @@ function parseWinCache(linesProc, linesCache) {
   let l2 = 0;
   parts.forEach(function(part) {
     const lines2 = part.split("\r\n");
-    const cacheType = util$h.getValue(lines2, "CacheType");
-    const level = util$h.getValue(lines2, "Level");
-    const installedSize = util$h.getValue(lines2, "InstalledSize");
+    const cacheType = util$g.getValue(lines2, "CacheType");
+    const level = util$g.getValue(lines2, "Level");
+    const installedSize = util$g.getValue(lines2, "InstalledSize");
     if (level === "3" && cacheType === "3") {
       result2.l1i = result2.l1i + parseInt(installedSize, 10) * 1024;
     }
@@ -6182,7 +6178,7 @@ function getLoad() {
   return new Promise((resolve) => {
     process.nextTick(() => {
       let loads = os$5.loadavg().map(function(x) {
-        return x / util$h.cores();
+        return x / util$g.cores();
       });
       let avgLoad = parseFloat(Math.max.apply(Math, loads).toFixed(2));
       let result2 = {};
@@ -6205,7 +6201,7 @@ function getLoad() {
         _corecount = cpus && cpus.length ? cpus.length : 0;
         if (_linux$d) {
           try {
-            const lines = execSync$8("cat /proc/stat 2>/dev/null | grep cpu", util$h.execOptsLinux).toString().split("\n");
+            const lines = execSync$8("cat /proc/stat 2>/dev/null | grep cpu", util$g.execOptsLinux).toString().split("\n");
             if (lines.length > 1) {
               lines.shift();
               if (lines.length === cpus.length) {
@@ -6221,7 +6217,7 @@ function getLoad() {
               }
             }
           } catch (e) {
-            util$h.noop();
+            util$g.noop();
           }
         }
         for (let i = 0; i < _corecount; i++) {
@@ -6423,7 +6419,7 @@ var memory = {};
 const os$4 = require$$0$1;
 const exec$c = require$$1.exec;
 const execSync$7 = require$$1.execSync;
-const util$g = util$l;
+const util$f = util$k;
 const fs$p = require$$1$1;
 let _platform$d = process.platform;
 const _linux$c = _platform$d === "linux" || _platform$d === "android";
@@ -6489,31 +6485,31 @@ function mem(callback) {
           fs$p.readFile("/proc/meminfo", function(error, stdout) {
             if (!error) {
               const lines = stdout.toString().split("\n");
-              result2.total = parseInt(util$g.getValue(lines, "memtotal"), 10);
+              result2.total = parseInt(util$f.getValue(lines, "memtotal"), 10);
               result2.total = result2.total ? result2.total * 1024 : os$4.totalmem();
-              result2.free = parseInt(util$g.getValue(lines, "memfree"), 10);
+              result2.free = parseInt(util$f.getValue(lines, "memfree"), 10);
               result2.free = result2.free ? result2.free * 1024 : os$4.freemem();
               result2.used = result2.total - result2.free;
-              result2.buffers = parseInt(util$g.getValue(lines, "buffers"), 10);
+              result2.buffers = parseInt(util$f.getValue(lines, "buffers"), 10);
               result2.buffers = result2.buffers ? result2.buffers * 1024 : 0;
-              result2.cached = parseInt(util$g.getValue(lines, "cached"), 10);
+              result2.cached = parseInt(util$f.getValue(lines, "cached"), 10);
               result2.cached = result2.cached ? result2.cached * 1024 : 0;
-              result2.slab = parseInt(util$g.getValue(lines, "slab"), 10);
+              result2.slab = parseInt(util$f.getValue(lines, "slab"), 10);
               result2.slab = result2.slab ? result2.slab * 1024 : 0;
               result2.buffcache = result2.buffers + result2.cached + result2.slab;
-              let available = parseInt(util$g.getValue(lines, "memavailable"), 10);
+              let available = parseInt(util$f.getValue(lines, "memavailable"), 10);
               result2.available = available ? available * 1024 : result2.free + result2.buffcache;
               result2.active = result2.total - result2.available;
-              result2.swaptotal = parseInt(util$g.getValue(lines, "swaptotal"), 10);
+              result2.swaptotal = parseInt(util$f.getValue(lines, "swaptotal"), 10);
               result2.swaptotal = result2.swaptotal ? result2.swaptotal * 1024 : 0;
-              result2.swapfree = parseInt(util$g.getValue(lines, "swapfree"), 10);
+              result2.swapfree = parseInt(util$f.getValue(lines, "swapfree"), 10);
               result2.swapfree = result2.swapfree ? result2.swapfree * 1024 : 0;
               result2.swapused = result2.swaptotal - result2.swapfree;
-              result2.writeback = parseInt(util$g.getValue(lines, "writeback"), 10);
+              result2.writeback = parseInt(util$f.getValue(lines, "writeback"), 10);
               result2.writeback = result2.writeback ? result2.writeback * 1024 : 0;
-              result2.dirty = parseInt(util$g.getValue(lines, "dirty"), 10);
+              result2.dirty = parseInt(util$f.getValue(lines, "dirty"), 10);
               result2.dirty = result2.dirty ? result2.dirty * 1024 : 0;
-              result2.reclaimable = parseInt(util$g.getValue(lines, "sreclaimable"), 10);
+              result2.reclaimable = parseInt(util$f.getValue(lines, "sreclaimable"), 10);
               result2.reclaimable = result2.reclaimable ? result2.reclaimable * 1024 : 0;
             }
             if (callback) {
@@ -6533,14 +6529,14 @@ function mem(callback) {
           exec$c("/sbin/sysctl hw.realmem hw.physmem vm.stats.vm.v_page_count vm.stats.vm.v_wire_count vm.stats.vm.v_active_count vm.stats.vm.v_inactive_count vm.stats.vm.v_cache_count vm.stats.vm.v_free_count vm.stats.vm.v_page_size", function(error, stdout) {
             if (!error) {
               let lines = stdout.toString().split("\n");
-              const pagesize = parseInt(util$g.getValue(lines, "vm.stats.vm.v_page_size"), 10);
-              const inactive = parseInt(util$g.getValue(lines, "vm.stats.vm.v_inactive_count"), 10) * pagesize;
-              const cache = parseInt(util$g.getValue(lines, "vm.stats.vm.v_cache_count"), 10) * pagesize;
-              result2.total = parseInt(util$g.getValue(lines, "hw.realmem"), 10);
+              const pagesize = parseInt(util$f.getValue(lines, "vm.stats.vm.v_page_size"), 10);
+              const inactive = parseInt(util$f.getValue(lines, "vm.stats.vm.v_inactive_count"), 10) * pagesize;
+              const cache = parseInt(util$f.getValue(lines, "vm.stats.vm.v_cache_count"), 10) * pagesize;
+              result2.total = parseInt(util$f.getValue(lines, "hw.realmem"), 10);
               if (isNaN(result2.total)) {
-                result2.total = parseInt(util$g.getValue(lines, "hw.physmem"), 10);
+                result2.total = parseInt(util$f.getValue(lines, "hw.physmem"), 10);
               }
-              result2.free = parseInt(util$g.getValue(lines, "vm.stats.vm.v_free_count"), 10) * pagesize;
+              result2.free = parseInt(util$f.getValue(lines, "vm.stats.vm.v_free_count"), 10) * pagesize;
               result2.buffcache = inactive + cache;
               result2.available = result2.buffcache + result2.free;
               result2.active = result2.total - result2.free - result2.buffcache;
@@ -6569,17 +6565,17 @@ function mem(callback) {
       if (_darwin$c) {
         let pageSize = 4096;
         try {
-          let sysPpageSize = util$g.toInt(execSync$7("sysctl -n vm.pagesize").toString());
+          let sysPpageSize = util$f.toInt(execSync$7("sysctl -n vm.pagesize").toString());
           pageSize = sysPpageSize || pageSize;
         } catch (e) {
-          util$g.noop();
+          util$f.noop();
         }
         try {
           exec$c('vm_stat 2>/dev/null | egrep "Pages active|Pages inactive"', function(error, stdout) {
             if (!error) {
               let lines = stdout.toString().split("\n");
-              result2.active = (parseInt(util$g.getValue(lines, "Pages active"), 10) || 0) * pageSize;
-              result2.reclaimable = (parseInt(util$g.getValue(lines, "Pages inactive"), 10) || 0) * pageSize;
+              result2.active = (parseInt(util$f.getValue(lines, "Pages active"), 10) || 0) * pageSize;
+              result2.reclaimable = (parseInt(util$f.getValue(lines, "Pages inactive"), 10) || 0) * pageSize;
               result2.buffcache = result2.used - result2.active;
               result2.available = result2.free + result2.buffcache;
             }
@@ -6619,7 +6615,7 @@ function mem(callback) {
         let swaptotal = 0;
         let swapused = 0;
         try {
-          util$g.powerShell("Get-CimInstance Win32_PageFileUsage | Select AllocatedBaseSize, CurrentUsage").then((stdout, error) => {
+          util$f.powerShell("Get-CimInstance Win32_PageFileUsage | Select AllocatedBaseSize, CurrentUsage").then((stdout, error) => {
             if (!error) {
               let lines = stdout.split("\r\n").filter((line) => line.trim() !== "").filter((line, idx) => idx > 0);
               lines.forEach(function(line) {
@@ -6667,28 +6663,28 @@ function memLayout(callback) {
             devices.shift();
             devices.forEach(function(device) {
               let lines = device.split("\n");
-              const sizeString = util$g.getValue(lines, "Size");
+              const sizeString = util$f.getValue(lines, "Size");
               const size = sizeString.indexOf("GB") >= 0 ? parseInt(sizeString, 10) * 1024 * 1024 * 1024 : parseInt(sizeString, 10) * 1024 * 1024;
-              let bank = util$g.getValue(lines, "Bank Locator");
+              let bank = util$f.getValue(lines, "Bank Locator");
               if (bank.toLowerCase().indexOf("bad") >= 0) {
                 bank = "";
               }
-              if (parseInt(util$g.getValue(lines, "Size"), 10) > 0) {
-                const totalWidth = util$g.toInt(util$g.getValue(lines, "Total Width"));
-                const dataWidth = util$g.toInt(util$g.getValue(lines, "Data Width"));
+              if (parseInt(util$f.getValue(lines, "Size"), 10) > 0) {
+                const totalWidth = util$f.toInt(util$f.getValue(lines, "Total Width"));
+                const dataWidth = util$f.toInt(util$f.getValue(lines, "Data Width"));
                 result2.push({
                   size,
                   bank,
-                  type: util$g.getValue(lines, "Type:"),
+                  type: util$f.getValue(lines, "Type:"),
                   ecc: dataWidth && totalWidth ? totalWidth > dataWidth : false,
-                  clockSpeed: util$g.getValue(lines, "Configured Clock Speed:") ? parseInt(util$g.getValue(lines, "Configured Clock Speed:"), 10) : util$g.getValue(lines, "Speed:") ? parseInt(util$g.getValue(lines, "Speed:"), 10) : null,
-                  formFactor: util$g.getValue(lines, "Form Factor:"),
-                  manufacturer: getManufacturer(util$g.getValue(lines, "Manufacturer:")),
-                  partNum: util$g.getValue(lines, "Part Number:"),
-                  serialNum: util$g.getValue(lines, "Serial Number:"),
-                  voltageConfigured: parseFloat(util$g.getValue(lines, "Configured Voltage:")) || null,
-                  voltageMin: parseFloat(util$g.getValue(lines, "Minimum Voltage:")) || null,
-                  voltageMax: parseFloat(util$g.getValue(lines, "Maximum Voltage:")) || null
+                  clockSpeed: util$f.getValue(lines, "Configured Clock Speed:") ? parseInt(util$f.getValue(lines, "Configured Clock Speed:"), 10) : util$f.getValue(lines, "Speed:") ? parseInt(util$f.getValue(lines, "Speed:"), 10) : null,
+                  formFactor: util$f.getValue(lines, "Form Factor:"),
+                  manufacturer: getManufacturer(util$f.getValue(lines, "Manufacturer:")),
+                  partNum: util$f.getValue(lines, "Part Number:"),
+                  serialNum: util$f.getValue(lines, "Serial Number:"),
+                  voltageConfigured: parseFloat(util$f.getValue(lines, "Configured Voltage:")) || null,
+                  voltageMin: parseFloat(util$f.getValue(lines, "Minimum Voltage:")) || null,
+                  voltageMax: parseFloat(util$f.getValue(lines, "Maximum Voltage:")) || null
                 });
               } else {
                 result2.push({
@@ -6697,7 +6693,7 @@ function memLayout(callback) {
                   type: "Empty",
                   ecc: null,
                   clockSpeed: 0,
-                  formFactor: util$g.getValue(lines, "Form Factor:"),
+                  formFactor: util$f.getValue(lines, "Form Factor:"),
                   partNum: "",
                   serialNum: "",
                   voltageConfigured: null,
@@ -6722,10 +6718,10 @@ function memLayout(callback) {
               voltageMax: null
             });
             try {
-              let stdout2 = execSync$7("cat /proc/cpuinfo 2>/dev/null", util$g.execOptsLinux);
+              let stdout2 = execSync$7("cat /proc/cpuinfo 2>/dev/null", util$f.execOptsLinux);
               let lines = stdout2.toString().split("\n");
-              let version2 = util$g.getValue(lines, "revision", ":", true).toLowerCase();
-              if (util$g.isRaspberry(lines)) {
+              let version2 = util$f.getValue(lines, "revision", ":", true).toLowerCase();
+              if (util$f.isRaspberry(lines)) {
                 const clockSpeed = {
                   "0": 400,
                   "1": 450,
@@ -6740,15 +6736,15 @@ function memLayout(callback) {
                 result2[0].clockSpeed = version2 && version2[2] && clockSpeed[version2[2]] || 400;
                 result2[0].clockSpeed = version2 && version2[4] && version2[4] === "d" ? 500 : result2[0].clockSpeed;
                 result2[0].formFactor = "SoC";
-                stdout2 = execSync$7("vcgencmd get_config sdram_freq 2>/dev/null", util$g.execOptsLinux);
+                stdout2 = execSync$7("vcgencmd get_config sdram_freq 2>/dev/null", util$f.execOptsLinux);
                 lines = stdout2.toString().split("\n");
-                let freq = parseInt(util$g.getValue(lines, "sdram_freq", "=", true), 10) || 0;
+                let freq = parseInt(util$f.getValue(lines, "sdram_freq", "=", true), 10) || 0;
                 if (freq) {
                   result2[0].clockSpeed = freq;
                 }
-                stdout2 = execSync$7("vcgencmd measure_volts sdram_p 2>/dev/null", util$g.execOptsLinux);
+                stdout2 = execSync$7("vcgencmd measure_volts sdram_p 2>/dev/null", util$f.execOptsLinux);
                 lines = stdout2.toString().split("\n");
-                let voltage = parseFloat(util$g.getValue(lines, "volt", "=", true)) || 0;
+                let voltage = parseFloat(util$f.getValue(lines, "volt", "=", true)) || 0;
                 if (voltage) {
                   result2[0].voltageConfigured = voltage;
                   result2[0].voltageMin = voltage;
@@ -6756,7 +6752,7 @@ function memLayout(callback) {
                 }
               }
             } catch (e) {
-              util$g.noop();
+              util$f.noop();
             }
           }
           if (callback) {
@@ -6769,7 +6765,7 @@ function memLayout(callback) {
         exec$c("system_profiler SPMemoryDataType", function(error, stdout) {
           if (!error) {
             const allLines = stdout.toString().split("\n");
-            const eccStatus = util$g.getValue(allLines, "ecc", ":", true).toLowerCase();
+            const eccStatus = util$f.getValue(allLines, "ecc", ":", true).toLowerCase();
             let devices = stdout.toString().split("        BANK ");
             let hasBank = true;
             if (devices.length === 1) {
@@ -6780,18 +6776,18 @@ function memLayout(callback) {
             devices.forEach(function(device) {
               let lines = device.split("\n");
               const bank = (hasBank ? "BANK " : "DIMM") + lines[0].trim().split("/")[0];
-              const size = parseInt(util$g.getValue(lines, "          Size"));
+              const size = parseInt(util$f.getValue(lines, "          Size"));
               if (size) {
                 result2.push({
                   size: size * 1024 * 1024 * 1024,
                   bank,
-                  type: util$g.getValue(lines, "          Type:"),
+                  type: util$f.getValue(lines, "          Type:"),
                   ecc: eccStatus ? eccStatus === "enabled" : null,
-                  clockSpeed: parseInt(util$g.getValue(lines, "          Speed:"), 10),
+                  clockSpeed: parseInt(util$f.getValue(lines, "          Speed:"), 10),
                   formFactor: "",
-                  manufacturer: getManufacturer(util$g.getValue(lines, "          Manufacturer:")),
-                  partNum: util$g.getValue(lines, "          Part Number:"),
-                  serialNum: util$g.getValue(lines, "          Serial Number:"),
+                  manufacturer: getManufacturer(util$f.getValue(lines, "          Manufacturer:")),
+                  partNum: util$f.getValue(lines, "          Part Number:"),
+                  serialNum: util$f.getValue(lines, "          Serial Number:"),
                   voltageConfigured: null,
                   voltageMin: null,
                   voltageMax: null
@@ -6816,9 +6812,9 @@ function memLayout(callback) {
           }
           if (!result2.length) {
             const lines = stdout.toString().split("\n");
-            const size = parseInt(util$g.getValue(lines, "      Memory:"));
-            const type = util$g.getValue(lines, "      Type:");
-            const manufacturerId = util$g.getValue(lines, "      Manufacturer:");
+            const size = parseInt(util$f.getValue(lines, "      Memory:"));
+            const type = util$f.getValue(lines, "      Type:");
+            const manufacturerId = util$f.getValue(lines, "      Manufacturer:");
             if (size && type) {
               result2.push({
                 size: size * 1024 * 1024 * 1024,
@@ -6852,32 +6848,32 @@ function memLayout(callback) {
         const memoryTypes = "Unknown|Other|DRAM|Synchronous DRAM|Cache DRAM|EDO|EDRAM|VRAM|SRAM|RAM|ROM|FLASH|EEPROM|FEPROM|EPROM|CDRAM|3DRAM|SDRAM|SGRAM|RDRAM|DDR|DDR2|DDR2 FB-DIMM|Reserved|DDR3|FBD2|DDR4|LPDDR|LPDDR2|LPDDR3|LPDDR4|Logical non-volatile device|HBM|HBM2|DDR5|LPDDR5".split("|");
         const FormFactors = "Unknown|Other|SIP|DIP|ZIP|SOJ|Proprietary|SIMM|DIMM|TSOP|PGA|RIMM|SODIMM|SRIMM|SMD|SSMP|QFP|TQFP|SOIC|LCC|PLCC|BGA|FPBGA|LGA".split("|");
         try {
-          util$g.powerShell("Get-CimInstance Win32_PhysicalMemory | select DataWidth,TotalWidth,Capacity,BankLabel,MemoryType,SMBIOSMemoryType,ConfiguredClockSpeed,Speed,FormFactor,Manufacturer,PartNumber,SerialNumber,ConfiguredVoltage,MinVoltage,MaxVoltage,Tag | fl").then((stdout, error) => {
+          util$f.powerShell("Get-CimInstance Win32_PhysicalMemory | select DataWidth,TotalWidth,Capacity,BankLabel,MemoryType,SMBIOSMemoryType,ConfiguredClockSpeed,Speed,FormFactor,Manufacturer,PartNumber,SerialNumber,ConfiguredVoltage,MinVoltage,MaxVoltage,Tag | fl").then((stdout, error) => {
             if (!error) {
               let devices = stdout.toString().split(/\n\s*\n/);
               devices.shift();
               devices.forEach(function(device) {
                 let lines = device.split("\r\n");
-                const dataWidth = util$g.toInt(util$g.getValue(lines, "DataWidth", ":"));
-                const totalWidth = util$g.toInt(util$g.getValue(lines, "TotalWidth", ":"));
-                const size = parseInt(util$g.getValue(lines, "Capacity", ":"), 10) || 0;
-                const tag = util$g.getValue(lines, "Tag", ":");
-                const tagInt = util$g.splitByNumber(tag);
+                const dataWidth = util$f.toInt(util$f.getValue(lines, "DataWidth", ":"));
+                const totalWidth = util$f.toInt(util$f.getValue(lines, "TotalWidth", ":"));
+                const size = parseInt(util$f.getValue(lines, "Capacity", ":"), 10) || 0;
+                const tag = util$f.getValue(lines, "Tag", ":");
+                const tagInt = util$f.splitByNumber(tag);
                 if (size) {
                   result2.push({
                     size,
-                    bank: util$g.getValue(lines, "BankLabel", ":") + (tagInt[1] ? "/" + tagInt[1] : ""),
+                    bank: util$f.getValue(lines, "BankLabel", ":") + (tagInt[1] ? "/" + tagInt[1] : ""),
                     // BankLabel
-                    type: memoryTypes[parseInt(util$g.getValue(lines, "MemoryType", ":"), 10) || parseInt(util$g.getValue(lines, "SMBIOSMemoryType", ":"), 10)],
+                    type: memoryTypes[parseInt(util$f.getValue(lines, "MemoryType", ":"), 10) || parseInt(util$f.getValue(lines, "SMBIOSMemoryType", ":"), 10)],
                     ecc: dataWidth && totalWidth ? totalWidth > dataWidth : false,
-                    clockSpeed: parseInt(util$g.getValue(lines, "ConfiguredClockSpeed", ":"), 10) || parseInt(util$g.getValue(lines, "Speed", ":"), 10) || 0,
-                    formFactor: FormFactors[parseInt(util$g.getValue(lines, "FormFactor", ":"), 10) || 0],
-                    manufacturer: getManufacturer(util$g.getValue(lines, "Manufacturer", ":")),
-                    partNum: util$g.getValue(lines, "PartNumber", ":"),
-                    serialNum: util$g.getValue(lines, "SerialNumber", ":"),
-                    voltageConfigured: (parseInt(util$g.getValue(lines, "ConfiguredVoltage", ":"), 10) || 0) / 1e3,
-                    voltageMin: (parseInt(util$g.getValue(lines, "MinVoltage", ":"), 10) || 0) / 1e3,
-                    voltageMax: (parseInt(util$g.getValue(lines, "MaxVoltage", ":"), 10) || 0) / 1e3
+                    clockSpeed: parseInt(util$f.getValue(lines, "ConfiguredClockSpeed", ":"), 10) || parseInt(util$f.getValue(lines, "Speed", ":"), 10) || 0,
+                    formFactor: FormFactors[parseInt(util$f.getValue(lines, "FormFactor", ":"), 10) || 0],
+                    manufacturer: getManufacturer(util$f.getValue(lines, "Manufacturer", ":")),
+                    partNum: util$f.getValue(lines, "PartNumber", ":"),
+                    serialNum: util$f.getValue(lines, "SerialNumber", ":"),
+                    voltageConfigured: (parseInt(util$f.getValue(lines, "ConfiguredVoltage", ":"), 10) || 0) / 1e3,
+                    voltageMin: (parseInt(util$f.getValue(lines, "MinVoltage", ":"), 10) || 0) / 1e3,
+                    voltageMax: (parseInt(util$f.getValue(lines, "MaxVoltage", ":"), 10) || 0) / 1e3
                   });
                 }
               });
@@ -6900,7 +6896,7 @@ function memLayout(callback) {
 memory.memLayout = memLayout;
 const exec$b = require$$1.exec;
 const fs$o = require$$1$1;
-const util$f = util$l;
+const util$e = util$k;
 let _platform$c = process.platform;
 const _linux$b = _platform$c === "linux" || _platform$c === "android";
 const _darwin$b = _platform$c === "darwin";
@@ -6911,20 +6907,20 @@ const _netbsd$a = _platform$c === "netbsd";
 const _sunos$a = _platform$c === "sunos";
 function parseWinBatteryPart(lines, designedCapacity, fullChargeCapacity) {
   const result2 = {};
-  let status = util$f.getValue(lines, "BatteryStatus", ":").trim();
+  let status = util$e.getValue(lines, "BatteryStatus", ":").trim();
   if (status >= 0) {
     const statusValue = status ? parseInt(status) : 0;
     result2.status = statusValue;
     result2.hasBattery = true;
-    result2.maxCapacity = fullChargeCapacity || parseInt(util$f.getValue(lines, "DesignCapacity", ":") || 0);
-    result2.designedCapacity = parseInt(util$f.getValue(lines, "DesignCapacity", ":") || designedCapacity);
-    result2.voltage = parseInt(util$f.getValue(lines, "DesignVoltage", ":") || 0) / 1e3;
+    result2.maxCapacity = fullChargeCapacity || parseInt(util$e.getValue(lines, "DesignCapacity", ":") || 0);
+    result2.designedCapacity = parseInt(util$e.getValue(lines, "DesignCapacity", ":") || designedCapacity);
+    result2.voltage = parseInt(util$e.getValue(lines, "DesignVoltage", ":") || 0) / 1e3;
     result2.capacityUnit = "mWh";
-    result2.percent = parseInt(util$f.getValue(lines, "EstimatedChargeRemaining", ":") || 0);
+    result2.percent = parseInt(util$e.getValue(lines, "EstimatedChargeRemaining", ":") || 0);
     result2.currentCapacity = parseInt(result2.maxCapacity * result2.percent / 100);
     result2.isCharging = statusValue >= 6 && statusValue <= 9 || statusValue === 11 || statusValue !== 3 && statusValue !== 1 && result2.percent < 100;
     result2.acConnected = result2.isCharging || statusValue === 2;
-    result2.model = util$f.getValue(lines, "DeviceID", ":");
+    result2.model = util$e.getValue(lines, "DeviceID", ":");
   } else {
     result2.status = -1;
   }
@@ -6972,25 +6968,25 @@ var battery = function(callback) {
           fs$o.readFile(battery_path + "uevent", function(error, stdout) {
             if (!error) {
               let lines = stdout.toString().split("\n");
-              result2.isCharging = util$f.getValue(lines, "POWER_SUPPLY_STATUS", "=").toLowerCase() === "charging";
+              result2.isCharging = util$e.getValue(lines, "POWER_SUPPLY_STATUS", "=").toLowerCase() === "charging";
               result2.acConnected = acConnected || result2.isCharging;
-              result2.voltage = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_VOLTAGE_NOW", "="), 10) / 1e6;
+              result2.voltage = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_VOLTAGE_NOW", "="), 10) / 1e6;
               result2.capacityUnit = result2.voltage ? "mWh" : "mAh";
-              result2.cycleCount = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_CYCLE_COUNT", "="), 10);
-              result2.maxCapacity = Math.round(parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_CHARGE_FULL", "=", true, true), 10) / 1e3 * (result2.voltage || 1));
-              const desingedMinVoltage = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_VOLTAGE_MIN_DESIGN", "="), 10) / 1e6;
-              result2.designedCapacity = Math.round(parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_CHARGE_FULL_DESIGN", "=", true, true), 10) / 1e3 * (desingedMinVoltage || result2.voltage || 1));
-              result2.currentCapacity = Math.round(parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_CHARGE_NOW", "="), 10) / 1e3 * (result2.voltage || 1));
+              result2.cycleCount = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_CYCLE_COUNT", "="), 10);
+              result2.maxCapacity = Math.round(parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_CHARGE_FULL", "=", true, true), 10) / 1e3 * (result2.voltage || 1));
+              const desingedMinVoltage = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_VOLTAGE_MIN_DESIGN", "="), 10) / 1e6;
+              result2.designedCapacity = Math.round(parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_CHARGE_FULL_DESIGN", "=", true, true), 10) / 1e3 * (desingedMinVoltage || result2.voltage || 1));
+              result2.currentCapacity = Math.round(parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_CHARGE_NOW", "="), 10) / 1e3 * (result2.voltage || 1));
               if (!result2.maxCapacity) {
-                result2.maxCapacity = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_ENERGY_FULL", "=", true, true), 10) / 1e3;
-                result2.designedCapacity = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_ENERGY_FULL_DESIGN", "=", true, true), 10) / 1e3 | result2.maxCapacity;
-                result2.currentCapacity = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_ENERGY_NOW", "="), 10) / 1e3;
+                result2.maxCapacity = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_ENERGY_FULL", "=", true, true), 10) / 1e3;
+                result2.designedCapacity = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_ENERGY_FULL_DESIGN", "=", true, true), 10) / 1e3 | result2.maxCapacity;
+                result2.currentCapacity = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_ENERGY_NOW", "="), 10) / 1e3;
               }
-              const percent = util$f.getValue(lines, "POWER_SUPPLY_CAPACITY", "=");
-              const energy = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_ENERGY_NOW", "="), 10);
-              const power = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_POWER_NOW", "="), 10);
-              const current = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_CURRENT_NOW", "="), 10);
-              const charge = parseInt("0" + util$f.getValue(lines, "POWER_SUPPLY_CHARGE_NOW", "="), 10);
+              const percent = util$e.getValue(lines, "POWER_SUPPLY_CAPACITY", "=");
+              const energy = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_ENERGY_NOW", "="), 10);
+              const power = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_POWER_NOW", "="), 10);
+              const current = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_CURRENT_NOW", "="), 10);
+              const charge = parseInt("0" + util$e.getValue(lines, "POWER_SUPPLY_CHARGE_NOW", "="), 10);
               result2.percent = parseInt("0" + percent, 10);
               if (result2.maxCapacity && result2.currentCapacity) {
                 result2.hasBattery = true;
@@ -7008,10 +7004,10 @@ var battery = function(callback) {
               } else if (current && result2.currentCapacity) {
                 result2.timeRemaining = Math.floor(result2.currentCapacity / current * 60);
               }
-              result2.type = util$f.getValue(lines, "POWER_SUPPLY_TECHNOLOGY", "=");
-              result2.model = util$f.getValue(lines, "POWER_SUPPLY_MODEL_NAME", "=");
-              result2.manufacturer = util$f.getValue(lines, "POWER_SUPPLY_MANUFACTURER", "=");
-              result2.serial = util$f.getValue(lines, "POWER_SUPPLY_SERIAL_NUMBER", "=");
+              result2.type = util$e.getValue(lines, "POWER_SUPPLY_TECHNOLOGY", "=");
+              result2.model = util$e.getValue(lines, "POWER_SUPPLY_MODEL_NAME", "=");
+              result2.manufacturer = util$e.getValue(lines, "POWER_SUPPLY_MANUFACTURER", "=");
+              result2.serial = util$e.getValue(lines, "POWER_SUPPLY_SERIAL_NUMBER", "=");
               if (callback) {
                 callback(result2);
               }
@@ -7033,11 +7029,11 @@ var battery = function(callback) {
       if (_freebsd$a || _openbsd$a || _netbsd$a) {
         exec$b("sysctl -i hw.acpi.battery hw.acpi.acline", function(error, stdout) {
           let lines = stdout.toString().split("\n");
-          const batteries = parseInt("0" + util$f.getValue(lines, "hw.acpi.battery.units"), 10);
-          const percent = parseInt("0" + util$f.getValue(lines, "hw.acpi.battery.life"), 10);
+          const batteries = parseInt("0" + util$e.getValue(lines, "hw.acpi.battery.units"), 10);
+          const percent = parseInt("0" + util$e.getValue(lines, "hw.acpi.battery.life"), 10);
           result2.hasBattery = batteries > 0;
           result2.cycleCount = null;
-          result2.isCharging = util$f.getValue(lines, "hw.acpi.acline") !== "1";
+          result2.isCharging = util$e.getValue(lines, "hw.acpi.acline") !== "1";
           result2.acConnected = result2.isCharging;
           result2.maxCapacity = null;
           result2.currentCapacity = null;
@@ -7053,17 +7049,17 @@ var battery = function(callback) {
         exec$b('ioreg -n AppleSmartBattery -r | egrep "CycleCount|IsCharging|DesignCapacity|MaxCapacity|CurrentCapacity|DeviceName|BatterySerialNumber|Serial|TimeRemaining|Voltage"; pmset -g batt | grep %', function(error, stdout) {
           if (stdout) {
             let lines = stdout.toString().replace(/ +/g, "").replace(/"+/g, "").replace(/-/g, "").split("\n");
-            result2.cycleCount = parseInt("0" + util$f.getValue(lines, "cyclecount", "="), 10);
-            result2.voltage = parseInt("0" + util$f.getValue(lines, "voltage", "="), 10) / 1e3;
+            result2.cycleCount = parseInt("0" + util$e.getValue(lines, "cyclecount", "="), 10);
+            result2.voltage = parseInt("0" + util$e.getValue(lines, "voltage", "="), 10) / 1e3;
             result2.capacityUnit = result2.voltage ? "mWh" : "mAh";
-            result2.maxCapacity = Math.round(parseInt("0" + util$f.getValue(lines, "applerawmaxcapacity", "="), 10) * (result2.voltage || 1));
-            result2.currentCapacity = Math.round(parseInt("0" + util$f.getValue(lines, "applerawcurrentcapacity", "="), 10) * (result2.voltage || 1));
-            result2.designedCapacity = Math.round(parseInt("0" + util$f.getValue(lines, "DesignCapacity", "="), 10) * (result2.voltage || 1));
+            result2.maxCapacity = Math.round(parseInt("0" + util$e.getValue(lines, "applerawmaxcapacity", "="), 10) * (result2.voltage || 1));
+            result2.currentCapacity = Math.round(parseInt("0" + util$e.getValue(lines, "applerawcurrentcapacity", "="), 10) * (result2.voltage || 1));
+            result2.designedCapacity = Math.round(parseInt("0" + util$e.getValue(lines, "DesignCapacity", "="), 10) * (result2.voltage || 1));
             result2.manufacturer = "Apple";
-            result2.serial = util$f.getValue(lines, "BatterySerialNumber", "=") || util$f.getValue(lines, "Serial", "=");
-            result2.model = util$f.getValue(lines, "DeviceName", "=");
+            result2.serial = util$e.getValue(lines, "BatterySerialNumber", "=") || util$e.getValue(lines, "Serial", "=");
+            result2.model = util$e.getValue(lines, "DeviceName", "=");
             let percent = null;
-            const line = util$f.getValue(lines, "internal", "Battery");
+            const line = util$e.getValue(lines, "internal", "Battery");
             let parts = line.split(";");
             if (parts && parts[0]) {
               let parts2 = parts[0].split("	");
@@ -7075,7 +7071,7 @@ var battery = function(callback) {
               result2.isCharging = parts[1].trim() === "charging";
               result2.acConnected = parts[1].trim() !== "discharging";
             } else {
-              result2.isCharging = util$f.getValue(lines, "ischarging", "=").toLowerCase() === "yes";
+              result2.isCharging = util$e.getValue(lines, "ischarging", "=").toLowerCase() === "yes";
               result2.acConnected = result2.isCharging;
             }
             if (result2.maxCapacity && result2.currentCapacity) {
@@ -7083,7 +7079,7 @@ var battery = function(callback) {
               result2.type = "Li-ion";
               result2.percent = percent !== null ? percent : Math.round(100 * result2.currentCapacity / result2.maxCapacity);
               if (!result2.isCharging) {
-                result2.timeRemaining = parseInt("0" + util$f.getValue(lines, "TimeRemaining", "="), 10);
+                result2.timeRemaining = parseInt("0" + util$e.getValue(lines, "TimeRemaining", "="), 10);
               }
             }
           }
@@ -7102,10 +7098,10 @@ var battery = function(callback) {
       if (_windows$c) {
         try {
           const workload = [];
-          workload.push(util$f.powerShell("Get-CimInstance Win32_Battery | select BatteryStatus, DesignCapacity, DesignVoltage, EstimatedChargeRemaining, DeviceID | fl"));
-          workload.push(util$f.powerShell("(Get-WmiObject -Class BatteryStaticData -Namespace ROOT/WMI).DesignedCapacity"));
-          workload.push(util$f.powerShell("(Get-CimInstance -Class BatteryFullChargedCapacity -Namespace ROOT/WMI).FullChargedCapacity"));
-          util$f.promiseAll(
+          workload.push(util$e.powerShell("Get-CimInstance Win32_Battery | select BatteryStatus, DesignCapacity, DesignVoltage, EstimatedChargeRemaining, DeviceID | fl"));
+          workload.push(util$e.powerShell("(Get-WmiObject -Class BatteryStaticData -Namespace ROOT/WMI).DesignedCapacity"));
+          workload.push(util$e.powerShell("(Get-CimInstance -Class BatteryFullChargedCapacity -Namespace ROOT/WMI).FullChargedCapacity"));
+          util$e.promiseAll(
             workload
           ).then((data) => {
             if (data) {
@@ -7127,8 +7123,8 @@ var battery = function(callback) {
                 let additionalBatteries = [];
                 for (let i = 0; i < batteries.length; i++) {
                   let lines = batteries[i][0].split("\r\n");
-                  const designedCapacity = designCapacities && designCapacities.length >= i + 1 && designCapacities[i] ? util$f.toInt(designCapacities[i]) : 0;
-                  const fullChargeCapacity = fullChargeCapacities && fullChargeCapacities.length >= i + 1 && fullChargeCapacities[i] ? util$f.toInt(fullChargeCapacities[i]) : 0;
+                  const designedCapacity = designCapacities && designCapacities.length >= i + 1 && designCapacities[i] ? util$e.toInt(designCapacities[i]) : 0;
+                  const fullChargeCapacity = fullChargeCapacities && fullChargeCapacities.length >= i + 1 && fullChargeCapacities[i] ? util$e.toInt(fullChargeCapacities[i]) : 0;
                   const parsed = parseWinBatteryPart(lines, designedCapacity, fullChargeCapacity);
                   if (!first && parsed.status > 0 && parsed.status !== 10) {
                     result2.hasBattery = parsed.hasBattery;
@@ -7191,7 +7187,7 @@ var graphics$1 = {};
 const fs$n = require$$1$1;
 const exec$a = require$$1.exec;
 const execSync$6 = require$$1.execSync;
-const util$e = util$l;
+const util$d = util$k;
 let _platform$b = process.platform;
 let _nvidiaSmiPath = "";
 const _linux$a = _platform$b === "linux" || _platform$b === "android";
@@ -7380,7 +7376,7 @@ function graphics(callback) {
     let isGraphicsController = false;
     let pciIDs = [];
     try {
-      pciIDs = execSync$6('export LC_ALL=C; dmidecode -t 9 2>/dev/null; unset LC_ALL | grep "Bus Address: "', util$e.execOptsLinux).toString().split("\n");
+      pciIDs = execSync$6('export LC_ALL=C; dmidecode -t 9 2>/dev/null; unset LC_ALL | grep "Bus Address: "', util$d.execOptsLinux).toString().split("\n");
       for (let i2 = 0; i2 < pciIDs.length; i2++) {
         pciIDs[i2] = pciIDs[i2].replace("Bus Address:", "").replace("0000:", "").trim();
       }
@@ -7388,7 +7384,7 @@ function graphics(callback) {
         return el != null && el;
       });
     } catch (e) {
-      util$e.noop();
+      util$d.noop();
     }
     let i = 1;
     lines.forEach((line) => {
@@ -7551,7 +7547,7 @@ function graphics(callback) {
     }
     if (_windows$b) {
       try {
-        const basePath = util$e.WINDIR + "\\System32\\DriverStore\\FileRepository";
+        const basePath = util$d.WINDIR + "\\System32\\DriverStore\\FileRepository";
         const candidateDirs = fs$n.readdirSync(basePath).filter((dir) => {
           return fs$n.readdirSync([basePath, dir].join("/")).includes("nvidia-smi.exe");
         });
@@ -7564,7 +7560,7 @@ function graphics(callback) {
           _nvidiaSmiPath = [basePath, targetDir, "nvidia-smi.exe"].join("/");
         }
       } catch (e) {
-        util$e.noop();
+        util$d.noop();
       }
     } else if (_linux$a) {
       _nvidiaSmiPath = "nvidia-smi";
@@ -7573,7 +7569,7 @@ function graphics(callback) {
   }
   function nvidiaSmi(options) {
     const nvidiaSmiExe = getNvidiaSmi();
-    options = options || util$e.execOptsWin;
+    options = options || util$d.execOptsWin;
     if (nvidiaSmiExe) {
       const nvidiaSmiOpts = "--query-gpu=driver_version,pci.sub_device_id,name,pci.bus_id,fan.speed,memory.total,memory.used,memory.free,utilization.gpu,utilization.memory,temperature.gpu,temperature.memory,power.draw,power.limit,clocks.gr,clocks.mem --format=csv,noheader,nounits";
       const cmd = nvidiaSmiExe + " " + nvidiaSmiOpts + (_linux$a ? "  2>/dev/null" : "");
@@ -7581,11 +7577,11 @@ function graphics(callback) {
         options.stdio = ["pipe", "pipe", "ignore"];
       }
       try {
-        const sanitized = util$e.sanitizeShellString(cmd);
+        const sanitized = util$d.sanitizeShellString(cmd);
         const res = execSync$6(sanitized, options).toString();
         return res;
       } catch (e) {
-        util$e.noop();
+        util$d.noop();
       }
     }
     return "";
@@ -7734,7 +7730,7 @@ function graphics(callback) {
           }).join("");
         }
       } catch (e) {
-        util$e.noop();
+        util$d.noop();
       }
     } else {
       result2.model = "";
@@ -7816,15 +7812,15 @@ function graphics(callback) {
           const parts1 = lines[i].split("(");
           if (parts1 && parts1.length > 1 && parts1[0].indexOf("x") >= 0) {
             const resParts = parts1[0].trim().split("x");
-            currentDisplay.currentResX = util$e.toInt(resParts[0]);
-            currentDisplay.currentResY = util$e.toInt(resParts[1]);
+            currentDisplay.currentResX = util$d.toInt(resParts[0]);
+            currentDisplay.currentResY = util$d.toInt(resParts[1]);
           }
           is_current = true;
         }
         if (is_current && lines[i].toLowerCase().indexOf("clock") >= 0 && lines[i].toLowerCase().indexOf("hz") >= 0 && lines[i].toLowerCase().indexOf("v: height") >= 0) {
           const parts1 = lines[i].split("clock");
           if (parts1 && parts1.length > 1 && parts1[1].toLowerCase().indexOf("hz") >= 0) {
-            currentDisplay.currentRefreshRate = util$e.toInt(parts1[1]);
+            currentDisplay.currentRefreshRate = util$d.toInt(parts1[1]);
           }
           is_current = false;
         }
@@ -7847,14 +7843,14 @@ function graphics(callback) {
           if (!error) {
             try {
               const output = stdout.toString();
-              result2 = parseLinesDarwin(util$e.plistParser(output)[0]._items);
+              result2 = parseLinesDarwin(util$d.plistParser(output)[0]._items);
             } catch (e) {
-              util$e.noop();
+              util$d.noop();
             }
             try {
               stdout = execSync$6('defaults read /Library/Preferences/com.apple.windowserver.plist 2>/dev/null;defaults read /Library/Preferences/com.apple.windowserver.displays.plist 2>/dev/null; echo ""', { maxBuffer: 1024 * 2e4 });
               const output = (stdout || "").toString();
-              const obj = util$e.plistReader(output);
+              const obj = util$d.plistReader(output);
               if (obj["DisplayAnyUserSets"] && obj["DisplayAnyUserSets"]["Configs"] && obj["DisplayAnyUserSets"]["Configs"][0] && obj["DisplayAnyUserSets"]["Configs"][0]["DisplayConfig"]) {
                 const current = obj["DisplayAnyUserSets"]["Configs"][0]["DisplayConfig"];
                 let i = 0;
@@ -7885,7 +7881,7 @@ function graphics(callback) {
                 });
               }
             } catch (e) {
-              util$e.noop();
+              util$d.noop();
             }
           }
           if (callback) {
@@ -7895,7 +7891,7 @@ function graphics(callback) {
         });
       }
       if (_linux$a) {
-        if (util$e.isRaspberry()) {
+        if (util$d.isRaspberry()) {
           let cmd2 = `fbset -s 2> /dev/null | grep 'mode "' ; vcgencmd get_mem gpu 2> /dev/null; tvservice -s 2> /dev/null; tvservice -n 2> /dev/null;`;
           exec$a(cmd2, function(error, stdout) {
             let lines = stdout.toString().split("\n");
@@ -7904,7 +7900,7 @@ function graphics(callback) {
               if (parts.length === 2) {
                 result2.displays.push({
                   vendor: "",
-                  model: util$e.getValue(lines, "device_name", "="),
+                  model: util$d.getValue(lines, "device_name", "="),
                   main: true,
                   builtin: false,
                   connection: "HDMI",
@@ -7924,9 +7920,9 @@ function graphics(callback) {
             if (lines.length >= 1 && stdout.toString().indexOf("gpu=") >= -1) {
               result2.controllers.push({
                 vendor: "Broadcom",
-                model: util$e.getRpiGpu(),
+                model: util$d.getRpiGpu(),
                 bus: "",
-                vram: util$e.getValue(lines, "gpu", "=").replace("M", ""),
+                vram: util$d.getValue(lines, "gpu", "=").replace("M", ""),
                 vramDynamic: true
               });
             }
@@ -7987,13 +7983,13 @@ function graphics(callback) {
       if (_windows$b) {
         try {
           const workload = [];
-          workload.push(util$e.powerShell("Get-CimInstance win32_VideoController | fl *"));
-          workload.push(util$e.powerShell('gp "HKLM:\\SYSTEM\\ControlSet001\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\*" -ErrorAction SilentlyContinue | where MatchingDeviceId $null -NE | select MatchingDeviceId,HardwareInformation.qwMemorySize | fl'));
-          workload.push(util$e.powerShell("Get-CimInstance win32_desktopmonitor | fl *"));
-          workload.push(util$e.powerShell("Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams | fl"));
-          workload.push(util$e.powerShell("Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Screen]::AllScreens"));
-          workload.push(util$e.powerShell("Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorConnectionParams | fl"));
-          workload.push(util$e.powerShell('gwmi WmiMonitorID -Namespace root\\wmi | ForEach-Object {(($_.ManufacturerName -notmatch 0 | foreach {[char]$_}) -join "") + "|" + (($_.ProductCodeID -notmatch 0 | foreach {[char]$_}) -join "") + "|" + (($_.UserFriendlyName -notmatch 0 | foreach {[char]$_}) -join "") + "|" + (($_.SerialNumberID -notmatch 0 | foreach {[char]$_}) -join "") + "|" + $_.InstanceName}'));
+          workload.push(util$d.powerShell("Get-CimInstance win32_VideoController | fl *"));
+          workload.push(util$d.powerShell('gp "HKLM:\\SYSTEM\\ControlSet001\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\*" -ErrorAction SilentlyContinue | where MatchingDeviceId $null -NE | select MatchingDeviceId,HardwareInformation.qwMemorySize | fl'));
+          workload.push(util$d.powerShell("Get-CimInstance win32_desktopmonitor | fl *"));
+          workload.push(util$d.powerShell("Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorBasicDisplayParams | fl"));
+          workload.push(util$d.powerShell("Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Screen]::AllScreens"));
+          workload.push(util$d.powerShell("Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorConnectionParams | fl"));
+          workload.push(util$d.powerShell('gwmi WmiMonitorID -Namespace root\\wmi | ForEach-Object {(($_.ManufacturerName -notmatch 0 | foreach {[char]$_}) -join "") + "|" + (($_.ProductCodeID -notmatch 0 | foreach {[char]$_}) -join "") + "|" + (($_.UserFriendlyName -notmatch 0 | foreach {[char]$_}) -join "") + "|" + (($_.SerialNumberID -notmatch 0 | foreach {[char]$_}) -join "") + "|" + $_.InstanceName}'));
           const nvidiaData = nvidiaDevices();
           Promise.all(
             workload
@@ -8099,9 +8095,9 @@ function graphics(callback) {
       if ({}.hasOwnProperty.call(vections, i)) {
         if (vections[i].trim() !== "") {
           const lines = vections[i].trim().split("\n");
-          const matchingDeviceId = util$e.getValue(lines, "MatchingDeviceId").match(/PCI\\(VEN_[0-9A-F]{4})&(DEV_[0-9A-F]{4})(?:&(SUBSYS_[0-9A-F]{8}))?(?:&(REV_[0-9A-F]{2}))?/i);
+          const matchingDeviceId = util$d.getValue(lines, "MatchingDeviceId").match(/PCI\\(VEN_[0-9A-F]{4})&(DEV_[0-9A-F]{4})(?:&(SUBSYS_[0-9A-F]{8}))?(?:&(REV_[0-9A-F]{2}))?/i);
           if (matchingDeviceId) {
-            const quadWordmemorySize = parseInt(util$e.getValue(lines, "HardwareInformation.qwMemorySize"));
+            const quadWordmemorySize = parseInt(util$d.getValue(lines, "HardwareInformation.qwMemorySize"));
             if (!isNaN(quadWordmemorySize)) {
               let deviceId = matchingDeviceId[1].toUpperCase() + "&" + matchingDeviceId[2].toUpperCase();
               if (matchingDeviceId[3]) {
@@ -8121,7 +8117,7 @@ function graphics(callback) {
       if ({}.hasOwnProperty.call(sections, i)) {
         if (sections[i].trim() !== "") {
           let lines = sections[i].trim().split("\n");
-          let pnpDeviceId = util$e.getValue(lines, "PNPDeviceID", ":").match(/PCI\\(VEN_[0-9A-F]{4})&(DEV_[0-9A-F]{4})(?:&(SUBSYS_[0-9A-F]{8}))?(?:&(REV_[0-9A-F]{2}))?/i);
+          let pnpDeviceId = util$d.getValue(lines, "PNPDeviceID", ":").match(/PCI\\(VEN_[0-9A-F]{4})&(DEV_[0-9A-F]{4})(?:&(SUBSYS_[0-9A-F]{8}))?(?:&(REV_[0-9A-F]{2}))?/i);
           let subDeviceId = null;
           let memorySize = null;
           if (pnpDeviceId) {
@@ -8155,17 +8151,17 @@ function graphics(callback) {
             }
           }
           controllers.push({
-            vendor: util$e.getValue(lines, "AdapterCompatibility", ":"),
-            model: util$e.getValue(lines, "name", ":"),
-            bus: util$e.getValue(lines, "PNPDeviceID", ":").startsWith("PCI") ? "PCI" : "",
-            vram: (memorySize == null ? util$e.toInt(util$e.getValue(lines, "AdapterRAM", ":")) : memorySize) / 1024 / 1024,
-            vramDynamic: util$e.getValue(lines, "VideoMemoryType", ":") === "2",
+            vendor: util$d.getValue(lines, "AdapterCompatibility", ":"),
+            model: util$d.getValue(lines, "name", ":"),
+            bus: util$d.getValue(lines, "PNPDeviceID", ":").startsWith("PCI") ? "PCI" : "",
+            vram: (memorySize == null ? util$d.toInt(util$d.getValue(lines, "AdapterRAM", ":")) : memorySize) / 1024 / 1024,
+            vramDynamic: util$d.getValue(lines, "VideoMemoryType", ":") === "2",
             subDeviceId
           });
-          _resolutionX = util$e.toInt(util$e.getValue(lines, "CurrentHorizontalResolution", ":")) || _resolutionX;
-          _resolutionY = util$e.toInt(util$e.getValue(lines, "CurrentVerticalResolution", ":")) || _resolutionY;
-          _refreshRate = util$e.toInt(util$e.getValue(lines, "CurrentRefreshRate", ":")) || _refreshRate;
-          _pixelDepth = util$e.toInt(util$e.getValue(lines, "CurrentBitsPerPixel", ":")) || _pixelDepth;
+          _resolutionX = util$d.toInt(util$d.getValue(lines, "CurrentHorizontalResolution", ":")) || _resolutionX;
+          _resolutionY = util$d.toInt(util$d.getValue(lines, "CurrentVerticalResolution", ":")) || _resolutionY;
+          _refreshRate = util$d.toInt(util$d.getValue(lines, "CurrentRefreshRate", ":")) || _refreshRate;
+          _pixelDepth = util$d.toInt(util$d.getValue(lines, "CurrentBitsPerPixel", ":")) || _pixelDepth;
         }
       }
     }
@@ -8180,11 +8176,11 @@ function graphics(callback) {
     let resolutionY = 0;
     if (dsections && dsections.length) {
       let linesDisplay = dsections[0].split("\n");
-      vendor = util$e.getValue(linesDisplay, "MonitorManufacturer", ":");
-      model = util$e.getValue(linesDisplay, "Name", ":");
-      deviceID = util$e.getValue(linesDisplay, "PNPDeviceID", ":").replace(/&amp;/g, "&").toLowerCase();
-      resolutionX = util$e.toInt(util$e.getValue(linesDisplay, "ScreenWidth", ":"));
-      resolutionY = util$e.toInt(util$e.getValue(linesDisplay, "ScreenHeight", ":"));
+      vendor = util$d.getValue(linesDisplay, "MonitorManufacturer", ":");
+      model = util$d.getValue(linesDisplay, "Name", ":");
+      deviceID = util$d.getValue(linesDisplay, "PNPDeviceID", ":").replace(/&amp;/g, "&").toLowerCase();
+      resolutionX = util$d.toInt(util$d.getValue(linesDisplay, "ScreenWidth", ":"));
+      resolutionY = util$d.toInt(util$d.getValue(linesDisplay, "ScreenHeight", ":"));
     }
     for (let i = 0; i < ssections.length; i++) {
       if (ssections[i].trim() !== "") {
@@ -8196,14 +8192,14 @@ function graphics(callback) {
         let linesScreen = ssections[i].split("\n");
         let linesMonitor = msections[i].split("\n");
         let linesConnection = tsections[i].split("\n");
-        const bitsPerPixel = util$e.getValue(linesScreen, "BitsPerPixel");
-        const bounds = util$e.getValue(linesScreen, "Bounds").replace("{", "").replace("}", "").replace(/=/g, ":").split(",");
-        const primary = util$e.getValue(linesScreen, "Primary");
-        const sizeX = util$e.getValue(linesMonitor, "MaxHorizontalImageSize");
-        const sizeY = util$e.getValue(linesMonitor, "MaxVerticalImageSize");
-        const instanceName = util$e.getValue(linesMonitor, "InstanceName").toLowerCase();
-        const videoOutputTechnology = util$e.getValue(linesConnection, "VideoOutputTechnology");
-        const deviceName = util$e.getValue(linesScreen, "DeviceName");
+        const bitsPerPixel = util$d.getValue(linesScreen, "BitsPerPixel");
+        const bounds = util$d.getValue(linesScreen, "Bounds").replace("{", "").replace("}", "").replace(/=/g, ":").split(",");
+        const primary = util$d.getValue(linesScreen, "Primary");
+        const sizeX = util$d.getValue(linesMonitor, "MaxHorizontalImageSize");
+        const sizeY = util$d.getValue(linesMonitor, "MaxVerticalImageSize");
+        const instanceName = util$d.getValue(linesMonitor, "InstanceName").toLowerCase();
+        const videoOutputTechnology = util$d.getValue(linesConnection, "VideoOutputTechnology");
+        const deviceName = util$d.getValue(linesScreen, "DeviceName");
         let displayVendor = "";
         let displayModel = "";
         isections.forEach((element) => {
@@ -8219,15 +8215,15 @@ function graphics(callback) {
           main: primary.toLowerCase() === "true",
           builtin: videoOutputTechnology === "2147483648",
           connection: videoOutputTechnology && videoTypes[videoOutputTechnology] ? videoTypes[videoOutputTechnology] : "",
-          resolutionX: util$e.toInt(util$e.getValue(bounds, "Width", ":")),
-          resolutionY: util$e.toInt(util$e.getValue(bounds, "Height", ":")),
+          resolutionX: util$d.toInt(util$d.getValue(bounds, "Width", ":")),
+          resolutionY: util$d.toInt(util$d.getValue(bounds, "Height", ":")),
           sizeX: sizeX ? parseInt(sizeX, 10) : null,
           sizeY: sizeY ? parseInt(sizeY, 10) : null,
           pixelDepth: bitsPerPixel,
-          currentResX: util$e.toInt(util$e.getValue(bounds, "Width", ":")),
-          currentResY: util$e.toInt(util$e.getValue(bounds, "Height", ":")),
-          positionX: util$e.toInt(util$e.getValue(bounds, "X", ":")),
-          positionY: util$e.toInt(util$e.getValue(bounds, "Y", ":"))
+          currentResX: util$d.toInt(util$d.getValue(bounds, "Width", ":")),
+          currentResY: util$d.toInt(util$d.getValue(bounds, "Height", ":")),
+          positionX: util$d.toInt(util$d.getValue(bounds, "X", ":")),
+          positionY: util$d.toInt(util$d.getValue(bounds, "Y", ":"))
         });
       }
     }
@@ -8252,11 +8248,11 @@ function graphics(callback) {
 }
 graphics$1.graphics = graphics;
 var filesystem = {};
-const util$d = util$l;
+const util$c = util$k;
 const fs$m = require$$1$1;
 const exec$9 = require$$1.exec;
 const execSync$5 = require$$1.execSync;
-const execPromiseSave = util$d.promisifySave(require$$1.exec);
+const execPromiseSave = util$c.promisifySave(require$$1.exec);
 let _platform$a = process.platform;
 const _linux$9 = _platform$a === "linux" || _platform$a === "android";
 const _darwin$9 = _platform$a === "darwin";
@@ -8268,7 +8264,7 @@ const _sunos$8 = _platform$a === "sunos";
 let _fs_speed = {};
 let _disk_io = {};
 function fsSize(drive, callback) {
-  if (util$d.isFunction(drive)) {
+  if (util$c.isFunction(drive)) {
     callback = drive;
     drive = "";
   }
@@ -8363,13 +8359,13 @@ function fsSize(drive, callback) {
               osMounts[line.split(" ")[0]] = line.toLowerCase().indexOf("read-only") === -1;
             });
           } catch (e) {
-            util$d.noop();
+            util$c.noop();
           }
         }
         if (_linux$9) {
           try {
             cmd = "export LC_ALL=C; df -lkPTx squashfs; unset LC_ALL";
-            execSync$5("cat /proc/mounts 2>/dev/null", util$d.execOptsLinux).toString().split("\n").filter((line) => {
+            execSync$5("cat /proc/mounts 2>/dev/null", util$c.execOptsLinux).toString().split("\n").filter((line) => {
               return line.startsWith("/");
             }).forEach((line) => {
               osMounts[line.split(" ")[0]] = osMounts[line.split(" ")[0]] || false;
@@ -8378,7 +8374,7 @@ function fsSize(drive, callback) {
               }
             });
           } catch (e) {
-            util$d.noop();
+            util$c.noop();
           }
         }
         if (_freebsd$8 || _openbsd$8 || _netbsd$8) {
@@ -8388,7 +8384,7 @@ function fsSize(drive, callback) {
               osMounts[line.split(" ")[0]] = line.toLowerCase().indexOf("read-only") === -1;
             });
           } catch (e) {
-            util$d.noop();
+            util$c.noop();
           }
         }
         exec$9(cmd, { maxBuffer: 1024 * 1024 }, function(error, stdout) {
@@ -8427,20 +8423,20 @@ function fsSize(drive, callback) {
       if (_windows$a) {
         try {
           const cmd = `Get-WmiObject Win32_logicaldisk | select Access,Caption,FileSystem,FreeSpace,Size ${drive ? "| where -property Caption -eq " + drive : ""} | fl`;
-          util$d.powerShell(cmd).then((stdout, error) => {
+          util$c.powerShell(cmd).then((stdout, error) => {
             if (!error) {
               let devices = stdout.toString().split(/\n\s*\n/);
               devices.forEach(function(device) {
                 let lines = device.split("\r\n");
-                const size = util$d.toInt(util$d.getValue(lines, "size", ":"));
-                const free = util$d.toInt(util$d.getValue(lines, "freespace", ":"));
-                const caption = util$d.getValue(lines, "caption", ":");
-                const rwValue = util$d.getValue(lines, "access", ":");
-                const rw = rwValue ? util$d.toInt(rwValue) !== 1 : null;
+                const size = util$c.toInt(util$c.getValue(lines, "size", ":"));
+                const free = util$c.toInt(util$c.getValue(lines, "freespace", ":"));
+                const caption = util$c.getValue(lines, "caption", ":");
+                const rwValue = util$c.getValue(lines, "access", ":");
+                const rw = rwValue ? util$c.toInt(rwValue) !== 1 : null;
                 if (size) {
                   data.push({
                     fs: caption,
-                    type: util$d.getValue(lines, "filesystem", ":"),
+                    type: util$c.getValue(lines, "filesystem", ":"),
                     size,
                     used: size - free,
                     available: free,
@@ -8480,8 +8476,8 @@ function fsOpenFiles(callback) {
         exec$9(cmd, { maxBuffer: 1024 * 1024 }, function(error, stdout) {
           if (!error) {
             let lines = stdout.toString().split("\n");
-            result2.max = parseInt(util$d.getValue(lines, "kern.maxfiles", ":"), 10);
-            result2.allocated = parseInt(util$d.getValue(lines, "kern.num_files", ":"), 10) || parseInt(util$d.getValue(lines, "kern.open_files", ":"), 10);
+            result2.max = parseInt(util$c.getValue(lines, "kern.maxfiles", ":"), 10);
+            result2.allocated = parseInt(util$c.getValue(lines, "kern.num_files", ":"), 10) || parseInt(util$c.getValue(lines, "kern.open_files", ":"), 10);
             result2.available = result2.max - result2.allocated;
           }
           if (callback) {
@@ -8648,17 +8644,17 @@ function parseBlk(lines) {
         "group": disk.group || ""
       });
     } catch (e) {
-      util$d.noop();
+      util$c.noop();
     }
   });
-  data = util$d.unique(data);
-  data = util$d.sortByKey(data, ["type", "name"]);
+  data = util$c.unique(data);
+  data = util$c.sortByKey(data, ["type", "name"]);
   return data;
 }
 function decodeMdabmData(lines) {
-  const raid = util$d.getValue(lines, "md_level", "=");
-  const label = util$d.getValue(lines, "md_name", "=");
-  const uuid2 = util$d.getValue(lines, "md_uuid", "=");
+  const raid = util$c.getValue(lines, "md_level", "=");
+  const label = util$c.getValue(lines, "md_name", "=");
+  const uuid2 = util$c.getValue(lines, "md_uuid", "=");
   const members = [];
   lines.forEach((line) => {
     if (line.toLowerCase().startsWith("md_device_dev") && line.toLowerCase().indexOf("/dev/") > 0) {
@@ -8677,7 +8673,7 @@ function raidMatchLinux(data) {
   try {
     data.forEach((element) => {
       if (element.type.startsWith("raid")) {
-        const lines = execSync$5(`mdadm --export --detail /dev/${element.name}`, util$d.execOptsLinux).toString().split("\n");
+        const lines = execSync$5(`mdadm --export --detail /dev/${element.name}`, util$c.execOptsLinux).toString().split("\n");
         const mdData = decodeMdabmData(lines);
         element.label = mdData.label;
         element.uuid = mdData.uuid;
@@ -8692,7 +8688,7 @@ function raidMatchLinux(data) {
       }
     });
   } catch (e) {
-    util$d.noop();
+    util$c.noop();
   }
   return result2;
 }
@@ -8720,7 +8716,7 @@ function matchDevicesLinux(data) {
       return blockdevice;
     });
   } catch (e) {
-    util$d.noop();
+    util$c.noop();
   }
   return result2;
 }
@@ -8759,7 +8755,7 @@ function matchDevicesMac(data) {
       return blockdevice;
     });
   } catch (e) {
-    util$d.noop();
+    util$c.noop();
   }
   return result2;
 }
@@ -8767,7 +8763,7 @@ function getDevicesWin(diskDrives) {
   const result2 = [];
   diskDrives.forEach((element) => {
     const lines = element.split("\r\n");
-    const device = util$d.getValue(lines, "DeviceID", ":");
+    const device = util$c.getValue(lines, "DeviceID", ":");
     let partitions = element.split("@{DeviceID=");
     if (partitions.length > 1) {
       partitions = partitions.slice(1);
@@ -8865,29 +8861,29 @@ function blockDevices(callback) {
         let drivetypes = ["Unknown", "NoRoot", "Removable", "Local", "Network", "CD/DVD", "RAM"];
         try {
           const workload = [];
-          workload.push(util$d.powerShell("Get-CimInstance -ClassName Win32_LogicalDisk | select Caption,DriveType,Name,FileSystem,Size,VolumeSerialNumber,VolumeName | fl"));
-          workload.push(util$d.powerShell("Get-WmiObject -Class Win32_diskdrive | Select-Object -Property PNPDeviceId,DeviceID, Model, Size, @{L='Partitions'; E={$_.GetRelated('Win32_DiskPartition').GetRelated('Win32_LogicalDisk') | Select-Object -Property DeviceID, VolumeName, Size, FreeSpace}} | fl"));
-          util$d.promiseAll(
+          workload.push(util$c.powerShell("Get-CimInstance -ClassName Win32_LogicalDisk | select Caption,DriveType,Name,FileSystem,Size,VolumeSerialNumber,VolumeName | fl"));
+          workload.push(util$c.powerShell("Get-WmiObject -Class Win32_diskdrive | Select-Object -Property PNPDeviceId,DeviceID, Model, Size, @{L='Partitions'; E={$_.GetRelated('Win32_DiskPartition').GetRelated('Win32_LogicalDisk') | Select-Object -Property DeviceID, VolumeName, Size, FreeSpace}} | fl"));
+          util$c.promiseAll(
             workload
           ).then((res) => {
             let logicalDisks = res.results[0].toString().split(/\n\s*\n/);
             let diskDrives = res.results[1].toString().split(/\n\s*\n/);
             logicalDisks.forEach(function(device) {
               let lines = device.split("\r\n");
-              let drivetype = util$d.getValue(lines, "drivetype", ":");
+              let drivetype = util$c.getValue(lines, "drivetype", ":");
               if (drivetype) {
                 data.push({
-                  name: util$d.getValue(lines, "name", ":"),
-                  identifier: util$d.getValue(lines, "caption", ":"),
+                  name: util$c.getValue(lines, "name", ":"),
+                  identifier: util$c.getValue(lines, "caption", ":"),
                   type: "disk",
-                  fsType: util$d.getValue(lines, "filesystem", ":").toLowerCase(),
-                  mount: util$d.getValue(lines, "caption", ":"),
-                  size: util$d.getValue(lines, "size", ":"),
+                  fsType: util$c.getValue(lines, "filesystem", ":").toLowerCase(),
+                  mount: util$c.getValue(lines, "caption", ":"),
+                  size: util$c.getValue(lines, "size", ":"),
                   physical: drivetype >= 0 && drivetype <= 6 ? drivetypes[drivetype] : drivetypes[0],
-                  uuid: util$d.getValue(lines, "volumeserialnumber", ":"),
-                  label: util$d.getValue(lines, "volumename", ":"),
+                  uuid: util$c.getValue(lines, "volumeserialnumber", ":"),
+                  label: util$c.getValue(lines, "volumename", ":"),
                   model: "",
-                  serial: util$d.getValue(lines, "volumeserialnumber", ":"),
+                  serial: util$c.getValue(lines, "volumeserialnumber", ":"),
                   removable: drivetype === "2",
                   protocol: "",
                   group: "",
@@ -9316,14 +9312,14 @@ function diskLayout(callback) {
                 }
               } catch (e) {
                 try {
-                  const out2 = execSync$5("export LC_ALL=C; lsblk -bPo NAME,TYPE,SIZE,FSTYPE,MOUNTPOINT,UUID,ROTA,RO,RM,LABEL,MODEL,OWNER,GROUP 2>/dev/null; unset LC_ALL", util$d.execOptsLinux).toString();
+                  const out2 = execSync$5("export LC_ALL=C; lsblk -bPo NAME,TYPE,SIZE,FSTYPE,MOUNTPOINT,UUID,ROTA,RO,RM,LABEL,MODEL,OWNER,GROUP 2>/dev/null; unset LC_ALL", util$c.execOptsLinux).toString();
                   let lines = blkStdoutToObject(out2).split("\n");
                   const data = parseBlk(lines);
                   devices = data.filter((item) => {
                     return item.type === "disk" && item.size > 0 && (item.model !== null && item.model !== "" || item.mount === "" && item.label === "" && item.fsType === "");
                   });
                 } catch (e2) {
-                  util$d.noop();
+                  util$c.noop();
                 }
               }
               devices.forEach((device) => {
@@ -9331,9 +9327,9 @@ function diskLayout(callback) {
                 const BSDName = "/dev/" + device.name;
                 const logical = device.name;
                 try {
-                  mediumType = execSync$5("cat /sys/block/" + logical + "/queue/rotational 2>/dev/null", util$d.execOptsLinux).toString().split("\n")[0];
+                  mediumType = execSync$5("cat /sys/block/" + logical + "/queue/rotational 2>/dev/null", util$c.execOptsLinux).toString().split("\n")[0];
                 } catch (e) {
-                  util$d.noop();
+                  util$c.noop();
                 }
                 let interfaceType = device.tran ? device.tran.toUpperCase().trim() : "";
                 if (interfaceType === "NVME") {
@@ -9365,7 +9361,7 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                 cmdFullSmart += `${cmdFullSmart ? 'printf ",";' : ""}smartctl -a -j ${BSDName};`;
               });
             } catch (e) {
-              util$d.noop();
+              util$c.noop();
             }
           }
           if (cmdFullSmart) {
@@ -9462,9 +9458,9 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
               devices.forEach(function(device) {
                 device = "InterfaceType: " + device;
                 let lines2 = device.split("\n");
-                const mediumType = util$d.getValue(lines2, "Medium Type", ":", true).trim();
-                const sizeStr = util$d.getValue(lines2, "capacity", ":", true).trim();
-                const BSDName = util$d.getValue(lines2, "BSD Name", ":", true).trim();
+                const mediumType = util$c.getValue(lines2, "Medium Type", ":", true).trim();
+                const sizeStr = util$c.getValue(lines2, "capacity", ":", true).trim();
+                const BSDName = util$c.getValue(lines2, "BSD Name", ":", true).trim();
                 if (sizeStr) {
                   let sizeValue = 0;
                   if (sizeStr.indexOf("(") >= 0) {
@@ -9474,12 +9470,12 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                     sizeValue = parseInt(sizeStr);
                   }
                   if (sizeValue) {
-                    const smartStatusString = util$d.getValue(lines2, "S.M.A.R.T. status", ":", true).trim().toLowerCase();
+                    const smartStatusString = util$c.getValue(lines2, "S.M.A.R.T. status", ":", true).trim().toLowerCase();
                     result2.push({
                       device: BSDName,
                       type: mediumType.startsWith("Solid") ? "SSD" : "HD",
-                      name: util$d.getValue(lines2, "Model", ":", true).trim(),
-                      vendor: getVendorFromModel2(util$d.getValue(lines2, "Model", ":", true).trim()) || util$d.getValue(lines2, "Manufacturer", ":", true),
+                      name: util$c.getValue(lines2, "Model", ":", true).trim(),
+                      vendor: getVendorFromModel2(util$c.getValue(lines2, "Model", ":", true).trim()) || util$c.getValue(lines2, "Manufacturer", ":", true),
                       size: sizeValue,
                       bytesPerSector: null,
                       totalCylinders: null,
@@ -9488,9 +9484,9 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                       totalTracks: null,
                       tracksPerCylinder: null,
                       sectorsPerTrack: null,
-                      firmwareRevision: util$d.getValue(lines2, "Revision", ":", true).trim(),
-                      serialNum: util$d.getValue(lines2, "Serial Number", ":", true).trim(),
-                      interfaceType: util$d.getValue(lines2, "InterfaceType", ":", true).trim(),
+                      firmwareRevision: util$c.getValue(lines2, "Revision", ":", true).trim(),
+                      serialNum: util$c.getValue(lines2, "Serial Number", ":", true).trim(),
+                      interfaceType: util$c.getValue(lines2, "InterfaceType", ":", true).trim(),
                       smartStatus: smartStatusString === "verified" ? "OK" : smartStatusString || "unknown",
                       temperature: null,
                       BSDName
@@ -9500,7 +9496,7 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                 }
               });
             } catch (e) {
-              util$d.noop();
+              util$c.noop();
             }
             try {
               let devices = linesNVMe.join("\n").split("\n\n          Capacity:");
@@ -9508,9 +9504,9 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
               devices.forEach(function(device) {
                 device = "!Capacity: " + device;
                 let lines2 = device.split("\n");
-                const linkWidth = util$d.getValue(lines2, "link width", ":", true).trim();
-                const sizeStr = util$d.getValue(lines2, "!capacity", ":", true).trim();
-                const BSDName = util$d.getValue(lines2, "BSD Name", ":", true).trim();
+                const linkWidth = util$c.getValue(lines2, "link width", ":", true).trim();
+                const sizeStr = util$c.getValue(lines2, "!capacity", ":", true).trim();
+                const BSDName = util$c.getValue(lines2, "BSD Name", ":", true).trim();
                 if (sizeStr) {
                   let sizeValue = 0;
                   if (sizeStr.indexOf("(") >= 0) {
@@ -9520,12 +9516,12 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                     sizeValue = parseInt(sizeStr);
                   }
                   if (sizeValue) {
-                    const smartStatusString = util$d.getValue(lines2, "S.M.A.R.T. status", ":", true).trim().toLowerCase();
+                    const smartStatusString = util$c.getValue(lines2, "S.M.A.R.T. status", ":", true).trim().toLowerCase();
                     result2.push({
                       device: BSDName,
                       type: "NVMe",
-                      name: util$d.getValue(lines2, "Model", ":", true).trim(),
-                      vendor: getVendorFromModel2(util$d.getValue(lines2, "Model", ":", true).trim()),
+                      name: util$c.getValue(lines2, "Model", ":", true).trim(),
+                      vendor: getVendorFromModel2(util$c.getValue(lines2, "Model", ":", true).trim()),
                       size: sizeValue,
                       bytesPerSector: null,
                       totalCylinders: null,
@@ -9534,8 +9530,8 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                       totalTracks: null,
                       tracksPerCylinder: null,
                       sectorsPerTrack: null,
-                      firmwareRevision: util$d.getValue(lines2, "Revision", ":", true).trim(),
-                      serialNum: util$d.getValue(lines2, "Serial Number", ":", true).trim(),
+                      firmwareRevision: util$c.getValue(lines2, "Revision", ":", true).trim(),
+                      serialNum: util$c.getValue(lines2, "Serial Number", ":", true).trim(),
                       interfaceType: ("PCIe " + linkWidth).trim(),
                       smartStatus: smartStatusString === "verified" ? "OK" : smartStatusString || "unknown",
                       temperature: null,
@@ -9546,15 +9542,15 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                 }
               });
             } catch (e) {
-              util$d.noop();
+              util$c.noop();
             }
             try {
               let devices = linesUSB.join("\n").replaceAll("Media:\n ", "Model:").split("\n\n          Product ID:");
               devices.shift();
               devices.forEach(function(device) {
                 let lines2 = device.split("\n");
-                const sizeStr = util$d.getValue(lines2, "Capacity", ":", true).trim();
-                const BSDName = util$d.getValue(lines2, "BSD Name", ":", true).trim();
+                const sizeStr = util$c.getValue(lines2, "Capacity", ":", true).trim();
+                const BSDName = util$c.getValue(lines2, "BSD Name", ":", true).trim();
                 if (sizeStr) {
                   let sizeValue = 0;
                   if (sizeStr.indexOf("(") >= 0) {
@@ -9564,12 +9560,12 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                     sizeValue = parseInt(sizeStr);
                   }
                   if (sizeValue) {
-                    const smartStatusString = util$d.getValue(lines2, "S.M.A.R.T. status", ":", true).trim().toLowerCase();
+                    const smartStatusString = util$c.getValue(lines2, "S.M.A.R.T. status", ":", true).trim().toLowerCase();
                     result2.push({
                       device: BSDName,
                       type: "USB",
-                      name: util$d.getValue(lines2, "Model", ":", true).trim().replaceAll(":", ""),
-                      vendor: getVendorFromModel2(util$d.getValue(lines2, "Model", ":", true).trim()),
+                      name: util$c.getValue(lines2, "Model", ":", true).trim().replaceAll(":", ""),
+                      vendor: getVendorFromModel2(util$c.getValue(lines2, "Model", ":", true).trim()),
                       size: sizeValue,
                       bytesPerSector: null,
                       totalCylinders: null,
@@ -9578,8 +9574,8 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                       totalTracks: null,
                       tracksPerCylinder: null,
                       sectorsPerTrack: null,
-                      firmwareRevision: util$d.getValue(lines2, "Revision", ":", true).trim(),
-                      serialNum: util$d.getValue(lines2, "Serial Number", ":", true).trim(),
+                      firmwareRevision: util$c.getValue(lines2, "Revision", ":", true).trim(),
+                      serialNum: util$c.getValue(lines2, "Serial Number", ":", true).trim(),
                       interfaceType: "USB",
                       smartStatus: smartStatusString === "verified" ? "OK" : smartStatusString || "unknown",
                       temperature: null,
@@ -9590,7 +9586,7 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                 }
               });
             } catch (e) {
-              util$d.noop();
+              util$c.noop();
             }
             if (cmd) {
               cmd = cmd + 'printf "\n"';
@@ -9638,47 +9634,47 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
       if (_windows$a) {
         try {
           const workload = [];
-          workload.push(util$d.powerShell("Get-CimInstance Win32_DiskDrive | select Caption,Size,Status,PNPDeviceId,DeviceId,BytesPerSector,TotalCylinders,TotalHeads,TotalSectors,TotalTracks,TracksPerCylinder,SectorsPerTrack,FirmwareRevision,SerialNumber,InterfaceType | fl"));
-          workload.push(util$d.powerShell("Get-PhysicalDisk | select BusType,MediaType,FriendlyName,Model,SerialNumber,Size | fl"));
-          if (util$d.smartMonToolsInstalled()) {
+          workload.push(util$c.powerShell("Get-CimInstance Win32_DiskDrive | select Caption,Size,Status,PNPDeviceId,DeviceId,BytesPerSector,TotalCylinders,TotalHeads,TotalSectors,TotalTracks,TracksPerCylinder,SectorsPerTrack,FirmwareRevision,SerialNumber,InterfaceType | fl"));
+          workload.push(util$c.powerShell("Get-PhysicalDisk | select BusType,MediaType,FriendlyName,Model,SerialNumber,Size | fl"));
+          if (util$c.smartMonToolsInstalled()) {
             try {
               const smartDev = JSON.parse(execSync$5("smartctl --scan -j").toString());
               if (smartDev && smartDev.devices && smartDev.devices.length > 0) {
                 smartDev.devices.forEach((dev) => {
-                  workload.push(execPromiseSave(`smartctl -j -a ${dev.name}`, util$d.execOptsWin));
+                  workload.push(execPromiseSave(`smartctl -j -a ${dev.name}`, util$c.execOptsWin));
                 });
               }
             } catch (e) {
-              util$d.noop();
+              util$c.noop();
             }
           }
-          util$d.promiseAll(
+          util$c.promiseAll(
             workload
           ).then((data) => {
             let devices = data.results[0].toString().split(/\n\s*\n/);
             devices.forEach(function(device) {
               let lines = device.split("\r\n");
-              const size = util$d.getValue(lines, "Size", ":").trim();
-              const status = util$d.getValue(lines, "Status", ":").trim().toLowerCase();
+              const size = util$c.getValue(lines, "Size", ":").trim();
+              const status = util$c.getValue(lines, "Status", ":").trim().toLowerCase();
               if (size) {
                 result2.push({
-                  device: util$d.getValue(lines, "DeviceId", ":"),
+                  device: util$c.getValue(lines, "DeviceId", ":"),
                   // changed from PNPDeviceId to DeviceID (be be able to match devices)
                   type: device.indexOf("SSD") > -1 ? "SSD" : "HD",
                   // just a starting point ... better: MSFT_PhysicalDisk - Media Type ... see below
-                  name: util$d.getValue(lines, "Caption", ":"),
-                  vendor: getVendorFromModel2(util$d.getValue(lines, "Caption", ":", true).trim()),
+                  name: util$c.getValue(lines, "Caption", ":"),
+                  vendor: getVendorFromModel2(util$c.getValue(lines, "Caption", ":", true).trim()),
                   size: parseInt(size),
-                  bytesPerSector: parseInt(util$d.getValue(lines, "BytesPerSector", ":")),
-                  totalCylinders: parseInt(util$d.getValue(lines, "TotalCylinders", ":")),
-                  totalHeads: parseInt(util$d.getValue(lines, "TotalHeads", ":")),
-                  totalSectors: parseInt(util$d.getValue(lines, "TotalSectors", ":")),
-                  totalTracks: parseInt(util$d.getValue(lines, "TotalTracks", ":")),
-                  tracksPerCylinder: parseInt(util$d.getValue(lines, "TracksPerCylinder", ":")),
-                  sectorsPerTrack: parseInt(util$d.getValue(lines, "SectorsPerTrack", ":")),
-                  firmwareRevision: util$d.getValue(lines, "FirmwareRevision", ":").trim(),
-                  serialNum: util$d.getValue(lines, "SerialNumber", ":").trim(),
-                  interfaceType: util$d.getValue(lines, "InterfaceType", ":").trim(),
+                  bytesPerSector: parseInt(util$c.getValue(lines, "BytesPerSector", ":")),
+                  totalCylinders: parseInt(util$c.getValue(lines, "TotalCylinders", ":")),
+                  totalHeads: parseInt(util$c.getValue(lines, "TotalHeads", ":")),
+                  totalSectors: parseInt(util$c.getValue(lines, "TotalSectors", ":")),
+                  totalTracks: parseInt(util$c.getValue(lines, "TotalTracks", ":")),
+                  tracksPerCylinder: parseInt(util$c.getValue(lines, "TracksPerCylinder", ":")),
+                  sectorsPerTrack: parseInt(util$c.getValue(lines, "SectorsPerTrack", ":")),
+                  firmwareRevision: util$c.getValue(lines, "FirmwareRevision", ":").trim(),
+                  serialNum: util$c.getValue(lines, "SerialNumber", ":").trim(),
+                  interfaceType: util$c.getValue(lines, "InterfaceType", ":").trim(),
                   smartStatus: status === "ok" ? "Ok" : status === "degraded" ? "Degraded" : status === "pred fail" ? "Predicted Failure" : "Unknown",
                   temperature: null
                 });
@@ -9687,12 +9683,12 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
             devices = data.results[1].split(/\n\s*\n/);
             devices.forEach(function(device) {
               let lines = device.split("\r\n");
-              const serialNum = util$d.getValue(lines, "SerialNumber", ":").trim();
-              const name = util$d.getValue(lines, "FriendlyName", ":").trim().replace("Msft ", "Microsoft");
-              const size = util$d.getValue(lines, "Size", ":").trim();
-              const model = util$d.getValue(lines, "Model", ":").trim();
-              const interfaceType = util$d.getValue(lines, "BusType", ":").trim();
-              let mediaType = util$d.getValue(lines, "MediaType", ":").trim();
+              const serialNum = util$c.getValue(lines, "SerialNumber", ":").trim();
+              const name = util$c.getValue(lines, "FriendlyName", ":").trim().replace("Msft ", "Microsoft");
+              const size = util$c.getValue(lines, "Size", ":").trim();
+              const model = util$c.getValue(lines, "Model", ":").trim();
+              const interfaceType = util$c.getValue(lines, "BusType", ":").trim();
+              let mediaType = util$c.getValue(lines, "MediaType", ":").trim();
               if (mediaType === "3" || mediaType === "HDD") {
                 mediaType = "HD";
               }
@@ -9706,9 +9702,9 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                 mediaType = "Virtual";
               }
               if (size) {
-                let i = util$d.findObjectByKey(result2, "serialNum", serialNum);
+                let i = util$c.findObjectByKey(result2, "serialNum", serialNum);
                 if (i === -1 || serialNum === "") {
-                  i = util$d.findObjectByKey(result2, "name", name);
+                  i = util$c.findObjectByKey(result2, "name", name);
                 }
                 if (i != -1) {
                   result2[i].type = mediaType;
@@ -9724,7 +9720,7 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                   const smartData = JSON.parse(smartStr);
                   if (smartData.serial_number) {
                     const serialNum = smartData.serial_number;
-                    let i = util$d.findObjectByKey(result2, "serialNum", serialNum);
+                    let i = util$c.findObjectByKey(result2, "serialNum", serialNum);
                     if (i != -1) {
                       result2[i].smartStatus = smartData.smart_status && smartData.smart_status.passed ? "Ok" : smartData.smart_status && smartData.smart_status.passed === false ? "Predicted Failure" : "unknown";
                       if (smartData.temperature && smartData.temperature.current) {
@@ -9734,7 +9730,7 @@ ${BSDName}|"; smartctl -H ${BSDName} | grep overall;`;
                     }
                   }
                 } catch (e) {
-                  util$d.noop();
+                  util$c.noop();
                 }
               });
             }
@@ -9759,7 +9755,7 @@ const os$3 = require$$0$1;
 const exec$8 = require$$1.exec;
 const execSync$4 = require$$1.execSync;
 const fs$l = require$$1$1;
-const util$c = util$l;
+const util$b = util$k;
 let _platform$9 = process.platform;
 const _linux$8 = _platform$9 === "linux" || _platform$9 === "android";
 const _darwin$8 = _platform$9 === "darwin";
@@ -9798,7 +9794,7 @@ function getDefaultNetworkInterface() {
     if (_windows$9) {
       let defaultIp = "";
       const cmd = "netstat -r";
-      const result2 = execSync$4(cmd, util$c.execOptsWin);
+      const result2 = execSync$4(cmd, util$b.execOptsWin);
       const lines = result2.toString().split(os$3.EOL);
       lines.forEach((line) => {
         line = line.replace(/\s+/g, " ").trim();
@@ -9823,7 +9819,7 @@ function getDefaultNetworkInterface() {
     }
     if (_linux$8) {
       let cmd = "ip route 2> /dev/null | grep default";
-      let result2 = execSync$4(cmd, util$c.execOptsLinux);
+      let result2 = execSync$4(cmd, util$b.execOptsLinux);
       let parts = result2.toString().split("\n")[0].split(/\s+/);
       if (parts[0] === "none" && parts[5]) {
         ifacename = parts[5];
@@ -9852,7 +9848,7 @@ function getDefaultNetworkInterface() {
       }
     }
   } catch (e) {
-    util$c.noop();
+    util$b.noop();
   }
   if (ifacename) {
     _default_iface = ifacename;
@@ -9867,7 +9863,7 @@ function getMacAddresses() {
   if (_linux$8 || _freebsd$7 || _openbsd$7 || _netbsd$7) {
     if (typeof pathToIp === "undefined") {
       try {
-        const lines = execSync$4("which ip", util$c.execOptsLinux).toString().split("\n");
+        const lines = execSync$4("which ip", util$b.execOptsLinux).toString().split("\n");
         if (lines.length && lines[0].indexOf(":") === -1 && lines[0].indexOf("/") === 0) {
           pathToIp = lines[0];
         } else {
@@ -9879,7 +9875,7 @@ function getMacAddresses() {
     }
     try {
       const cmd = "export LC_ALL=C; " + (pathToIp ? pathToIp + " link show up" : "/sbin/ifconfig") + "; unset LC_ALL";
-      let res = execSync$4(cmd, util$c.execOptsLinux);
+      let res = execSync$4(cmd, util$b.execOptsLinux);
       const lines = res.toString().split("\n");
       for (let i = 0; i < lines.length; i++) {
         if (lines[i] && lines[i][0] !== " ") {
@@ -9902,7 +9898,7 @@ function getMacAddresses() {
         }
       }
     } catch (e) {
-      util$c.noop();
+      util$b.noop();
     }
   }
   if (_darwin$8) {
@@ -9923,7 +9919,7 @@ function getMacAddresses() {
         }
       }
     } catch (e) {
-      util$c.noop();
+      util$b.noop();
     }
   }
   return result2;
@@ -9951,32 +9947,32 @@ function parseLinesWindowsNics(sections, nconfigsections) {
           try {
             linesNicConfig = nconfigsections && nconfigsections[i] ? nconfigsections[i].trim().split("\r\n") : [];
           } catch (e) {
-            util$c.noop();
+            util$b.noop();
           }
-          let netEnabled = util$c.getValue(lines, "NetEnabled", ":");
-          let adapterType = util$c.getValue(lines, "AdapterTypeID", ":") === "9" ? "wireless" : "wired";
-          let ifacename = util$c.getValue(lines, "Name", ":").replace(/\]/g, ")").replace(/\[/g, "(");
-          let iface = util$c.getValue(lines, "NetConnectionID", ":").replace(/\]/g, ")").replace(/\[/g, "(");
+          let netEnabled = util$b.getValue(lines, "NetEnabled", ":");
+          let adapterType = util$b.getValue(lines, "AdapterTypeID", ":") === "9" ? "wireless" : "wired";
+          let ifacename = util$b.getValue(lines, "Name", ":").replace(/\]/g, ")").replace(/\[/g, "(");
+          let iface = util$b.getValue(lines, "NetConnectionID", ":").replace(/\]/g, ")").replace(/\[/g, "(");
           if (ifacename.toLowerCase().indexOf("wi-fi") >= 0 || ifacename.toLowerCase().indexOf("wireless") >= 0) {
             adapterType = "wireless";
           }
           if (netEnabled !== "") {
-            const speed = parseInt(util$c.getValue(lines, "speed", ":").trim(), 10) / 1e6;
+            const speed = parseInt(util$b.getValue(lines, "speed", ":").trim(), 10) / 1e6;
             nics.push({
-              mac: util$c.getValue(lines, "MACAddress", ":").toLowerCase(),
-              dhcp: util$c.getValue(linesNicConfig, "dhcpEnabled", ":").toLowerCase() === "true",
+              mac: util$b.getValue(lines, "MACAddress", ":").toLowerCase(),
+              dhcp: util$b.getValue(linesNicConfig, "dhcpEnabled", ":").toLowerCase() === "true",
               name: ifacename,
               iface,
               netEnabled: netEnabled === "TRUE",
               speed: isNaN(speed) ? null : speed,
-              operstate: util$c.getValue(lines, "NetConnectionStatus", ":") === "2" ? "up" : "down",
+              operstate: util$b.getValue(lines, "NetConnectionStatus", ":") === "2" ? "up" : "down",
               type: adapterType
             });
           }
         }
       }
     } catch (e) {
-      util$c.noop();
+      util$b.noop();
     }
   }
   return nics;
@@ -9987,7 +9983,7 @@ function getWindowsNics() {
       let cmd = "Get-CimInstance Win32_NetworkAdapter | fl *; echo '#-#-#-#';";
       cmd += "Get-CimInstance Win32_NetworkAdapterConfiguration | fl DHCPEnabled";
       try {
-        util$c.powerShell(cmd).then((data) => {
+        util$b.powerShell(cmd).then((data) => {
           data = data.split("#-#-#-#");
           const nsections = (data[0] || "").split(/\n\s*\n/);
           const nconfigsections = (data[1] || "").split(/\n\s*\n/);
@@ -10007,7 +10003,7 @@ function getWindowsDNSsuffixes() {
     ifaces: []
   };
   try {
-    const ipconfig = execSync$4("ipconfig /all", util$c.execOptsWin);
+    const ipconfig = execSync$4("ipconfig /all", util$b.execOptsWin);
     const ipconfigArray = ipconfig.split("\r\n\r\n");
     ipconfigArray.forEach((element, index) => {
       if (index == 1) {
@@ -10064,7 +10060,7 @@ function getWindowsIfaceDNSsuffix(ifaces, ifacename) {
 }
 function getWindowsWiredProfilesInformation() {
   try {
-    const result2 = execSync$4("netsh lan show profiles", util$c.execOptsWin);
+    const result2 = execSync$4("netsh lan show profiles", util$b.execOptsWin);
     const profileList = result2.split("\r\nProfile on interface");
     return profileList;
   } catch (error) {
@@ -10076,7 +10072,7 @@ function getWindowsWiredProfilesInformation() {
 }
 function getWindowsWirelessIfaceSSID(interfaceName) {
   try {
-    const result2 = execSync$4(`netsh wlan show  interface name="${interfaceName}" | findstr "SSID"`, util$c.execOptsWin);
+    const result2 = execSync$4(`netsh wlan show  interface name="${interfaceName}" | findstr "SSID"`, util$b.execOptsWin);
     const SSID = result2.split("\r\n").shift();
     const parseSSID = SSID.split(":").pop().trim();
     return parseSSID;
@@ -10123,15 +10119,15 @@ function getWindowsIEEE8021x(connectionType, iface, ifaces) {
       const SSID = getWindowsWirelessIfaceSSID(iface);
       if (SSID !== "Unknown") {
         let ifaceSanitized = "";
-        const s = util$c.isPrototypePolluted() ? "---" : util$c.sanitizeShellString(SSID);
-        const l = util$c.mathMin(s.length, 32);
+        const s = util$b.isPrototypePolluted() ? "---" : util$b.sanitizeShellString(SSID);
+        const l = util$b.mathMin(s.length, 32);
         for (let i = 0; i <= l; i++) {
           if (s[i] !== void 0) {
             ifaceSanitized = ifaceSanitized + s[i];
           }
         }
-        i8021xState = execSync$4(`netsh wlan show profiles "${ifaceSanitized}" | findstr "802.1X"`, util$c.execOptsWin);
-        i8021xProtocol = execSync$4(`netsh wlan show profiles "${ifaceSanitized}" | findstr "EAP"`, util$c.execOptsWin);
+        i8021xState = execSync$4(`netsh wlan show profiles "${ifaceSanitized}" | findstr "802.1X"`, util$b.execOptsWin);
+        i8021xProtocol = execSync$4(`netsh wlan show profiles "${ifaceSanitized}" | findstr "EAP"`, util$b.execOptsWin);
       }
       if (i8021xState.includes(":") && i8021xProtocol.includes(":")) {
         i8021x.state = i8021xState.split(":").pop();
@@ -10198,10 +10194,10 @@ function parseLinesDarwinNics(sections) {
         nic.ip4 = line.split("inet ")[1].toLowerCase().split(" ")[0];
       }
     });
-    let speed = util$c.getValue(section, "link rate");
+    let speed = util$b.getValue(section, "link rate");
     nic.speed = speed ? parseFloat(speed) : null;
     if (nic.speed === null) {
-      speed = util$c.getValue(section, "uplink rate");
+      speed = util$b.getValue(section, "uplink rate");
       nic.speed = speed ? parseFloat(speed) : null;
       if (nic.speed !== null && speed.toLowerCase().indexOf("gbps") >= 0) {
         nic.speed = nic.speed * 1e3;
@@ -10211,10 +10207,10 @@ function parseLinesDarwinNics(sections) {
         nic.speed = nic.speed * 1e3;
       }
     }
-    nic.type = util$c.getValue(section, "type").toLowerCase().indexOf("wi-fi") > -1 ? "wireless" : "wired";
-    const operstate = util$c.getValue(section, "status").toLowerCase();
+    nic.type = util$b.getValue(section, "type").toLowerCase().indexOf("wi-fi") > -1 ? "wireless" : "wired";
+    const operstate = util$b.getValue(section, "status").toLowerCase();
     nic.operstate = operstate === "active" ? "up" : operstate === "inactive" ? "down" : "unknown";
-    nic.duplex = util$c.getValue(section, "media").toLowerCase().indexOf("half-duplex") > -1 ? "half" : "full";
+    nic.duplex = util$b.getValue(section, "media").toLowerCase().indexOf("half-duplex") > -1 ? "half" : "full";
     if (nic.ip6 || nic.ip4 || nic.mac) {
       nics.push(nic);
     }
@@ -10234,7 +10230,7 @@ function getDarwinNics() {
 function getLinuxIfaceConnectionName(interfaceName) {
   const cmd = `nmcli device status 2>/dev/null | grep ${interfaceName}`;
   try {
-    const result2 = execSync$4(cmd, util$c.execOptsLinux).toString();
+    const result2 = execSync$4(cmd, util$b.execOptsLinux).toString();
     const resultFormat = result2.replace(/\s+/g, " ").trim();
     const connectionNameLines = resultFormat.split(" ").slice(3);
     const connectionName = connectionNameLines.join(" ");
@@ -10247,7 +10243,7 @@ function checkLinuxDCHPInterfaces(file2) {
   let result2 = [];
   try {
     let cmd = `cat ${file2} 2> /dev/null | grep 'iface\\|source'`;
-    const lines = execSync$4(cmd, util$c.execOptsLinux).toString().split("\n");
+    const lines = execSync$4(cmd, util$b.execOptsLinux).toString().split("\n");
     lines.forEach((line) => {
       const parts = line.replace(/\s+/g, " ").trim().split(" ");
       if (parts.length >= 4) {
@@ -10261,7 +10257,7 @@ function checkLinuxDCHPInterfaces(file2) {
       }
     });
   } catch (e) {
-    util$c.noop();
+    util$b.noop();
   }
   return result2;
 }
@@ -10269,16 +10265,16 @@ function getLinuxDHCPNics() {
   let cmd = "ip a 2> /dev/null";
   let result2 = [];
   try {
-    const lines = execSync$4(cmd, util$c.execOptsLinux).toString().split("\n");
+    const lines = execSync$4(cmd, util$b.execOptsLinux).toString().split("\n");
     const nsections = splitSectionsNics(lines);
     result2 = parseLinuxDHCPNics(nsections);
   } catch (e) {
-    util$c.noop();
+    util$b.noop();
   }
   try {
     result2 = checkLinuxDCHPInterfaces("/etc/network/interfaces");
   } catch (e) {
-    util$c.noop();
+    util$b.noop();
   }
   return result2;
 }
@@ -10308,7 +10304,7 @@ function getLinuxIfaceDHCPstatus(iface, connectionName, DHCPNics) {
   if (connectionName) {
     const cmd = `nmcli connection show "${connectionName}" 2>/dev/null | grep ipv4.method;`;
     try {
-      const lines = execSync$4(cmd, util$c.execOptsLinux).toString();
+      const lines = execSync$4(cmd, util$b.execOptsLinux).toString();
       const resultFormat = lines.replace(/\s+/g, " ").trim();
       let dhcStatus = resultFormat.split(" ").slice(1).toString();
       switch (dhcStatus) {
@@ -10336,7 +10332,7 @@ function getDarwinIfaceDHCPstatus(iface) {
       result2 = true;
     }
   } catch (e) {
-    util$c.noop();
+    util$b.noop();
   }
   return result2;
 }
@@ -10344,7 +10340,7 @@ function getLinuxIfaceDNSsuffix(connectionName) {
   if (connectionName) {
     const cmd = `nmcli connection show "${connectionName}" 2>/dev/null | grep ipv4.dns-search;`;
     try {
-      const result2 = execSync$4(cmd, util$c.execOptsLinux).toString();
+      const result2 = execSync$4(cmd, util$b.execOptsLinux).toString();
       const resultFormat = result2.replace(/\s+/g, " ").trim();
       const dnsSuffix = resultFormat.split(" ").slice(1).toString();
       return dnsSuffix == "--" ? "Not defined" : dnsSuffix;
@@ -10359,7 +10355,7 @@ function getLinuxIfaceIEEE8021xAuth(connectionName) {
   if (connectionName) {
     const cmd = `nmcli connection show "${connectionName}" 2>/dev/null | grep 802-1x.eap;`;
     try {
-      const result2 = execSync$4(cmd, util$c.execOptsLinux).toString();
+      const result2 = execSync$4(cmd, util$b.execOptsLinux).toString();
       const resultFormat = result2.replace(/\s+/g, " ").trim();
       const authenticationProtocol = resultFormat.split(" ").slice(1).toString();
       return authenticationProtocol == "--" ? "" : authenticationProtocol;
@@ -10436,8 +10432,8 @@ function networkInterfaces(callback, rescan, defaultString) {
               });
             }
             let ifaceSanitized = "";
-            const s = util$c.isPrototypePolluted() ? "---" : util$c.sanitizeShellString(nic.iface);
-            const l = util$c.mathMin(s.length, 2e3);
+            const s = util$b.isPrototypePolluted() ? "---" : util$b.sanitizeShellString(nic.iface);
+            const l = util$b.mathMin(s.length, 2e3);
             for (let i = 0; i <= l; i++) {
               if (s[i] !== void 0) {
                 ifaceSanitized = ifaceSanitized + s[i];
@@ -10531,8 +10527,8 @@ function networkInterfaces(callback, rescan, defaultString) {
               });
               let iface = dev.split(":")[0].trim().toLowerCase();
               let ifaceSanitized = "";
-              const s = util$c.isPrototypePolluted() ? "---" : util$c.sanitizeShellString(iface);
-              const l = util$c.mathMin(s.length, 2e3);
+              const s = util$b.isPrototypePolluted() ? "---" : util$b.sanitizeShellString(iface);
+              const l = util$b.mathMin(s.length, 2e3);
               for (let i = 0; i <= l; i++) {
                 if (s[i] !== void 0) {
                   ifaceSanitized = ifaceSanitized + s[i];
@@ -10565,28 +10561,28 @@ function networkInterfaces(callback, rescan, defaultString) {
             echo -n "wirelessspeed: "; iw dev ${ifaceSanitized} link 2>&1 | grep bitrate; echo;`;
               let lines = [];
               try {
-                lines = execSync$4(cmd, util$c.execOptsLinux).toString().split("\n");
+                lines = execSync$4(cmd, util$b.execOptsLinux).toString().split("\n");
                 const connectionName = getLinuxIfaceConnectionName(ifaceSanitized);
                 dhcp = getLinuxIfaceDHCPstatus(ifaceSanitized, connectionName, _dhcpNics);
                 dnsSuffix = getLinuxIfaceDNSsuffix(connectionName);
                 ieee8021xAuth = getLinuxIfaceIEEE8021xAuth(connectionName);
                 ieee8021xState = getLinuxIfaceIEEE8021xState(ieee8021xAuth);
               } catch (e) {
-                util$c.noop();
+                util$b.noop();
               }
-              duplex = util$c.getValue(lines, "duplex");
+              duplex = util$b.getValue(lines, "duplex");
               duplex = duplex.startsWith("cat") ? "" : duplex;
-              mtu = parseInt(util$c.getValue(lines, "mtu"), 10);
-              let myspeed = parseInt(util$c.getValue(lines, "speed"), 10);
+              mtu = parseInt(util$b.getValue(lines, "mtu"), 10);
+              let myspeed = parseInt(util$b.getValue(lines, "speed"), 10);
               speed = isNaN(myspeed) ? null : myspeed;
-              let wirelessspeed = util$c.getValue(lines, "wirelessspeed").split("tx bitrate: ");
+              let wirelessspeed = util$b.getValue(lines, "wirelessspeed").split("tx bitrate: ");
               if (speed === null && wirelessspeed.length === 2) {
                 myspeed = parseFloat(wirelessspeed[1]);
                 speed = isNaN(myspeed) ? null : myspeed;
               }
-              carrierChanges = parseInt(util$c.getValue(lines, "carrier_changes"), 10);
-              const operstate = util$c.getValue(lines, "operstate");
-              type = operstate === "up" ? util$c.getValue(lines, "wireless").trim() ? "wireless" : "wired" : "unknown";
+              carrierChanges = parseInt(util$b.getValue(lines, "carrier_changes"), 10);
+              const operstate = util$b.getValue(lines, "operstate");
+              type = operstate === "up" ? util$b.getValue(lines, "wireless").trim() ? "wireless" : "wired" : "unknown";
               if (ifaceSanitized === "lo" || ifaceSanitized.startsWith("bond")) {
                 type = "virtual";
               }
@@ -10664,8 +10660,8 @@ function networkInterfaces(callback, rescan, defaultString) {
             dnsSuffixes = getWindowsDNSsuffixes();
             for (let dev in ifaces) {
               let ifaceSanitized = "";
-              const s = util$c.isPrototypePolluted() ? "---" : util$c.sanitizeShellString(dev);
-              const l = util$c.mathMin(s.length, 2e3);
+              const s = util$b.isPrototypePolluted() ? "---" : util$b.sanitizeShellString(dev);
+              const l = util$b.mathMin(s.length, 2e3);
               for (let i = 0; i <= l; i++) {
                 if (s[i] !== void 0) {
                   ifaceSanitized = ifaceSanitized + s[i];
@@ -10820,7 +10816,7 @@ function networkStats(ifaces, callback) {
   let ifacesArray = [];
   return new Promise((resolve) => {
     process.nextTick(() => {
-      if (util$c.isFunction(ifaces) && !callback) {
+      if (util$b.isFunction(ifaces) && !callback) {
         callback = ifaces;
         ifacesArray = [getDefaultNetworkInterface()];
       } else {
@@ -10832,15 +10828,15 @@ function networkStats(ifaces, callback) {
         }
         ifaces = ifaces || getDefaultNetworkInterface();
         try {
-          ifaces.__proto__.toLowerCase = util$c.stringToLower;
-          ifaces.__proto__.replace = util$c.stringReplace;
-          ifaces.__proto__.toString = util$c.stringToString;
-          ifaces.__proto__.substr = util$c.stringSubstr;
-          ifaces.__proto__.substring = util$c.stringSubstring;
-          ifaces.__proto__.trim = util$c.stringTrim;
-          ifaces.__proto__.startsWith = util$c.stringStartWith;
+          ifaces.__proto__.toLowerCase = util$b.stringToLower;
+          ifaces.__proto__.replace = util$b.stringReplace;
+          ifaces.__proto__.toString = util$b.stringToString;
+          ifaces.__proto__.substr = util$b.stringSubstr;
+          ifaces.__proto__.substring = util$b.stringSubstring;
+          ifaces.__proto__.trim = util$b.stringTrim;
+          ifaces.__proto__.startsWith = util$b.stringStartWith;
         } catch (e) {
-          Object.setPrototypeOf(ifaces, util$c.stringObj);
+          Object.setPrototypeOf(ifaces, util$b.stringObj);
         }
         ifaces = ifaces.trim().toLowerCase().replace(/,+/g, "|");
         ifacesArray = ifaces.split("|");
@@ -10891,13 +10887,13 @@ function networkStatsSingle(iface) {
         if (sections[i].trim() !== "") {
           let lines = sections[i].trim().split("\r\n");
           perfData.push({
-            name: util$c.getValue(lines, "Name", ":").replace(/[()[\] ]+/g, "").replace(/#|\//g, "_").toLowerCase(),
-            rx_bytes: parseInt(util$c.getValue(lines, "BytesReceivedPersec", ":"), 10),
-            rx_errors: parseInt(util$c.getValue(lines, "PacketsReceivedErrors", ":"), 10),
-            rx_dropped: parseInt(util$c.getValue(lines, "PacketsReceivedDiscarded", ":"), 10),
-            tx_bytes: parseInt(util$c.getValue(lines, "BytesSentPersec", ":"), 10),
-            tx_errors: parseInt(util$c.getValue(lines, "PacketsOutboundErrors", ":"), 10),
-            tx_dropped: parseInt(util$c.getValue(lines, "PacketsOutboundDiscarded", ":"), 10)
+            name: util$b.getValue(lines, "Name", ":").replace(/[()[\] ]+/g, "").replace(/#|\//g, "_").toLowerCase(),
+            rx_bytes: parseInt(util$b.getValue(lines, "BytesReceivedPersec", ":"), 10),
+            rx_errors: parseInt(util$b.getValue(lines, "PacketsReceivedErrors", ":"), 10),
+            rx_dropped: parseInt(util$b.getValue(lines, "PacketsReceivedDiscarded", ":"), 10),
+            tx_bytes: parseInt(util$b.getValue(lines, "BytesSentPersec", ":"), 10),
+            tx_errors: parseInt(util$b.getValue(lines, "PacketsOutboundErrors", ":"), 10),
+            tx_dropped: parseInt(util$b.getValue(lines, "PacketsOutboundDiscarded", ":"), 10)
           });
         }
       }
@@ -10907,8 +10903,8 @@ function networkStatsSingle(iface) {
   return new Promise((resolve) => {
     process.nextTick(() => {
       let ifaceSanitized = "";
-      const s = util$c.isPrototypePolluted() ? "---" : util$c.sanitizeShellString(iface);
-      const l = util$c.mathMin(s.length, 2e3);
+      const s = util$b.isPrototypePolluted() ? "---" : util$b.sanitizeShellString(iface);
+      const l = util$b.mathMin(s.length, 2e3);
       for (let i = 0; i <= l; i++) {
         if (s[i] !== void 0) {
           ifaceSanitized = ifaceSanitized + s[i];
@@ -11016,7 +11012,7 @@ function networkStatsSingle(iface) {
         if (_windows$9) {
           let perfData = [];
           let ifaceName = ifaceSanitized;
-          util$c.powerShell("Get-CimInstance Win32_PerfRawData_Tcpip_NetworkInterface | select Name,BytesReceivedPersec,PacketsReceivedErrors,PacketsReceivedDiscarded,BytesSentPersec,PacketsOutboundErrors,PacketsOutboundDiscarded | fl").then((stdout, error) => {
+          util$b.powerShell("Get-CimInstance Win32_PerfRawData_Tcpip_NetworkInterface | select Name,BytesReceivedPersec,PacketsReceivedErrors,PacketsReceivedDiscarded,BytesSentPersec,PacketsOutboundErrors,PacketsOutboundDiscarded | fl").then((stdout, error) => {
             if (!error) {
               const psections = stdout.toString().split(/\n\s*\n/);
               perfData = parseLinesWindowsPerfData(psections);
@@ -11250,7 +11246,7 @@ function networkConnections(callback) {
       if (_windows$9) {
         let cmd = "netstat -nao";
         try {
-          exec$8(cmd, util$c.execOptsWin, function(error, stdout) {
+          exec$8(cmd, util$b.execOptsWin, function(error, stdout) {
             if (!error) {
               let lines = stdout.toString().split("\r\n");
               lines.forEach(function(line) {
@@ -11274,7 +11270,7 @@ function networkConnections(callback) {
                     peerip = peeraddress.join(":");
                   }
                   peerip = peerip.replace(/\[/g, "").replace(/\]/g, "");
-                  let pid = util$c.toInt(line[4]);
+                  let pid = util$b.toInt(line[4]);
                   let connstate = line[3];
                   if (connstate === "HERGESTELLT") {
                     connstate = "ESTABLISHED";
@@ -11385,7 +11381,7 @@ function networkGatewayDefault(callback) {
           exec$8(cmd, { maxBuffer: 1024 * 2e4 }, function(error, stdout) {
             if (!error) {
               const lines = stdout.toString().split("\n").map((line) => line.trim());
-              result2 = util$c.getValue(lines, "gateway");
+              result2 = util$b.getValue(lines, "gateway");
             }
             if (!result2) {
               cmd = "netstat -rn | awk '/default/ {print $2}'";
@@ -11413,7 +11409,7 @@ function networkGatewayDefault(callback) {
       }
       if (_windows$9) {
         try {
-          exec$8("netstat -r", util$c.execOptsWin, function(error, stdout) {
+          exec$8("netstat -r", util$b.execOptsWin, function(error, stdout) {
             const lines = stdout.toString().split(os$3.EOL);
             lines.forEach((line) => {
               line = line.replace(/\s+/g, " ").trim();
@@ -11425,10 +11421,10 @@ function networkGatewayDefault(callback) {
               }
             });
             if (!result2) {
-              util$c.powerShell("Get-CimInstance -ClassName Win32_IP4RouteTable | Where-Object { $_.Destination -eq '0.0.0.0' -and $_.Mask -eq '0.0.0.0' }").then((data) => {
+              util$b.powerShell("Get-CimInstance -ClassName Win32_IP4RouteTable | Where-Object { $_.Destination -eq '0.0.0.0' -and $_.Mask -eq '0.0.0.0' }").then((data) => {
                 let lines2 = data.toString().split("\r\n");
                 if (lines2.length > 1 && !result2) {
-                  result2 = util$c.getValue(lines2, "NextHop");
+                  result2 = util$b.getValue(lines2, "NextHop");
                   if (callback) {
                     callback(result2);
                   }
@@ -11457,7 +11453,7 @@ var wifi = {};
 const os$2 = require$$0$1;
 const exec$7 = require$$1.exec;
 const execSync$3 = require$$1.execSync;
-const util$b = util$l;
+const util$a = util$k;
 let _platform$8 = process.platform;
 const _linux$7 = _platform$8 === "linux" || _platform$8 === "android";
 const _darwin$7 = _platform$8 === "darwin";
@@ -11559,7 +11555,7 @@ function wifiChannelFromFrequencs(frequency) {
   for (let key in _wifi_frequencies) {
     if ({}.hasOwnProperty.call(_wifi_frequencies, key)) {
       if (_wifi_frequencies[key] === frequency) {
-        channel = util$b.toInt(key);
+        channel = util$a.toInt(key);
       }
     }
   }
@@ -11569,15 +11565,15 @@ function ifaceListLinux() {
   const result2 = [];
   const cmd = "iw dev 2>/dev/null";
   try {
-    const all = execSync$3(cmd, util$b.execOptsLinux).toString().split("\n").map((line) => line.trim()).join("\n");
+    const all = execSync$3(cmd, util$a.execOptsLinux).toString().split("\n").map((line) => line.trim()).join("\n");
     const parts = all.split("\nInterface ");
     parts.shift();
     parts.forEach((ifaceDetails) => {
       const lines = ifaceDetails.split("\n");
       const iface = lines[0];
-      const id = util$b.toInt(util$b.getValue(lines, "ifindex", " "));
-      const mac = util$b.getValue(lines, "addr", " ");
-      const channel = util$b.toInt(util$b.getValue(lines, "channel", " "));
+      const id = util$a.toInt(util$a.getValue(lines, "ifindex", " "));
+      const mac = util$a.getValue(lines, "addr", " ");
+      const channel = util$a.toInt(util$a.getValue(lines, "channel", " "));
       result2.push({
         id,
         iface,
@@ -11588,15 +11584,15 @@ function ifaceListLinux() {
     return result2;
   } catch (e) {
     try {
-      const all = execSync$3("nmcli -t -f general,wifi-properties,wired-properties,interface-flags,capabilities,nsp device show 2>/dev/null", util$b.execOptsLinux).toString();
+      const all = execSync$3("nmcli -t -f general,wifi-properties,wired-properties,interface-flags,capabilities,nsp device show 2>/dev/null", util$a.execOptsLinux).toString();
       const parts = all.split("\n\n");
       let i = 1;
       parts.forEach((ifaceDetails) => {
         const lines = ifaceDetails.split("\n");
-        const iface = util$b.getValue(lines, "GENERAL.DEVICE");
-        const type = util$b.getValue(lines, "GENERAL.TYPE");
+        const iface = util$a.getValue(lines, "GENERAL.DEVICE");
+        const type = util$a.getValue(lines, "GENERAL.TYPE");
         const id = i++;
-        const mac = util$b.getValue(lines, "GENERAL.HWADDR");
+        const mac = util$a.getValue(lines, "GENERAL.HWADDR");
         const channel = "";
         if (type.toLowerCase() === "wifi") {
           result2.push({
@@ -11616,14 +11612,14 @@ function ifaceListLinux() {
 function nmiDeviceLinux(iface) {
   const cmd = `nmcli -t -f general,wifi-properties,capabilities,ip4,ip6 device show ${iface} 2> /dev/null`;
   try {
-    const lines = execSync$3(cmd, util$b.execOptsLinux).toString().split("\n");
-    const ssid = util$b.getValue(lines, "GENERAL.CONNECTION");
+    const lines = execSync$3(cmd, util$a.execOptsLinux).toString().split("\n");
+    const ssid = util$a.getValue(lines, "GENERAL.CONNECTION");
     return {
       iface,
-      type: util$b.getValue(lines, "GENERAL.TYPE"),
-      vendor: util$b.getValue(lines, "GENERAL.VENDOR"),
-      product: util$b.getValue(lines, "GENERAL.PRODUCT"),
-      mac: util$b.getValue(lines, "GENERAL.HWADDR").toLowerCase(),
+      type: util$a.getValue(lines, "GENERAL.TYPE"),
+      vendor: util$a.getValue(lines, "GENERAL.VENDOR"),
+      product: util$a.getValue(lines, "GENERAL.PRODUCT"),
+      mac: util$a.getValue(lines, "GENERAL.HWADDR").toLowerCase(),
       ssid: ssid !== "--" ? ssid : null
     };
   } catch (e) {
@@ -11633,14 +11629,14 @@ function nmiDeviceLinux(iface) {
 function nmiConnectionLinux(ssid) {
   const cmd = `nmcli -t --show-secrets connection show ${ssid} 2>/dev/null`;
   try {
-    const lines = execSync$3(cmd, util$b.execOptsLinux).toString().split("\n");
-    const bssid = util$b.getValue(lines, "802-11-wireless.seen-bssids").toLowerCase();
+    const lines = execSync$3(cmd, util$a.execOptsLinux).toString().split("\n");
+    const bssid = util$a.getValue(lines, "802-11-wireless.seen-bssids").toLowerCase();
     return {
       ssid: ssid !== "--" ? ssid : null,
-      uuid: util$b.getValue(lines, "connection.uuid"),
-      type: util$b.getValue(lines, "connection.type"),
-      autoconnect: util$b.getValue(lines, "connection.autoconnect") === "yes",
-      security: util$b.getValue(lines, "802-11-wireless-security.key-mgmt"),
+      uuid: util$a.getValue(lines, "connection.uuid"),
+      type: util$a.getValue(lines, "connection.type"),
+      autoconnect: util$a.getValue(lines, "connection.autoconnect") === "yes",
+      security: util$a.getValue(lines, "802-11-wireless-security.key-mgmt"),
       bssid: bssid !== "--" ? bssid : null
     };
   } catch (e) {
@@ -11653,15 +11649,15 @@ function wpaConnectionLinux(iface) {
   }
   const cmd = `wpa_cli -i ${iface} status 2>&1`;
   try {
-    const lines = execSync$3(cmd, util$b.execOptsLinux).toString().split("\n");
-    const freq = util$b.toInt(util$b.getValue(lines, "freq", "="));
+    const lines = execSync$3(cmd, util$a.execOptsLinux).toString().split("\n");
+    const freq = util$a.toInt(util$a.getValue(lines, "freq", "="));
     return {
-      ssid: util$b.getValue(lines, "ssid", "="),
-      uuid: util$b.getValue(lines, "uuid", "="),
-      security: util$b.getValue(lines, "key_mgmt", "="),
+      ssid: util$a.getValue(lines, "ssid", "="),
+      uuid: util$a.getValue(lines, "uuid", "="),
+      security: util$a.getValue(lines, "key_mgmt", "="),
       freq,
       channel: wifiChannelFromFrequencs(freq),
-      bssid: util$b.getValue(lines, "bssid", "=").toLowerCase()
+      bssid: util$a.getValue(lines, "bssid", "=").toLowerCase()
     };
   } catch (e) {
     return {};
@@ -11671,22 +11667,22 @@ function getWifiNetworkListNmi() {
   const result2 = [];
   const cmd = "nmcli -t -m multiline --fields active,ssid,bssid,mode,chan,freq,signal,security,wpa-flags,rsn-flags device wifi list 2>/dev/null";
   try {
-    const stdout = execSync$3(cmd, util$b.execOptsLinux);
+    const stdout = execSync$3(cmd, util$a.execOptsLinux);
     const parts = stdout.toString().split("ACTIVE:");
     parts.shift();
     parts.forEach((part) => {
       part = "ACTIVE:" + part;
       const lines = part.split(os$2.EOL);
-      const channel = util$b.getValue(lines, "CHAN");
-      const frequency = util$b.getValue(lines, "FREQ").toLowerCase().replace("mhz", "").trim();
-      const security = util$b.getValue(lines, "SECURITY").replace("(", "").replace(")", "");
-      const wpaFlags = util$b.getValue(lines, "WPA-FLAGS").replace("(", "").replace(")", "");
-      const rsnFlags = util$b.getValue(lines, "RSN-FLAGS").replace("(", "").replace(")", "");
-      const quality = util$b.getValue(lines, "SIGNAL");
+      const channel = util$a.getValue(lines, "CHAN");
+      const frequency = util$a.getValue(lines, "FREQ").toLowerCase().replace("mhz", "").trim();
+      const security = util$a.getValue(lines, "SECURITY").replace("(", "").replace(")", "");
+      const wpaFlags = util$a.getValue(lines, "WPA-FLAGS").replace("(", "").replace(")", "");
+      const rsnFlags = util$a.getValue(lines, "RSN-FLAGS").replace("(", "").replace(")", "");
+      const quality = util$a.getValue(lines, "SIGNAL");
       result2.push({
-        ssid: util$b.getValue(lines, "SSID"),
-        bssid: util$b.getValue(lines, "BSSID").toLowerCase(),
-        mode: util$b.getValue(lines, "MODE"),
+        ssid: util$a.getValue(lines, "SSID"),
+        bssid: util$a.getValue(lines, "BSSID").toLowerCase(),
+        mode: util$a.getValue(lines, "MODE"),
         channel: channel ? parseInt(channel, 10) : null,
         frequency: frequency ? parseInt(frequency, 10) : null,
         signalLevel: wifiDBFromQuality(quality),
@@ -11704,7 +11700,7 @@ function getWifiNetworkListNmi() {
 function getWifiNetworkListIw(iface) {
   const result2 = [];
   try {
-    let iwlistParts = execSync$3(`export LC_ALL=C; iwlist ${iface} scan 2>&1; unset LC_ALL`, util$b.execOptsLinux).toString().split("        Cell ");
+    let iwlistParts = execSync$3(`export LC_ALL=C; iwlist ${iface} scan 2>&1; unset LC_ALL`, util$a.execOptsLinux).toString().split("        Cell ");
     if (iwlistParts[0].indexOf("resource busy") >= 0) {
       return -1;
     }
@@ -11712,15 +11708,15 @@ function getWifiNetworkListIw(iface) {
       iwlistParts.shift();
       iwlistParts.forEach((element) => {
         const lines = element.split("\n");
-        const channel = util$b.getValue(lines, "channel", ":", true);
+        const channel = util$a.getValue(lines, "channel", ":", true);
         const address = lines && lines.length && lines[0].indexOf("Address:") >= 0 ? lines[0].split("Address:")[1].trim().toLowerCase() : "";
-        const mode = util$b.getValue(lines, "mode", ":", true);
-        const frequency = util$b.getValue(lines, "frequency", ":", true);
-        const qualityString = util$b.getValue(lines, "Quality", "=", true);
+        const mode = util$a.getValue(lines, "mode", ":", true);
+        const frequency = util$a.getValue(lines, "frequency", ":", true);
+        const qualityString = util$a.getValue(lines, "Quality", "=", true);
         const dbParts = qualityString.toLowerCase().split("signal level=");
-        const db = dbParts.length > 1 ? util$b.toInt(dbParts[1]) : 0;
+        const db = dbParts.length > 1 ? util$a.toInt(dbParts[1]) : 0;
         const quality = db ? wifiQualityFromDB(db) : 0;
-        const ssid = util$b.getValue(lines, "essid", ":", true);
+        const ssid = util$a.getValue(lines, "essid", ":", true);
         const isWpa = element.indexOf(" WPA ") >= 0;
         const isWpa2 = element.indexOf("WPA2 ") >= 0;
         const security = [];
@@ -11773,8 +11769,8 @@ function getWifiNetworkListIw(iface) {
           ssid,
           bssid: address,
           mode,
-          channel: channel ? util$b.toInt(channel) : null,
-          frequency: frequency ? util$b.toInt(frequency.replace(".", "")) : null,
+          channel: channel ? util$a.toInt(channel) : null,
+          frequency: frequency ? util$a.toInt(frequency.replace(".", "")) : null,
           signalLevel: db,
           quality,
           security,
@@ -11835,7 +11831,7 @@ function wifiNetworks(callback) {
         result2 = getWifiNetworkListNmi();
         if (result2.length === 0) {
           try {
-            const iwconfigParts = execSync$3("export LC_ALL=C; iwconfig 2>/dev/null; unset LC_ALL", util$b.execOptsLinux).toString().split("\n\n");
+            const iwconfigParts = execSync$3("export LC_ALL=C; iwconfig 2>/dev/null; unset LC_ALL", util$a.execOptsLinux).toString().split("\n\n");
             let iface = "";
             iwconfigParts.forEach((element) => {
               if (element.indexOf("no wireless") === -1 && element.trim() !== "") {
@@ -11844,8 +11840,8 @@ function wifiNetworks(callback) {
             });
             if (iface) {
               let ifaceSanitized = "";
-              const s = util$b.isPrototypePolluted() ? "---" : util$b.sanitizeShellString(iface, true);
-              const l = util$b.mathMin(s.length, 2e3);
+              const s = util$a.isPrototypePolluted() ? "---" : util$a.sanitizeShellString(iface, true);
+              const l = util$a.mathMin(s.length, 2e3);
               for (let i = 0; i <= l; i++) {
                 if (s[i] !== void 0) {
                   ifaceSanitized = ifaceSanitized + s[i];
@@ -11899,7 +11895,7 @@ function wifiNetworks(callback) {
         });
       } else if (_windows$8) {
         let cmd = "netsh wlan show networks mode=Bssid";
-        util$b.powerShell(cmd).then((stdout) => {
+        util$a.powerShell(cmd).then((stdout) => {
           const ssidParts = stdout.toString("utf8").split(os$2.EOL + os$2.EOL + "SSID ");
           ssidParts.shift();
           ssidParts.forEach((ssidPart) => {
@@ -11985,8 +11981,8 @@ function wifiConnections(callback) {
         const networkList = getWifiNetworkListNmi();
         ifaces.forEach((ifaceDetail) => {
           let ifaceSanitized = "";
-          const s = util$b.isPrototypePolluted() ? "---" : util$b.sanitizeShellString(ifaceDetail.iface, true);
-          const ll = util$b.mathMin(s.length, 2e3);
+          const s = util$a.isPrototypePolluted() ? "---" : util$a.sanitizeShellString(ifaceDetail.iface, true);
+          const ll = util$a.mathMin(s.length, 2e3);
           for (let i = 0; i <= ll; i++) {
             if (s[i] !== void 0) {
               ifaceSanitized = ifaceSanitized + s[i];
@@ -11997,8 +11993,8 @@ function wifiConnections(callback) {
           const ssid = nmiDetails.ssid || wpaDetails.ssid;
           const network2 = networkList.filter((nw) => nw.ssid === ssid);
           let ssidSanitized = "";
-          const t = util$b.isPrototypePolluted() ? "---" : util$b.sanitizeShellString(ssid, true);
-          const l = util$b.mathMin(t.length, 32);
+          const t = util$a.isPrototypePolluted() ? "---" : util$a.sanitizeShellString(ssid, true);
+          const l = util$a.mathMin(t.length, 32);
           for (let i = 0; i <= l; i++) {
             if (t[i] !== void 0) {
               ssidSanitized = ssidSanitized + t[i];
@@ -12034,7 +12030,7 @@ function wifiConnections(callback) {
         exec$7(cmd, function(error, stdout) {
           try {
             const parts = stdout.toString().split("######");
-            const profilerObj = util$b.plistParser(parts[0]);
+            const profilerObj = util$a.plistParser(parts[0]);
             const networkObj = profilerObj[0]._SPCommandLineArguments.indexOf("SPNetworkDataType") >= 0 ? profilerObj[0]._items : profilerObj[1]._items;
             const airportObj = profilerObj[0]._SPCommandLineArguments.indexOf("SPAirPortDataType") >= 0 ? profilerObj[0]._items[0].spairport_airport_interfaces : profilerObj[1]._items[0].spairport_airport_interfaces;
             let lines3 = [];
@@ -12075,7 +12071,7 @@ function wifiConnections(callback) {
               txRate: airportWifiObj.spairport_network_rate || null
             });
           } catch (e) {
-            util$b.noop();
+            util$a.noop();
           }
           if (callback) {
             callback(result2);
@@ -12084,7 +12080,7 @@ function wifiConnections(callback) {
         });
       } else if (_windows$8) {
         let cmd = "netsh wlan show interfaces";
-        util$b.powerShell(cmd).then(function(stdout) {
+        util$a.powerShell(cmd).then(function(stdout) {
           const allLines = stdout.toString().split("\r\n");
           for (let i = 0; i < allLines.length; i++) {
             allLines[i] = allLines[i].trim();
@@ -12097,14 +12093,14 @@ function wifiConnections(callback) {
               const iface = lines[0].indexOf(":") >= 0 ? lines[0].split(":")[1].trim() : "";
               const model = lines[1].indexOf(":") >= 0 ? lines[1].split(":")[1].trim() : "";
               const id = lines[2].indexOf(":") >= 0 ? lines[2].split(":")[1].trim() : "";
-              const ssid = util$b.getValue(lines, "SSID", ":", true);
-              const bssid = util$b.getValue(lines, "BSSID", ":", true) || util$b.getValue(lines, "AP BSSID", ":", true);
-              const quality = util$b.getValue(lines, "Signal", ":", true);
+              const ssid = util$a.getValue(lines, "SSID", ":", true);
+              const bssid = util$a.getValue(lines, "BSSID", ":", true) || util$a.getValue(lines, "AP BSSID", ":", true);
+              const quality = util$a.getValue(lines, "Signal", ":", true);
               const signalLevel = wifiDBFromQuality(quality);
-              const type = util$b.getValue(lines, "Radio type", ":", true) || util$b.getValue(lines, "Type de radio", ":", true) || util$b.getValue(lines, "Funktyp", ":", true) || null;
-              const security = util$b.getValue(lines, "authentication", ":", true) || util$b.getValue(lines, "Authentification", ":", true) || util$b.getValue(lines, "Authentifizierung", ":", true) || null;
-              const channel = util$b.getValue(lines, "Channel", ":", true) || util$b.getValue(lines, "Canal", ":", true) || util$b.getValue(lines, "Kanal", ":", true) || null;
-              const txRate = util$b.getValue(lines, "Transmit rate (mbps)", ":", true) || util$b.getValue(lines, "Transmission (mbit/s)", ":", true) || util$b.getValue(lines, "Empfangsrate (MBit/s)", ":", true) || null;
+              const type = util$a.getValue(lines, "Radio type", ":", true) || util$a.getValue(lines, "Type de radio", ":", true) || util$a.getValue(lines, "Funktyp", ":", true) || null;
+              const security = util$a.getValue(lines, "authentication", ":", true) || util$a.getValue(lines, "Authentification", ":", true) || util$a.getValue(lines, "Authentifizierung", ":", true) || null;
+              const channel = util$a.getValue(lines, "Channel", ":", true) || util$a.getValue(lines, "Canal", ":", true) || util$a.getValue(lines, "Kanal", ":", true) || null;
+              const txRate = util$a.getValue(lines, "Transmit rate (mbps)", ":", true) || util$a.getValue(lines, "Transmission (mbit/s)", ":", true) || util$a.getValue(lines, "Empfangsrate (MBit/s)", ":", true) || null;
               if (model && id && ssid && bssid) {
                 result2.push({
                   id,
@@ -12112,13 +12108,13 @@ function wifiConnections(callback) {
                   model,
                   ssid,
                   bssid,
-                  channel: util$b.toInt(channel),
+                  channel: util$a.toInt(channel),
                   frequency: channel ? wifiFrequencyFromChannel(channel) : null,
                   type,
                   security,
                   signalLevel,
                   quality: quality ? parseInt(quality, 10) : null,
-                  txRate: util$b.toInt(txRate) || null
+                  txRate: util$a.toInt(txRate) || null
                 });
               }
             }
@@ -12164,9 +12160,9 @@ function wifiInterfaces(callback) {
           const parts1 = stdout.toString().split("\n\n    Wi-Fi:\n\n");
           if (parts1.length > 1) {
             const lines = parts1[1].split("\n\n")[0].split("\n");
-            const iface = util$b.getValue(lines, "BSD Device Name", ":", true);
-            const mac = util$b.getValue(lines, "MAC Address", ":", true);
-            const model = util$b.getValue(lines, "hardware", ":", true);
+            const iface = util$a.getValue(lines, "BSD Device Name", ":", true);
+            const mac = util$a.getValue(lines, "MAC Address", ":", true);
+            const model = util$a.getValue(lines, "hardware", ":", true);
             result2.push({
               id: "Wi-Fi",
               iface,
@@ -12182,7 +12178,7 @@ function wifiInterfaces(callback) {
         });
       } else if (_windows$8) {
         let cmd = "netsh wlan show interfaces";
-        util$b.powerShell(cmd).then(function(stdout) {
+        util$a.powerShell(cmd).then(function(stdout) {
           const allLines = stdout.toString().split("\r\n");
           for (let i = 0; i < allLines.length; i++) {
             allLines[i] = allLines[i].trim();
@@ -12228,10 +12224,10 @@ wifi.wifiInterfaces = wifiInterfaces;
 var processes$1 = {};
 const os$1 = require$$0$1;
 const fs$k = require$$1$1;
-const path$e = path$g;
+const path$d = require$$1$2;
 const exec$6 = require$$1.exec;
 const execSync$2 = require$$1.execSync;
-const util$a = util$l;
+const util$9 = util$k;
 let _platform$7 = process.platform;
 const _linux$6 = _platform$7 === "linux" || _platform$7 === "android";
 const _darwin$6 = _platform$7 === "darwin";
@@ -12299,12 +12295,12 @@ function parseElapsedTime(etime) {
     res = new Date(current.getTime() - ms);
     result2 = res.toISOString().substring(0, 10) + " " + res.toISOString().substring(11, 19);
   } catch (e) {
-    util$a.noop();
+    util$9.noop();
   }
   return result2;
 }
 function services(srv, callback) {
-  if (util$a.isFunction(srv) && !callback) {
+  if (util$9.isFunction(srv) && !callback) {
     callback = srv;
     srv = "";
   }
@@ -12319,18 +12315,18 @@ function services(srv, callback) {
       if (srv) {
         let srvString = "";
         try {
-          srvString.__proto__.toLowerCase = util$a.stringToLower;
-          srvString.__proto__.replace = util$a.stringReplace;
-          srvString.__proto__.toString = util$a.stringToString;
-          srvString.__proto__.substr = util$a.stringSubstr;
-          srvString.__proto__.substring = util$a.stringSubstring;
-          srvString.__proto__.trim = util$a.stringTrim;
-          srvString.__proto__.startsWith = util$a.stringStartWith;
+          srvString.__proto__.toLowerCase = util$9.stringToLower;
+          srvString.__proto__.replace = util$9.stringReplace;
+          srvString.__proto__.toString = util$9.stringToString;
+          srvString.__proto__.substr = util$9.stringSubstr;
+          srvString.__proto__.substring = util$9.stringSubstring;
+          srvString.__proto__.trim = util$9.stringTrim;
+          srvString.__proto__.startsWith = util$9.stringStartWith;
         } catch (e) {
-          Object.setPrototypeOf(srvString, util$a.stringObj);
+          Object.setPrototypeOf(srvString, util$9.stringObj);
         }
-        const s = util$a.sanitizeShellString(srv);
-        const l = util$a.mathMin(s.length, 2e3);
+        const s = util$9.sanitizeShellString(srv);
+        const l = util$9.mathMin(s.length, 2e3);
         for (let i = 0; i <= l; i++) {
           if (s[i] !== void 0) {
             srvString = srvString + s[i];
@@ -12340,7 +12336,7 @@ function services(srv, callback) {
         if (srvString === "") {
           srvString = "*";
         }
-        if (util$a.isPrototypePolluted() && srvString !== "*") {
+        if (util$9.isPrototypePolluted() && srvString !== "*") {
           srvString = "------";
         }
         let srvs = srvString.split("|");
@@ -12349,7 +12345,7 @@ function services(srv, callback) {
         if (_linux$6 || _freebsd$6 || _openbsd$6 || _netbsd$6 || _darwin$6) {
           if ((_linux$6 || _freebsd$6 || _openbsd$6 || _netbsd$6) && srvString === "*") {
             try {
-              const tmpsrv = execSync$2("systemctl --all --type=service --no-legend 2> /dev/null", util$a.execOptsLinux).toString().split("\n");
+              const tmpsrv = execSync$2("systemctl --all --type=service --no-legend 2> /dev/null", util$9.execOptsLinux).toString().split("\n");
               srvs = [];
               for (const s2 of tmpsrv) {
                 const name = s2.split(".service")[0];
@@ -12361,7 +12357,7 @@ function services(srv, callback) {
             } catch (d) {
               try {
                 srvString = "";
-                const tmpsrv = execSync$2("service --status-all 2> /dev/null", util$a.execOptsLinux).toString().split("\n");
+                const tmpsrv = execSync$2("service --status-all 2> /dev/null", util$9.execOptsLinux).toString().split("\n");
                 for (const s2 of tmpsrv) {
                   const parts = s2.split("]");
                   if (parts.length === 2) {
@@ -12371,7 +12367,7 @@ function services(srv, callback) {
                 srvs = srvString.split("|");
               } catch (e) {
                 try {
-                  const srvStr = execSync$2("ls /etc/init.d/ -m 2> /dev/null", util$a.execOptsLinux).toString().split("\n").join("");
+                  const srvStr = execSync$2("ls /etc/init.d/ -m 2> /dev/null", util$9.execOptsLinux).toString().split("\n").join("");
                   srvString = "";
                   if (srvStr) {
                     const tmpsrv = srvStr.split(",");
@@ -12398,7 +12394,7 @@ function services(srv, callback) {
           }
           let args = _darwin$6 ? ["-caxo", "pcpu,pmem,pid,command"] : ["-axo", "pcpu,pmem,pid,command"];
           if (srvString !== "" && srvs.length > 0) {
-            util$a.execSafe("ps", args).then((stdout) => {
+            util$9.execSafe("ps", args).then((stdout) => {
               if (stdout) {
                 let lines = stdout.replace(/ +/g, " ").replace(/,+/g, ".").split("\n");
                 srvs.forEach(function(srv2) {
@@ -12485,7 +12481,7 @@ function services(srv, callback) {
                 }
               } else {
                 args = ["-o", "comm"];
-                util$a.execSafe("ps", args).then((stdout2) => {
+                util$9.execSafe("ps", args).then((stdout2) => {
                   if (stdout2) {
                     let lines = stdout2.replace(/ +/g, " ").replace(/,+/g, ".").split("\n");
                     srvs.forEach(function(srv2) {
@@ -12540,17 +12536,17 @@ function services(srv, callback) {
               wincommand = `${wincommand.slice(0, -4)}"`;
             }
             wincommand += " | select Name,Caption,Started,StartMode,ProcessId | fl";
-            util$a.powerShell(wincommand).then((stdout, error) => {
+            util$9.powerShell(wincommand).then((stdout, error) => {
               if (!error) {
                 let serviceSections = stdout.split(/\n\s*\n/);
                 serviceSections.forEach((element) => {
                   if (element.trim() !== "") {
                     let lines = element.trim().split("\r\n");
-                    let srvName = util$a.getValue(lines, "Name", ":", true).toLowerCase();
-                    let srvCaption = util$a.getValue(lines, "Caption", ":", true).toLowerCase();
-                    let started = util$a.getValue(lines, "Started", ":", true);
-                    let startMode = util$a.getValue(lines, "StartMode", ":", true);
-                    let pid = util$a.getValue(lines, "ProcessId", ":", true);
+                    let srvName = util$9.getValue(lines, "Name", ":", true).toLowerCase();
+                    let srvCaption = util$9.getValue(lines, "Caption", ":", true).toLowerCase();
+                    let started = util$9.getValue(lines, "Started", ":", true);
+                    let startMode = util$9.getValue(lines, "StartMode", ":", true);
+                    let pid = util$9.getValue(lines, "ProcessId", ":", true);
                     if (srvString === "*" || srvs.indexOf(srvName) >= 0 || srvs.indexOf(srvCaption) >= 0) {
                       result2.push({
                         name: srvName,
@@ -12794,7 +12790,7 @@ function processes(callback) {
           }
           if (firstPos === 1e4 && tmpCommand.indexOf(" ") > -1) {
             const parts = tmpCommand.split(" ");
-            if (fs$k.existsSync(path$e.join(cmdPath, parts[0]))) {
+            if (fs$k.existsSync(path$d.join(cmdPath, parts[0]))) {
               command = parts.shift();
               params = (parts.join(" ") + " " + tmpParams).trim();
             } else {
@@ -12833,7 +12829,7 @@ function processes(callback) {
     let result2 = [];
     if (lines.length > 1) {
       let head = lines[0];
-      parsedhead = util$a.parseHead(head, 8);
+      parsedhead = util$9.parseHead(head, 8);
       lines.shift();
       lines.forEach(function(line) {
         if (line.trim() !== "") {
@@ -13016,7 +13012,7 @@ function processes(callback) {
           });
         } else if (_windows$7) {
           try {
-            util$a.powerShell('Get-CimInstance Win32_Process | select-Object ProcessId,ParentProcessId,ExecutionState,Caption,CommandLine,ExecutablePath,UserModeTime,KernelModeTime,WorkingSetSize,Priority,PageFileUsage, @{n="CreationDate";e={$_.CreationDate.ToString("yyyy-MM-dd HH:mm:ss")}} | fl').then((stdout, error) => {
+            util$9.powerShell('Get-CimInstance Win32_Process | select-Object ProcessId,ParentProcessId,ExecutionState,Caption,CommandLine,ExecutablePath,UserModeTime,KernelModeTime,WorkingSetSize,Priority,PageFileUsage, @{n="CreationDate";e={$_.CreationDate.ToString("yyyy-MM-dd HH:mm:ss")}} | fl').then((stdout, error) => {
               if (!error) {
                 let processSections = stdout.split(/\n\s*\n/);
                 let procs = [];
@@ -13027,11 +13023,11 @@ function processes(callback) {
                 processSections.forEach((element) => {
                   if (element.trim() !== "") {
                     let lines = element.trim().split("\r\n");
-                    let pid = parseInt(util$a.getValue(lines, "ProcessId", ":", true), 10);
-                    let parentPid = parseInt(util$a.getValue(lines, "ParentProcessId", ":", true), 10);
-                    let statusValue = util$a.getValue(lines, "ExecutionState", ":");
-                    let name = util$a.getValue(lines, "Caption", ":", true);
-                    let commandLine = util$a.getValue(lines, "CommandLine", ":", true);
+                    let pid = parseInt(util$9.getValue(lines, "ProcessId", ":", true), 10);
+                    let parentPid = parseInt(util$9.getValue(lines, "ParentProcessId", ":", true), 10);
+                    let statusValue = util$9.getValue(lines, "ExecutionState", ":");
+                    let name = util$9.getValue(lines, "Caption", ":", true);
+                    let commandLine = util$9.getValue(lines, "CommandLine", ":", true);
                     let additionalCommand = false;
                     lines.forEach((line) => {
                       if (additionalCommand && line.toLowerCase().startsWith(" ")) {
@@ -13043,10 +13039,10 @@ function processes(callback) {
                         additionalCommand = true;
                       }
                     });
-                    let commandPath = util$a.getValue(lines, "ExecutablePath", ":", true);
-                    let utime = parseInt(util$a.getValue(lines, "UserModeTime", ":", true), 10);
-                    let stime = parseInt(util$a.getValue(lines, "KernelModeTime", ":", true), 10);
-                    let memw = parseInt(util$a.getValue(lines, "WorkingSetSize", ":", true), 10);
+                    let commandPath = util$9.getValue(lines, "ExecutablePath", ":", true);
+                    let utime = parseInt(util$9.getValue(lines, "UserModeTime", ":", true), 10);
+                    let stime = parseInt(util$9.getValue(lines, "KernelModeTime", ":", true), 10);
+                    let memw = parseInt(util$9.getValue(lines, "WorkingSetSize", ":", true), 10);
                     allcpuu = allcpuu + utime;
                     allcpus = allcpus + stime;
                     result2.all++;
@@ -13075,11 +13071,11 @@ function processes(callback) {
                       cpuu: 0,
                       cpus: 0,
                       mem: memw / os$1.totalmem() * 100,
-                      priority: parseInt(util$a.getValue(lines, "Priority", ":", true), 10),
-                      memVsz: parseInt(util$a.getValue(lines, "PageFileUsage", ":", true), 10),
-                      memRss: Math.floor(parseInt(util$a.getValue(lines, "WorkingSetSize", ":", true), 10) / 1024),
+                      priority: parseInt(util$9.getValue(lines, "Priority", ":", true), 10),
+                      memVsz: parseInt(util$9.getValue(lines, "PageFileUsage", ":", true), 10),
+                      memRss: Math.floor(parseInt(util$9.getValue(lines, "WorkingSetSize", ":", true), 10) / 1024),
                       nice: 0,
-                      started: util$a.getValue(lines, "CreationDate", ":", true),
+                      started: util$9.getValue(lines, "CreationDate", ":", true),
                       state: !statusValue ? _winStatusValues[0] : _winStatusValues[statusValue],
                       tty: "",
                       user: "",
@@ -13143,7 +13139,7 @@ function processes(callback) {
 }
 processes$1.processes = processes;
 function processLoad(proc, callback) {
-  if (util$a.isFunction(proc) && !callback) {
+  if (util$9.isFunction(proc) && !callback) {
     callback = proc;
     proc = "";
   }
@@ -13158,18 +13154,18 @@ function processLoad(proc, callback) {
       }
       let processesString = "";
       try {
-        processesString.__proto__.toLowerCase = util$a.stringToLower;
-        processesString.__proto__.replace = util$a.stringReplace;
-        processesString.__proto__.toString = util$a.stringToString;
-        processesString.__proto__.substr = util$a.stringSubstr;
-        processesString.__proto__.substring = util$a.stringSubstring;
-        processesString.__proto__.trim = util$a.stringTrim;
-        processesString.__proto__.startsWith = util$a.stringStartWith;
+        processesString.__proto__.toLowerCase = util$9.stringToLower;
+        processesString.__proto__.replace = util$9.stringReplace;
+        processesString.__proto__.toString = util$9.stringToString;
+        processesString.__proto__.substr = util$9.stringSubstr;
+        processesString.__proto__.substring = util$9.stringSubstring;
+        processesString.__proto__.trim = util$9.stringTrim;
+        processesString.__proto__.startsWith = util$9.stringStartWith;
       } catch (e) {
-        Object.setPrototypeOf(processesString, util$a.stringObj);
+        Object.setPrototypeOf(processesString, util$9.stringObj);
       }
-      const s = util$a.sanitizeShellString(proc);
-      const l = util$a.mathMin(s.length, 2e3);
+      const s = util$9.sanitizeShellString(proc);
+      const l = util$9.mathMin(s.length, 2e3);
       for (let i = 0; i <= l; i++) {
         if (s[i] !== void 0) {
           processesString = processesString + s[i];
@@ -13179,16 +13175,16 @@ function processLoad(proc, callback) {
       if (processesString === "") {
         processesString = "*";
       }
-      if (util$a.isPrototypePolluted() && processesString !== "*") {
+      if (util$9.isPrototypePolluted() && processesString !== "*") {
         processesString = "------";
       }
       let processes2 = processesString.split("|");
       let result2 = [];
-      const procSanitized = util$a.isPrototypePolluted() ? "" : util$a.sanitizeShellString(proc) || "*";
+      const procSanitized = util$9.isPrototypePolluted() ? "" : util$9.sanitizeShellString(proc) || "*";
       if (procSanitized && processes2.length && processes2[0] !== "------") {
         if (_windows$7) {
           try {
-            util$a.powerShell("Get-CimInstance Win32_Process | select ProcessId,Caption,UserModeTime,KernelModeTime,WorkingSetSize | fl").then((stdout, error) => {
+            util$9.powerShell("Get-CimInstance Win32_Process | select ProcessId,Caption,UserModeTime,KernelModeTime,WorkingSetSize | fl").then((stdout, error) => {
               if (!error) {
                 let processSections = stdout.split(/\n\s*\n/);
                 let procStats = [];
@@ -13198,11 +13194,11 @@ function processLoad(proc, callback) {
                 processSections.forEach((element) => {
                   if (element.trim() !== "") {
                     let lines = element.trim().split("\r\n");
-                    let pid = parseInt(util$a.getValue(lines, "ProcessId", ":", true), 10);
-                    let name = util$a.getValue(lines, "Caption", ":", true);
-                    let utime = parseInt(util$a.getValue(lines, "UserModeTime", ":", true), 10);
-                    let stime = parseInt(util$a.getValue(lines, "KernelModeTime", ":", true), 10);
-                    let mem2 = parseInt(util$a.getValue(lines, "WorkingSetSize", ":", true), 10);
+                    let pid = parseInt(util$9.getValue(lines, "ProcessId", ":", true), 10);
+                    let name = util$9.getValue(lines, "Caption", ":", true);
+                    let utime = parseInt(util$9.getValue(lines, "UserModeTime", ":", true), 10);
+                    let stime = parseInt(util$9.getValue(lines, "KernelModeTime", ":", true), 10);
+                    let mem2 = parseInt(util$9.getValue(lines, "WorkingSetSize", ":", true), 10);
                     allcpuu = allcpuu + utime;
                     allcpus = allcpus + stime;
                     procStats.push({
@@ -13299,7 +13295,7 @@ function processLoad(proc, callback) {
         }
         if (_darwin$6 || _linux$6 || _freebsd$6 || _openbsd$6 || _netbsd$6) {
           const params = ["-axo", "pid,ppid,pcpu,pmem,comm"];
-          util$a.execSafe("ps", params).then((stdout) => {
+          util$9.execSafe("ps", params).then((stdout) => {
             if (stdout) {
               let procStats = [];
               let lines = stdout.toString().split("\n").filter(function(line) {
@@ -13452,7 +13448,7 @@ function processLoad(proc, callback) {
 processes$1.processLoad = processLoad;
 var users$1 = {};
 const exec$5 = require$$1.exec;
-const util$9 = util$l;
+const util$8 = util$k;
 let _platform$6 = process.platform;
 const _linux$5 = _platform$6 === "linux" || _platform$6 === "android";
 const _darwin$5 = _platform$6 === "darwin";
@@ -13536,7 +13532,7 @@ function parseUsersDarwin(lines) {
             dt = "" + ((/* @__PURE__ */ new Date()).getFullYear() - 1) + "-" + ("0" + ("JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC".indexOf(l[2].toUpperCase()) / 3 + 1)).slice(-2) + "-" + ("0" + l[3]).slice(-2);
           }
         } catch {
-          util$9.noop();
+          util$8.noop();
         }
         result_who.push({
           user: l[0],
@@ -13643,7 +13639,7 @@ function users(callback) {
           cmd += "Get-CimInstance Win32_LoggedOnUser | select antecedent,dependent | fl ; echo '#-#-#-#';";
           cmd += `$process = (Get-CimInstance Win32_Process -Filter "name = 'explorer.exe'"); Invoke-CimMethod -InputObject $process[0] -MethodName GetOwner | select user, domain | fl; get-process -name explorer | select-object sessionid | fl; echo '#-#-#-#';`;
           cmd += "query user";
-          util$9.powerShell(cmd).then((data) => {
+          util$8.powerShell(cmd).then((data) => {
             if (data) {
               data = data.split("#-#-#-#");
               let sessions = parseWinSessions((data[0] || "").split(/\n\s*\n/));
@@ -13693,8 +13689,8 @@ function parseWinSessions(sessionParts) {
   const sessions = {};
   sessionParts.forEach((session) => {
     const lines = session.split("\r\n");
-    const id = util$9.getValue(lines, "LogonId");
-    const starttime = util$9.getValue(lines, "starttime");
+    const id = util$8.getValue(lines, "LogonId");
+    const starttime = util$8.getValue(lines, "starttime");
     if (id) {
       sessions[id] = starttime;
     }
@@ -13722,9 +13718,9 @@ function parseWinUsers(userParts, userQuery) {
   const users2 = [];
   userParts.forEach((user) => {
     const lines = user.split("\r\n");
-    const domain = util$9.getValue(lines, "domain", ":", true);
-    const username = util$9.getValue(lines, "user", ":", true);
-    const sessionid = util$9.getValue(lines, "sessionid", ":", true);
+    const domain = util$8.getValue(lines, "domain", ":", true);
+    const username = util$8.getValue(lines, "user", ":", true);
+    const sessionid = util$8.getValue(lines, "sessionid", ":", true);
     if (username) {
       const quser = userQuery.filter((item) => fuzzyMatch(item.user, username));
       users2.push({
@@ -13740,11 +13736,11 @@ function parseWinLoggedOn(loggedonParts) {
   const loggedons = {};
   loggedonParts.forEach((loggedon) => {
     const lines = loggedon.split("\r\n");
-    const antecendent = util$9.getValue(lines, "antecedent", ":", true);
+    const antecendent = util$8.getValue(lines, "antecedent", ":", true);
     let parts = antecendent.split("=");
     const name = parts.length > 2 ? parts[1].split(",")[0].replace(/"/g, "").trim() : "";
     const domain = parts.length > 2 ? parts[2].replace(/"/g, "").replace(/\)/g, "").trim() : "";
-    const dependent = util$9.getValue(lines, "dependent", ":", true);
+    const dependent = util$8.getValue(lines, "dependent", ":", true);
     parts = dependent.split("=");
     const id = parts.length > 1 ? parts[1].replace(/"/g, "").replace(/\)/g, "").trim() : "";
     if (id) {
@@ -13790,7 +13786,7 @@ function parseWinUsersQuery(lines) {
 }
 users$1.users = users;
 var internet = {};
-const util$8 = util$l;
+const util$7 = util$k;
 let _platform$5 = process.platform;
 const _linux$4 = _platform$5 === "linux" || _platform$5 === "android";
 const _darwin$4 = _platform$5 === "darwin";
@@ -13815,14 +13811,14 @@ function inetChecksite(url, callback) {
         return resolve(result2);
       }
       let urlSanitized = "";
-      const s = util$8.sanitizeShellString(url, true);
-      const l = util$8.mathMin(s.length, 2e3);
+      const s = util$7.sanitizeShellString(url, true);
+      const l = util$7.mathMin(s.length, 2e3);
       for (let i = 0; i <= l; i++) {
         if (s[i] !== void 0) {
           try {
-            s[i].__proto__.toLowerCase = util$8.stringToLower;
+            s[i].__proto__.toLowerCase = util$7.stringToLower;
           } catch (e) {
-            Object.setPrototypeOf(s[i], util$8.stringObj);
+            Object.setPrototypeOf(s[i], util$7.stringObj);
           }
           const sl = s[i].toLowerCase();
           if (sl && sl[0] && !sl[1] && sl[0].length === 1) {
@@ -13832,11 +13828,11 @@ function inetChecksite(url, callback) {
       }
       result2.url = urlSanitized;
       try {
-        if (urlSanitized && !util$8.isPrototypePolluted()) {
+        if (urlSanitized && !util$7.isPrototypePolluted()) {
           try {
-            urlSanitized.__proto__.startsWith = util$8.stringStartWith;
+            urlSanitized.__proto__.startsWith = util$7.stringStartWith;
           } catch (e) {
-            Object.setPrototypeOf(urlSanitized, util$8.stringObj);
+            Object.setPrototypeOf(urlSanitized, util$7.stringObj);
           }
           if (urlSanitized.startsWith("file:") || urlSanitized.startsWith("gopher:") || urlSanitized.startsWith("telnet:") || urlSanitized.startsWith("mailto:") || urlSanitized.startsWith("news:") || urlSanitized.startsWith("nntp:")) {
             if (callback) {
@@ -13844,7 +13840,7 @@ function inetChecksite(url, callback) {
             }
             return resolve(result2);
           }
-          util$8.checkWebsite(urlSanitized).then((res) => {
+          util$7.checkWebsite(urlSanitized).then((res) => {
             result2.status = res.statusCode;
             result2.ok = res.statusCode >= 200 && res.statusCode <= 399;
             ;
@@ -13871,7 +13867,7 @@ function inetChecksite(url, callback) {
 }
 internet.inetChecksite = inetChecksite;
 function inetLatency(host, callback) {
-  if (util$8.isFunction(host) && !callback) {
+  if (util$7.isFunction(host) && !callback) {
     callback = host;
     host = "";
   }
@@ -13885,14 +13881,14 @@ function inetLatency(host, callback) {
         return resolve(null);
       }
       let hostSanitized = "";
-      const s = (util$8.isPrototypePolluted() ? "8.8.8.8" : util$8.sanitizeShellString(host, true)).trim();
-      const l = util$8.mathMin(s.length, 2e3);
+      const s = (util$7.isPrototypePolluted() ? "8.8.8.8" : util$7.sanitizeShellString(host, true)).trim();
+      const l = util$7.mathMin(s.length, 2e3);
       for (let i = 0; i <= l; i++) {
         if (!(s[i] === void 0)) {
           try {
-            s[i].__proto__.toLowerCase = util$8.stringToLower;
+            s[i].__proto__.toLowerCase = util$7.stringToLower;
           } catch (e) {
-            Object.setPrototypeOf(s[i], util$8.stringObj);
+            Object.setPrototypeOf(s[i], util$7.stringObj);
           }
           const sl = s[i].toLowerCase();
           if (sl && sl[0] && !sl[1]) {
@@ -13901,9 +13897,9 @@ function inetLatency(host, callback) {
         }
       }
       try {
-        hostSanitized.__proto__.startsWith = util$8.stringStartWith;
+        hostSanitized.__proto__.startsWith = util$7.stringStartWith;
       } catch (e) {
-        Object.setPrototypeOf(hostSanitized, util$8.stringObj);
+        Object.setPrototypeOf(hostSanitized, util$7.stringObj);
       }
       if (hostSanitized.startsWith("file:") || hostSanitized.startsWith("gopher:") || hostSanitized.startsWith("telnet:") || hostSanitized.startsWith("mailto:") || hostSanitized.startsWith("news:") || hostSanitized.startsWith("nntp:")) {
         if (callback) {
@@ -13922,7 +13918,7 @@ function inetLatency(host, callback) {
         if (_darwin$4) {
           params = ["-c2", "-t3", hostSanitized];
         }
-        util$8.execSafe("ping", params).then((stdout) => {
+        util$7.execSafe("ping", params).then((stdout) => {
           let result2 = null;
           if (stdout) {
             const lines = stdout.split("\n").filter((line2) => line2.indexOf("rtt") >= 0 || line2.indexOf("round-trip") >= 0 || line2.indexOf("avg") >= 0).join("\n");
@@ -13943,7 +13939,7 @@ function inetLatency(host, callback) {
       if (_sunos$4) {
         const params2 = ["-s", "-a", hostSanitized, "56", "2"];
         const filt = "avg";
-        util$8.execSafe("ping", params2, { timeout: 3e3 }).then((stdout) => {
+        util$7.execSafe("ping", params2, { timeout: 3e3 }).then((stdout) => {
           let result2 = null;
           if (stdout) {
             const lines = stdout.split("\n").filter((line2) => line2.indexOf(filt) >= 0).join("\n");
@@ -13965,7 +13961,7 @@ function inetLatency(host, callback) {
         let result2 = null;
         try {
           const params2 = [hostSanitized, "-n", "1"];
-          util$8.execSafe("ping", params2, util$8.execOptsWin).then((stdout) => {
+          util$7.execSafe("ping", params2, util$7.execOptsWin).then((stdout) => {
             if (stdout) {
               let lines = stdout.split("\r\n");
               lines.shift();
@@ -14261,7 +14257,7 @@ let DockerSocket$1 = class DockerSocket {
   }
 };
 var dockerSocket = DockerSocket$1;
-const util$7 = util$l;
+const util$6 = util$k;
 const DockerSocket2 = dockerSocket;
 let _platform$4 = process.platform;
 const _windows$4 = _platform$4 === "win32";
@@ -14332,7 +14328,7 @@ function dockerInfo(callback) {
 }
 docker.dockerInfo = dockerInfo;
 function dockerImages(all, callback) {
-  if (util$7.isFunction(all) && !callback) {
+  if (util$6.isFunction(all) && !callback) {
     callback = all;
     all = false;
   }
@@ -14399,7 +14395,7 @@ function dockerImagesInspect(imageID, payload) {
       if (typeof imageID !== "string") {
         return resolve();
       }
-      const imageIDSanitized = (util$7.isPrototypePolluted() ? "" : util$7.sanitizeShellString(imageID, true)).trim();
+      const imageIDSanitized = (util$6.isPrototypePolluted() ? "" : util$6.sanitizeShellString(imageID, true)).trim();
       if (imageIDSanitized) {
         if (!_docker_socket) {
           _docker_socket = new DockerSocket2();
@@ -14444,7 +14440,7 @@ function dockerContainers(all, callback) {
     });
     return filtered.length > 0;
   }
-  if (util$7.isFunction(all) && !callback) {
+  if (util$6.isFunction(all) && !callback) {
     callback = all;
     all = false;
   }
@@ -14525,7 +14521,7 @@ function dockerContainerInspect(containerID, payload) {
       if (typeof containerID !== "string") {
         return resolve();
       }
-      const containerIdSanitized = (util$7.isPrototypePolluted() ? "" : util$7.sanitizeShellString(containerID, true)).trim();
+      const containerIdSanitized = (util$6.isPrototypePolluted() ? "" : util$6.sanitizeShellString(containerID, true)).trim();
       if (containerIdSanitized) {
         if (!_docker_socket) {
           _docker_socket = new DockerSocket2();
@@ -14578,7 +14574,7 @@ function docker_calcCPUPercent(cpu_stats, precpu_stats) {
     }
     return cpuPercent;
   } else {
-    let nanoSecNow = util$7.nanoSeconds();
+    let nanoSecNow = util$6.nanoSeconds();
     let cpuPercent = 0;
     if (_docker_last_read > 0) {
       let possIntervals = nanoSecNow - _docker_last_read;
@@ -14628,7 +14624,7 @@ function dockerContainerStats(containerIDs, callback) {
   let containerArray = [];
   return new Promise((resolve) => {
     process.nextTick(() => {
-      if (util$7.isFunction(containerIDs) && !callback) {
+      if (util$6.isFunction(containerIDs) && !callback) {
         callback = containerIDs;
         containerArray = ["*"];
       } else {
@@ -14641,25 +14637,25 @@ function dockerContainerStats(containerIDs, callback) {
         }
         let containerIDsSanitized = "";
         try {
-          containerIDsSanitized.__proto__.toLowerCase = util$7.stringToLower;
-          containerIDsSanitized.__proto__.replace = util$7.stringReplace;
-          containerIDsSanitized.__proto__.toString = util$7.stringToString;
-          containerIDsSanitized.__proto__.substr = util$7.stringSubstr;
-          containerIDsSanitized.__proto__.substring = util$7.stringSubstring;
-          containerIDsSanitized.__proto__.trim = util$7.stringTrim;
-          containerIDsSanitized.__proto__.startsWith = util$7.stringStartWith;
+          containerIDsSanitized.__proto__.toLowerCase = util$6.stringToLower;
+          containerIDsSanitized.__proto__.replace = util$6.stringReplace;
+          containerIDsSanitized.__proto__.toString = util$6.stringToString;
+          containerIDsSanitized.__proto__.substr = util$6.stringSubstr;
+          containerIDsSanitized.__proto__.substring = util$6.stringSubstring;
+          containerIDsSanitized.__proto__.trim = util$6.stringTrim;
+          containerIDsSanitized.__proto__.startsWith = util$6.stringStartWith;
         } catch (e) {
-          Object.setPrototypeOf(containerIDsSanitized, util$7.stringObj);
+          Object.setPrototypeOf(containerIDsSanitized, util$6.stringObj);
         }
         containerIDsSanitized = containerIDs;
         containerIDsSanitized = containerIDsSanitized.trim();
         if (containerIDsSanitized !== "*") {
           containerIDsSanitized = "";
-          const s = (util$7.isPrototypePolluted() ? "" : util$7.sanitizeShellString(containerIDs, true)).trim();
-          const l = util$7.mathMin(s.length, 2e3);
+          const s = (util$6.isPrototypePolluted() ? "" : util$6.sanitizeShellString(containerIDs, true)).trim();
+          const l = util$6.mathMin(s.length, 2e3);
           for (let i = 0; i <= l; i++) {
             if (s[i] !== void 0) {
-              s[i].__proto__.toLowerCase = util$7.stringToLower;
+              s[i].__proto__.toLowerCase = util$6.stringToLower;
               const sl = s[i].toLowerCase();
               if (sl && sl[0] && !sl[1]) {
                 containerIDsSanitized = containerIDsSanitized + sl[0];
@@ -14771,12 +14767,12 @@ function dockerContainerStatsSingle(containerID) {
                   result2.networks = stats.networks ? stats.networks : {};
                 }
               } catch (err) {
-                util$7.noop();
+                util$6.noop();
               }
               resolve(result2);
             });
           } catch (err) {
-            util$7.noop();
+            util$6.noop();
           }
         });
       } else {
@@ -14794,7 +14790,7 @@ function dockerContainerProcesses(containerID, callback) {
       if (typeof containerID !== "string") {
         return resolve(result2);
       }
-      const containerIdSanitized = (util$7.isPrototypePolluted() ? "" : util$7.sanitizeShellString(containerID, true)).trim();
+      const containerIdSanitized = (util$6.isPrototypePolluted() ? "" : util$6.sanitizeShellString(containerID, true)).trim();
       if (containerIdSanitized) {
         if (!_docker_socket) {
           _docker_socket = new DockerSocket2();
@@ -14839,7 +14835,7 @@ function dockerContainerProcesses(containerID, callback) {
               });
             }
           } catch (err) {
-            util$7.noop();
+            util$6.noop();
           }
           if (callback) {
             callback(result2);
@@ -14945,18 +14941,18 @@ docker.dockerAll = dockerAll;
 var virtualbox = {};
 const os = require$$0$1;
 const exec$4 = require$$1.exec;
-const util$6 = util$l;
+const util$5 = util$k;
 function vboxInfo(callback) {
   let result2 = [];
   return new Promise((resolve) => {
     process.nextTick(() => {
       try {
-        exec$4(util$6.getVboxmanage() + " list vms --long", function(error, stdout) {
+        exec$4(util$5.getVboxmanage() + " list vms --long", function(error, stdout) {
           let parts = (os.EOL + stdout.toString()).split(os.EOL + "Name:");
           parts.shift();
           parts.forEach((part) => {
             const lines = ("Name:" + part).split(os.EOL);
-            const state = util$6.getValue(lines, "State");
+            const state = util$5.getValue(lines, "State");
             const running = state.startsWith("running");
             const runningSinceString = running ? state.replace("running (since ", "").replace(")", "").trim() : "";
             let runningSince = 0;
@@ -14967,7 +14963,7 @@ function vboxInfo(callback) {
                 runningSince = Math.round((Date.now() - Date.parse(sinceDateObj)) / 1e3) + offset * 60;
               }
             } catch (e) {
-              util$6.noop();
+              util$5.noop();
             }
             const stoppedSinceString = !running ? state.replace("powered off (since", "").replace(")", "").trim() : "";
             let stoppedSince = 0;
@@ -14978,45 +14974,45 @@ function vboxInfo(callback) {
                 stoppedSince = Math.round((Date.now() - Date.parse(sinceDateObj)) / 1e3) + offset * 60;
               }
             } catch (e) {
-              util$6.noop();
+              util$5.noop();
             }
             result2.push({
-              id: util$6.getValue(lines, "UUID"),
-              name: util$6.getValue(lines, "Name"),
+              id: util$5.getValue(lines, "UUID"),
+              name: util$5.getValue(lines, "Name"),
               running,
               started: runningSinceString,
               runningSince,
               stopped: stoppedSinceString,
               stoppedSince,
-              guestOS: util$6.getValue(lines, "Guest OS"),
-              hardwareUUID: util$6.getValue(lines, "Hardware UUID"),
-              memory: parseInt(util$6.getValue(lines, "Memory size", "     "), 10),
-              vram: parseInt(util$6.getValue(lines, "VRAM size"), 10),
-              cpus: parseInt(util$6.getValue(lines, "Number of CPUs"), 10),
-              cpuExepCap: util$6.getValue(lines, "CPU exec cap"),
-              cpuProfile: util$6.getValue(lines, "CPUProfile"),
-              chipset: util$6.getValue(lines, "Chipset"),
-              firmware: util$6.getValue(lines, "Firmware"),
-              pageFusion: util$6.getValue(lines, "Page Fusion") === "enabled",
-              configFile: util$6.getValue(lines, "Config file"),
-              snapshotFolder: util$6.getValue(lines, "Snapshot folder"),
-              logFolder: util$6.getValue(lines, "Log folder"),
-              hpet: util$6.getValue(lines, "HPET") === "enabled",
-              pae: util$6.getValue(lines, "PAE") === "enabled",
-              longMode: util$6.getValue(lines, "Long Mode") === "enabled",
-              tripleFaultReset: util$6.getValue(lines, "Triple Fault Reset") === "enabled",
-              apic: util$6.getValue(lines, "APIC") === "enabled",
-              x2Apic: util$6.getValue(lines, "X2APIC") === "enabled",
-              acpi: util$6.getValue(lines, "ACPI") === "enabled",
-              ioApic: util$6.getValue(lines, "IOAPIC") === "enabled",
-              biosApicMode: util$6.getValue(lines, "BIOS APIC mode"),
-              bootMenuMode: util$6.getValue(lines, "Boot menu mode"),
-              bootDevice1: util$6.getValue(lines, "Boot Device 1"),
-              bootDevice2: util$6.getValue(lines, "Boot Device 2"),
-              bootDevice3: util$6.getValue(lines, "Boot Device 3"),
-              bootDevice4: util$6.getValue(lines, "Boot Device 4"),
-              timeOffset: util$6.getValue(lines, "Time offset"),
-              rtc: util$6.getValue(lines, "RTC")
+              guestOS: util$5.getValue(lines, "Guest OS"),
+              hardwareUUID: util$5.getValue(lines, "Hardware UUID"),
+              memory: parseInt(util$5.getValue(lines, "Memory size", "     "), 10),
+              vram: parseInt(util$5.getValue(lines, "VRAM size"), 10),
+              cpus: parseInt(util$5.getValue(lines, "Number of CPUs"), 10),
+              cpuExepCap: util$5.getValue(lines, "CPU exec cap"),
+              cpuProfile: util$5.getValue(lines, "CPUProfile"),
+              chipset: util$5.getValue(lines, "Chipset"),
+              firmware: util$5.getValue(lines, "Firmware"),
+              pageFusion: util$5.getValue(lines, "Page Fusion") === "enabled",
+              configFile: util$5.getValue(lines, "Config file"),
+              snapshotFolder: util$5.getValue(lines, "Snapshot folder"),
+              logFolder: util$5.getValue(lines, "Log folder"),
+              hpet: util$5.getValue(lines, "HPET") === "enabled",
+              pae: util$5.getValue(lines, "PAE") === "enabled",
+              longMode: util$5.getValue(lines, "Long Mode") === "enabled",
+              tripleFaultReset: util$5.getValue(lines, "Triple Fault Reset") === "enabled",
+              apic: util$5.getValue(lines, "APIC") === "enabled",
+              x2Apic: util$5.getValue(lines, "X2APIC") === "enabled",
+              acpi: util$5.getValue(lines, "ACPI") === "enabled",
+              ioApic: util$5.getValue(lines, "IOAPIC") === "enabled",
+              biosApicMode: util$5.getValue(lines, "BIOS APIC mode"),
+              bootMenuMode: util$5.getValue(lines, "Boot menu mode"),
+              bootDevice1: util$5.getValue(lines, "Boot Device 1"),
+              bootDevice2: util$5.getValue(lines, "Boot Device 2"),
+              bootDevice3: util$5.getValue(lines, "Boot Device 3"),
+              bootDevice4: util$5.getValue(lines, "Boot Device 4"),
+              timeOffset: util$5.getValue(lines, "Time offset"),
+              rtc: util$5.getValue(lines, "RTC")
             });
           });
           if (callback) {
@@ -15036,7 +15032,7 @@ function vboxInfo(callback) {
 virtualbox.vboxInfo = vboxInfo;
 var printer$1 = {};
 const exec$3 = require$$1.exec;
-const util$5 = util$l;
+const util$4 = util$k;
 let _platform$3 = process.platform;
 const _linux$3 = _platform$3 === "linux" || _platform$3 === "android";
 const _darwin$3 = _platform$3 === "darwin";
@@ -15066,29 +15062,29 @@ function parseLinuxCupsHeader(lines) {
 }
 function parseLinuxCupsPrinter(lines) {
   const result2 = {};
-  const printerId = util$5.getValue(lines, "PrinterId", " ");
+  const printerId = util$4.getValue(lines, "PrinterId", " ");
   result2.id = printerId ? parseInt(printerId, 10) : null;
-  result2.name = util$5.getValue(lines, "Info", " ");
+  result2.name = util$4.getValue(lines, "Info", " ");
   result2.model = lines.length > 0 && lines[0] ? lines[0].split(" ")[0] : "";
-  result2.uri = util$5.getValue(lines, "DeviceURI", " ");
-  result2.uuid = util$5.getValue(lines, "UUID", " ");
-  result2.status = util$5.getValue(lines, "State", " ");
-  result2.local = util$5.getValue(lines, "Location", " ").toLowerCase().startsWith("local");
+  result2.uri = util$4.getValue(lines, "DeviceURI", " ");
+  result2.uuid = util$4.getValue(lines, "UUID", " ");
+  result2.status = util$4.getValue(lines, "State", " ");
+  result2.local = util$4.getValue(lines, "Location", " ").toLowerCase().startsWith("local");
   result2.default = null;
-  result2.shared = util$5.getValue(lines, "Shared", " ").toLowerCase().startsWith("yes");
+  result2.shared = util$4.getValue(lines, "Shared", " ").toLowerCase().startsWith("yes");
   return result2;
 }
 function parseLinuxLpstatPrinter(lines, id) {
   const result2 = {};
   result2.id = id;
-  result2.name = util$5.getValue(lines, "Description", ":", true);
+  result2.name = util$4.getValue(lines, "Description", ":", true);
   result2.model = lines.length > 0 && lines[0] ? lines[0].split(" ")[0] : "";
   result2.uri = null;
   result2.uuid = null;
   result2.status = lines.length > 0 && lines[0] ? lines[0].indexOf(" idle") > 0 ? "idle" : lines[0].indexOf(" printing") > 0 ? "printing" : "unknown" : null;
-  result2.local = util$5.getValue(lines, "Location", ":", true).toLowerCase().startsWith("local");
+  result2.local = util$4.getValue(lines, "Location", ":", true).toLowerCase().startsWith("local");
   result2.default = null;
-  result2.shared = util$5.getValue(lines, "Shared", " ").toLowerCase().startsWith("yes");
+  result2.shared = util$4.getValue(lines, "Shared", " ").toLowerCase().startsWith("yes");
   return result2;
 }
 function parseDarwinPrinters(printerObject, id) {
@@ -15107,16 +15103,16 @@ function parseDarwinPrinters(printerObject, id) {
 }
 function parseWindowsPrinters(lines, id) {
   const result2 = {};
-  const status = parseInt(util$5.getValue(lines, "PrinterStatus", ":"), 10);
+  const status = parseInt(util$4.getValue(lines, "PrinterStatus", ":"), 10);
   result2.id = id;
-  result2.name = util$5.getValue(lines, "name", ":");
-  result2.model = util$5.getValue(lines, "DriverName", ":");
+  result2.name = util$4.getValue(lines, "name", ":");
+  result2.model = util$4.getValue(lines, "DriverName", ":");
   result2.uri = null;
   result2.uuid = null;
   result2.status = winPrinterStatus[status] ? winPrinterStatus[status] : null;
-  result2.local = util$5.getValue(lines, "Local", ":").toUpperCase() === "TRUE";
-  result2.default = util$5.getValue(lines, "Default", ":").toUpperCase() === "TRUE";
-  result2.shared = util$5.getValue(lines, "Shared", ":").toUpperCase() === "TRUE";
+  result2.local = util$4.getValue(lines, "Local", ":").toUpperCase() === "TRUE";
+  result2.default = util$4.getValue(lines, "Default", ":").toUpperCase() === "TRUE";
+  result2.shared = util$4.getValue(lines, "Shared", ":").toUpperCase() === "TRUE";
   return result2;
 }
 function printer(callback) {
@@ -15179,7 +15175,7 @@ function printer(callback) {
                 }
               }
             } catch (e) {
-              util$5.noop();
+              util$4.noop();
             }
           }
           if (callback) {
@@ -15189,7 +15185,7 @@ function printer(callback) {
         });
       }
       if (_windows$3) {
-        util$5.powerShell("Get-CimInstance Win32_Printer | select PrinterStatus,Name,DriverName,Local,Default,Shared | fl").then((stdout, error) => {
+        util$4.powerShell("Get-CimInstance Win32_Printer | select PrinterStatus,Name,DriverName,Local,Default,Shared | fl").then((stdout, error) => {
           if (!error) {
             const parts = stdout.toString().split(/\n\s*\n/);
             for (let i = 0; i < parts.length; i++) {
@@ -15214,7 +15210,7 @@ function printer(callback) {
 printer$1.printer = printer;
 var usb$1 = {};
 const exec$2 = require$$1.exec;
-const util$4 = util$l;
+const util$3 = util$k;
 let _platform$2 = process.platform;
 const _linux$2 = _platform$2 === "linux" || _platform$2 === "android";
 const _darwin$2 = _platform$2 === "darwin";
@@ -15262,23 +15258,23 @@ function parseLinuxUsb(usb2) {
     result2.bus = null;
     result2.deviceId = null;
   }
-  const idVendor = util$4.getValue(lines, "idVendor", " ", true).trim();
+  const idVendor = util$3.getValue(lines, "idVendor", " ", true).trim();
   let vendorParts = idVendor.split(" ");
   vendorParts.shift();
   const vendor = vendorParts.join(" ");
-  const idProduct = util$4.getValue(lines, "idProduct", " ", true).trim();
+  const idProduct = util$3.getValue(lines, "idProduct", " ", true).trim();
   let productParts = idProduct.split(" ");
   productParts.shift();
   const product = productParts.join(" ");
-  const interfaceClass = util$4.getValue(lines, "bInterfaceClass", " ", true).trim();
+  const interfaceClass = util$3.getValue(lines, "bInterfaceClass", " ", true).trim();
   let interfaceClassParts = interfaceClass.split(" ");
   interfaceClassParts.shift();
   const usbType = interfaceClassParts.join(" ");
-  const iManufacturer = util$4.getValue(lines, "iManufacturer", " ", true).trim();
+  const iManufacturer = util$3.getValue(lines, "iManufacturer", " ", true).trim();
   let iManufacturerParts = iManufacturer.split(" ");
   iManufacturerParts.shift();
   const manufacturer = iManufacturerParts.join(" ");
-  const iSerial = util$4.getValue(lines, "iSerial", " ", true).trim();
+  const iSerial = util$3.getValue(lines, "iSerial", " ", true).trim();
   let iSerialParts = iSerial.split(" ");
   iSerialParts.shift();
   const serial = iSerialParts.join(" ");
@@ -15288,7 +15284,7 @@ function parseLinuxUsb(usb2) {
   result2.removable = null;
   result2.vendor = vendor;
   result2.manufacturer = manufacturer;
-  result2.maxPower = util$4.getValue(lines, "MaxPower", " ", true);
+  result2.maxPower = util$3.getValue(lines, "MaxPower", " ", true);
   result2.serialNumber = serial;
   return result2;
 }
@@ -15399,17 +15395,17 @@ function getWindowsUsbTypeCreation(creationclass, name) {
   return result2;
 }
 function parseWindowsUsb(lines, id) {
-  const usbType = getWindowsUsbTypeCreation(util$4.getValue(lines, "CreationClassName", ":").toLowerCase(), util$4.getValue(lines, "name", ":").toLowerCase());
+  const usbType = getWindowsUsbTypeCreation(util$3.getValue(lines, "CreationClassName", ":").toLowerCase(), util$3.getValue(lines, "name", ":").toLowerCase());
   if (usbType) {
     const result2 = {};
     result2.bus = null;
-    result2.deviceId = util$4.getValue(lines, "deviceid", ":");
+    result2.deviceId = util$3.getValue(lines, "deviceid", ":");
     result2.id = id;
-    result2.name = util$4.getValue(lines, "name", ":");
+    result2.name = util$3.getValue(lines, "name", ":");
     result2.type = usbType;
     result2.removable = null;
     result2.vendor = null;
-    result2.manufacturer = util$4.getValue(lines, "Manufacturer", ":");
+    result2.manufacturer = util$3.getValue(lines, "Manufacturer", ":");
     result2.maxPower = null;
     result2.serialNumber = null;
     return result2;
@@ -15460,7 +15456,7 @@ function usb(callback) {
         });
       }
       if (_windows$2) {
-        util$4.powerShell('Get-CimInstance CIM_LogicalDevice | where { $_.Description -match "USB"} | select Name,CreationClassName,DeviceId,Manufacturer | fl').then((stdout, error) => {
+        util$3.powerShell('Get-CimInstance CIM_LogicalDevice | where { $_.Description -match "USB"} | select Name,CreationClassName,DeviceId,Manufacturer | fl').then((stdout, error) => {
           if (!error) {
             const parts = stdout.toString().split(/\n\s*\n/);
             for (let i = 0; i < parts.length; i++) {
@@ -15486,7 +15482,7 @@ usb$1.usb = usb;
 var audio$1 = {};
 const exec$1 = require$$1.exec;
 const execSync$1 = require$$1.execSync;
-const util$3 = util$l;
+const util$2 = util$k;
 let _platform$1 = process.platform;
 const _linux$1 = _platform$1 === "linux" || _platform$1 === "android";
 const _darwin$1 = _platform$1 === "darwin";
@@ -15551,13 +15547,13 @@ function getLinuxAudioPci() {
   let cmd = "lspci -v 2>/dev/null";
   let result2 = [];
   try {
-    const parts = execSync$1(cmd, util$3.execOptsLinux).toString().split("\n\n");
+    const parts = execSync$1(cmd, util$2.execOptsLinux).toString().split("\n\n");
     parts.forEach((element) => {
       const lines = element.split("\n");
       if (lines && lines.length && lines[0].toLowerCase().indexOf("audio") >= 0) {
         const audio2 = {};
         audio2.slotId = lines[0].split(" ")[0];
-        audio2.driver = util$3.getValue(lines, "Kernel driver in use", ":", true) || util$3.getValue(lines, "Kernel modules", ":", true);
+        audio2.driver = util$2.getValue(lines, "Kernel driver in use", ":", true) || util$2.getValue(lines, "Kernel modules", ":", true);
         result2.push(audio2);
       }
     });
@@ -15568,14 +15564,14 @@ function getLinuxAudioPci() {
 }
 function parseLinuxAudioPciMM(lines, audioPCI) {
   const result2 = {};
-  const slotId = util$3.getValue(lines, "Slot");
+  const slotId = util$2.getValue(lines, "Slot");
   const pciMatch = audioPCI.filter(function(item) {
     return item.slotId === slotId;
   });
   result2.id = slotId;
-  result2.name = util$3.getValue(lines, "SDevice");
-  result2.manufacturer = util$3.getValue(lines, "SVendor");
-  result2.revision = util$3.getValue(lines, "Rev");
+  result2.name = util$2.getValue(lines, "SDevice");
+  result2.manufacturer = util$2.getValue(lines, "SVendor");
+  result2.revision = util$2.getValue(lines, "Rev");
   result2.driver = pciMatch && pciMatch.length === 1 && pciMatch[0].driver ? pciMatch[0].driver : "";
   result2.default = null;
   result2.channel = "PCIe";
@@ -15625,10 +15621,10 @@ function parseDarwinAudio(audioObject, id) {
 }
 function parseWindowsAudio(lines) {
   const result2 = {};
-  const status = util$3.getValue(lines, "StatusInfo", ":");
-  result2.id = util$3.getValue(lines, "DeviceID", ":");
-  result2.name = util$3.getValue(lines, "name", ":");
-  result2.manufacturer = util$3.getValue(lines, "manufacturer", ":");
+  const status = util$2.getValue(lines, "StatusInfo", ":");
+  result2.id = util$2.getValue(lines, "DeviceID", ":");
+  result2.name = util$2.getValue(lines, "name", ":");
+  result2.manufacturer = util$2.getValue(lines, "manufacturer", ":");
   result2.revision = null;
   result2.driver = null;
   result2.default = null;
@@ -15651,7 +15647,7 @@ function audio(callback) {
             const parts = stdout.toString().split("\n\n");
             parts.forEach((element) => {
               const lines = element.split("\n");
-              if (util$3.getValue(lines, "class", ":", true).toLowerCase().indexOf("audio") >= 0) {
+              if (util$2.getValue(lines, "class", ":", true).toLowerCase().indexOf("audio") >= 0) {
                 const audio2 = parseLinuxAudioPciMM(lines, audioPCI);
                 result2.push(audio2);
               }
@@ -15676,7 +15672,7 @@ function audio(callback) {
                 }
               }
             } catch (e) {
-              util$3.noop();
+              util$2.noop();
             }
           }
           if (callback) {
@@ -15686,12 +15682,12 @@ function audio(callback) {
         });
       }
       if (_windows$1) {
-        util$3.powerShell("Get-CimInstance Win32_SoundDevice | select DeviceID,StatusInfo,Name,Manufacturer | fl").then((stdout, error) => {
+        util$2.powerShell("Get-CimInstance Win32_SoundDevice | select DeviceID,StatusInfo,Name,Manufacturer | fl").then((stdout, error) => {
           if (!error) {
             const parts = stdout.toString().split(/\n\s*\n/);
             parts.forEach((element) => {
               const lines = element.split("\n");
-              if (util$3.getValue(lines, "name", ":")) {
+              if (util$2.getValue(lines, "name", ":")) {
                 result2.push(parseWindowsAudio(lines));
               }
             });
@@ -16848,8 +16844,8 @@ var bluetoothVendors$1 = {
 };
 const exec = require$$1.exec;
 const execSync = require$$1.execSync;
-const path$d = path$g;
-const util$2 = util$l;
+const path$c = require$$1$2;
+const util$1 = util$k;
 const bluetoothVendors = bluetoothVendors$1;
 const fs$j = require$$1$1;
 let _platform = process.platform;
@@ -16930,7 +16926,7 @@ function parseBluetoothVendor(str) {
 function parseLinuxBluetoothInfo(lines, macAddr1, macAddr2) {
   const result2 = {};
   result2.device = null;
-  result2.name = util$2.getValue(lines, "name", "=");
+  result2.name = util$1.getValue(lines, "name", "=");
   result2.manufacturer = null;
   result2.macDevice = macAddr1;
   result2.macHost = macAddr2;
@@ -16955,8 +16951,8 @@ function parseDarwinBluetoothDevices(bluetoothObject, macAddr2) {
 function parseWindowsBluetooth(lines) {
   const result2 = {};
   result2.device = null;
-  result2.name = util$2.getValue(lines, "name", ":");
-  result2.manufacturer = util$2.getValue(lines, "manufacturer", ":");
+  result2.name = util$1.getValue(lines, "name", ":");
+  result2.manufacturer = util$1.getValue(lines, "manufacturer", ":");
   result2.macDevice = null;
   result2.macHost = null;
   result2.batteryPercent = null;
@@ -16969,9 +16965,9 @@ function bluetoothDevices(callback) {
     process.nextTick(() => {
       let result2 = [];
       if (_linux) {
-        const btFiles = util$2.getFilesInPath("/var/lib/bluetooth/");
+        const btFiles = util$1.getFilesInPath("/var/lib/bluetooth/");
         btFiles.forEach((element) => {
-          const filename = path$d.basename(element);
+          const filename = path$c.basename(element);
           const pathParts = element.split("/");
           const macAddr1 = pathParts.length >= 6 ? pathParts[pathParts.length - 2] : null;
           const macAddr2 = pathParts.length >= 7 ? pathParts[pathParts.length - 3] : null;
@@ -16981,14 +16977,14 @@ function bluetoothDevices(callback) {
           }
         });
         try {
-          const hdicon = execSync("hcitool con", util$2.execOptsLinux).toString().toLowerCase();
+          const hdicon = execSync("hcitool con", util$1.execOptsLinux).toString().toLowerCase();
           for (let i = 0; i < result2.length; i++) {
             if (result2[i].macDevice && result2[i].macDevice.length > 10 && hdicon.indexOf(result2[i].macDevice.toLowerCase()) >= 0) {
               result2[i].connected = true;
             }
           }
         } catch (e) {
-          util$2.noop();
+          util$1.noop();
         }
         if (callback) {
           callback(result2);
@@ -17046,7 +17042,7 @@ function bluetoothDevices(callback) {
                 });
               }
             } catch (e) {
-              util$2.noop();
+              util$1.noop();
             }
           }
           if (callback) {
@@ -17056,11 +17052,11 @@ function bluetoothDevices(callback) {
         });
       }
       if (_windows) {
-        util$2.powerShell("Get-CimInstance Win32_PNPEntity | select PNPClass, Name, Manufacturer | fl").then((stdout, error) => {
+        util$1.powerShell("Get-CimInstance Win32_PNPEntity | select PNPClass, Name, Manufacturer | fl").then((stdout, error) => {
           if (!error) {
             const parts = stdout.toString().split(/\n\s*\n/);
             parts.forEach((part) => {
-              if (util$2.getValue(part.split("\n"), "PNPClass", ":") === "Bluetooth") {
+              if (util$1.getValue(part.split("\n"), "PNPClass", ":") === "Bluetooth") {
                 result2.push(parseWindowsBluetooth(part.split("\n")));
               }
             });
@@ -17080,7 +17076,7 @@ function bluetoothDevices(callback) {
 bluetooth.bluetoothDevices = bluetoothDevices;
 (function(exports) {
   const lib_version = require$$0.version;
-  const util2 = util$l;
+  const util2 = util$k;
   const system2 = system$1;
   const osInfo2 = osinfo;
   const cpu2 = cpu$1;
@@ -17309,7 +17305,7 @@ bluetooth.bluetoothDevices = bluetoothDevices;
       });
     });
   }
-  function get2(valueObject, callback) {
+  function get(valueObject, callback) {
     return new Promise((resolve) => {
       process.nextTick(() => {
         const allPromises = Object.keys(valueObject).filter((func) => ({}).hasOwnProperty.call(exports, func)).map((func) => {
@@ -17330,27 +17326,27 @@ bluetooth.bluetoothDevices = bluetoothDevices;
               if (valueObject[key] === "*" || valueObject[key] === "all") {
                 result2[key] = data[i];
               } else {
-                let keys2 = valueObject[key];
+                let keys = valueObject[key];
                 let filter = "";
                 let filterParts = [];
-                if (keys2.indexOf(")") >= 0) {
-                  keys2 = keys2.split(")")[1].trim();
+                if (keys.indexOf(")") >= 0) {
+                  keys = keys.split(")")[1].trim();
                 }
-                if (keys2.indexOf("|") >= 0) {
-                  filter = keys2.split("|")[1].trim();
+                if (keys.indexOf("|") >= 0) {
+                  filter = keys.split("|")[1].trim();
                   filterParts = filter.split(":");
-                  keys2 = keys2.split("|")[0].trim();
+                  keys = keys.split("|")[0].trim();
                 }
-                keys2 = keys2.replace(/,/g, " ").replace(/ +/g, " ").split(" ");
+                keys = keys.replace(/,/g, " ").replace(/ +/g, " ").split(" ");
                 if (data[i]) {
                   if (Array.isArray(data[i])) {
                     const partialArray = [];
                     data[i].forEach((element) => {
                       let partialRes = {};
-                      if (keys2.length === 1 && (keys2[0] === "*" || keys2[0] === "all")) {
+                      if (keys.length === 1 && (keys[0] === "*" || keys[0] === "all")) {
                         partialRes = element;
                       } else {
-                        keys2.forEach((k) => {
+                        keys.forEach((k) => {
                           if ({}.hasOwnProperty.call(element, k)) {
                             partialRes[k] = element[k];
                           }
@@ -17376,7 +17372,7 @@ bluetooth.bluetoothDevices = bluetoothDevices;
                     result2[key] = partialArray;
                   } else {
                     const partialRes = {};
-                    keys2.forEach((k) => {
+                    keys.forEach((k) => {
                       if ({}.hasOwnProperty.call(data[i], k)) {
                         partialRes[k] = data[i][k];
                       }
@@ -17401,7 +17397,7 @@ bluetooth.bluetoothDevices = bluetoothDevices;
   function observe(valueObject, interval, callback) {
     let _data = null;
     const result2 = setInterval(() => {
-      get2(valueObject).then((data) => {
+      get(valueObject).then((data) => {
         if (JSON.stringify(_data) !== JSON.stringify(data)) {
           _data = Object.assign({}, data);
           callback(data);
@@ -17466,7 +17462,7 @@ bluetooth.bluetoothDevices = bluetoothDevices;
   exports.getStaticData = getStaticData;
   exports.getDynamicData = getDynamicData;
   exports.getAllData = getAllData;
-  exports.get = get2;
+  exports.get = get;
   exports.observe = observe;
   exports.powerShellStart = util2.powerShellStart;
   exports.powerShellRelease = util2.powerShellRelease;
@@ -17795,9 +17791,9 @@ function legacy$1(fs2) {
     this.mode = 438;
     this.bufferSize = 64 * 1024;
     options = options || {};
-    var keys2 = Object.keys(options);
-    for (var index = 0, length = keys2.length; index < length; index++) {
-      var key = keys2[index];
+    var keys = Object.keys(options);
+    for (var index = 0, length = keys.length; index < length; index++) {
+      var key = keys[index];
       this[key] = options[key];
     }
     if (this.encoding) this.setEncoding(this.encoding);
@@ -17843,9 +17839,9 @@ function legacy$1(fs2) {
     this.mode = 438;
     this.bytesWritten = 0;
     options = options || {};
-    var keys2 = Object.keys(options);
-    for (var index = 0, length = keys2.length; index < length; index++) {
-      var key = keys2[index];
+    var keys = Object.keys(options);
+    for (var index = 0, length = keys.length; index < length; index++) {
+      var key = keys[index];
       this[key] = options[key];
     }
     if (this.start !== void 0) {
@@ -17886,7 +17882,7 @@ var fs$h = require$$1$1;
 var polyfills = polyfills$1;
 var legacy = legacyStreams;
 var clone = clone_1;
-var util$1 = require$$4;
+var util = require$$4;
 var gracefulQueue;
 var previousSymbol;
 if (typeof Symbol === "function" && typeof Symbol.for === "function") {
@@ -17906,11 +17902,11 @@ function publishQueue(context, queue2) {
   });
 }
 var debug = noop;
-if (util$1.debuglog)
-  debug = util$1.debuglog("gfs4");
+if (util.debuglog)
+  debug = util.debuglog("gfs4");
 else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ""))
   debug = function() {
-    var m = util$1.format.apply(util$1, arguments);
+    var m = util.format.apply(util, arguments);
     m = "GFS4: " + m.split(/\n/).join("\nGFS4: ");
     console.error(m);
   };
@@ -18358,10 +18354,10 @@ function retry() {
 })(fs$i);
 var makeDir$1 = {};
 var utils$1 = {};
-const path$c = path$g;
+const path$b = require$$1$2;
 utils$1.checkPath = function checkPath(pth) {
   if (process.platform === "win32") {
-    const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path$c.parse(pth).root, ""));
+    const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path$b.parse(pth).root, ""));
     if (pathHasInvalidWinCharacters) {
       const error = new Error(`Path contains invalid characters: ${pth}`);
       error.code = "EINVAL";
@@ -18439,7 +18435,7 @@ var utimes = {
   utimesMillisSync: utimesMillisSync$1
 };
 const fs$d = fs$i;
-const path$b = path$g;
+const path$a = require$$1$2;
 const u$b = universalify$1.fromPromise;
 function getStats$1(src, dest, opts) {
   const statFunc = opts.dereference ? (file2) => fs$d.stat(file2, { bigint: true }) : (file2) => fs$d.lstat(file2, { bigint: true });
@@ -18467,8 +18463,8 @@ async function checkPaths(src, dest, funcName, opts) {
   const { srcStat, destStat } = await getStats$1(src, dest, opts);
   if (destStat) {
     if (areIdentical$2(srcStat, destStat)) {
-      const srcBaseName = path$b.basename(src);
-      const destBaseName = path$b.basename(dest);
+      const srcBaseName = path$a.basename(src);
+      const destBaseName = path$a.basename(dest);
       if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
         return { srcStat, destStat, isChangingCase: true };
       }
@@ -18490,8 +18486,8 @@ function checkPathsSync(src, dest, funcName, opts) {
   const { srcStat, destStat } = getStatsSync(src, dest, opts);
   if (destStat) {
     if (areIdentical$2(srcStat, destStat)) {
-      const srcBaseName = path$b.basename(src);
-      const destBaseName = path$b.basename(dest);
+      const srcBaseName = path$a.basename(src);
+      const destBaseName = path$a.basename(dest);
       if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
         return { srcStat, destStat, isChangingCase: true };
       }
@@ -18510,9 +18506,9 @@ function checkPathsSync(src, dest, funcName, opts) {
   return { srcStat, destStat };
 }
 async function checkParentPaths(src, srcStat, dest, funcName) {
-  const srcParent = path$b.resolve(path$b.dirname(src));
-  const destParent = path$b.resolve(path$b.dirname(dest));
-  if (destParent === srcParent || destParent === path$b.parse(destParent).root) return;
+  const srcParent = path$a.resolve(path$a.dirname(src));
+  const destParent = path$a.resolve(path$a.dirname(dest));
+  if (destParent === srcParent || destParent === path$a.parse(destParent).root) return;
   let destStat;
   try {
     destStat = await fs$d.stat(destParent, { bigint: true });
@@ -18526,9 +18522,9 @@ async function checkParentPaths(src, srcStat, dest, funcName) {
   return checkParentPaths(src, srcStat, destParent, funcName);
 }
 function checkParentPathsSync(src, srcStat, dest, funcName) {
-  const srcParent = path$b.resolve(path$b.dirname(src));
-  const destParent = path$b.resolve(path$b.dirname(dest));
-  if (destParent === srcParent || destParent === path$b.parse(destParent).root) return;
+  const srcParent = path$a.resolve(path$a.dirname(src));
+  const destParent = path$a.resolve(path$a.dirname(dest));
+  if (destParent === srcParent || destParent === path$a.parse(destParent).root) return;
   let destStat;
   try {
     destStat = fs$d.statSync(destParent, { bigint: true });
@@ -18545,8 +18541,8 @@ function areIdentical$2(srcStat, destStat) {
   return destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev;
 }
 function isSrcSubdir(src, dest) {
-  const srcArr = path$b.resolve(src).split(path$b.sep).filter((i) => i);
-  const destArr = path$b.resolve(dest).split(path$b.sep).filter((i) => i);
+  const srcArr = path$a.resolve(src).split(path$a.sep).filter((i) => i);
+  const destArr = path$a.resolve(dest).split(path$a.sep).filter((i) => i);
   return srcArr.every((cur, i) => destArr[i] === cur);
 }
 function errMsg(src, dest, funcName) {
@@ -18564,7 +18560,7 @@ var stat$4 = {
   areIdentical: areIdentical$2
 };
 const fs$c = fs$i;
-const path$a = path$g;
+const path$9 = require$$1$2;
 const { mkdirs: mkdirs$1 } = mkdirs$2;
 const { pathExists: pathExists$5 } = pathExists_1;
 const { utimesMillis } = utimes;
@@ -18586,7 +18582,7 @@ async function copy$2(src, dest, opts = {}) {
   await stat$3.checkParentPaths(src, srcStat, dest, "copy");
   const include = await runFilter(src, dest, opts);
   if (!include) return;
-  const destParent = path$a.dirname(dest);
+  const destParent = path$9.dirname(dest);
   const dirExists = await pathExists$5(destParent);
   if (!dirExists) {
     await mkdirs$1(destParent);
@@ -18640,8 +18636,8 @@ async function onDir$1(srcStat, destStat, src, dest, opts) {
   }
   const promises = [];
   for await (const item of await fs$c.opendir(src)) {
-    const srcItem = path$a.join(src, item.name);
-    const destItem = path$a.join(dest, item.name);
+    const srcItem = path$9.join(src, item.name);
+    const destItem = path$9.join(dest, item.name);
     promises.push(
       runFilter(srcItem, destItem, opts).then((include) => {
         if (include) {
@@ -18660,7 +18656,7 @@ async function onDir$1(srcStat, destStat, src, dest, opts) {
 async function onLink$1(destStat, src, dest, opts) {
   let resolvedSrc = await fs$c.readlink(src);
   if (opts.dereference) {
-    resolvedSrc = path$a.resolve(process.cwd(), resolvedSrc);
+    resolvedSrc = path$9.resolve(process.cwd(), resolvedSrc);
   }
   if (!destStat) {
     return fs$c.symlink(resolvedSrc, dest);
@@ -18673,7 +18669,7 @@ async function onLink$1(destStat, src, dest, opts) {
     throw e;
   }
   if (opts.dereference) {
-    resolvedDest = path$a.resolve(process.cwd(), resolvedDest);
+    resolvedDest = path$9.resolve(process.cwd(), resolvedDest);
   }
   if (stat$3.isSrcSubdir(resolvedSrc, resolvedDest)) {
     throw new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`);
@@ -18686,7 +18682,7 @@ async function onLink$1(destStat, src, dest, opts) {
 }
 var copy_1 = copy$2;
 const fs$b = gracefulFs;
-const path$9 = path$g;
+const path$8 = require$$1$2;
 const mkdirsSync$1 = mkdirs$2.mkdirsSync;
 const utimesMillisSync = utimes.utimesMillisSync;
 const stat$2 = stat$4;
@@ -18707,7 +18703,7 @@ function copySync$1(src, dest, opts) {
   const { srcStat, destStat } = stat$2.checkPathsSync(src, dest, "copy", opts);
   stat$2.checkParentPathsSync(src, srcStat, dest, "copy");
   if (opts.filter && !opts.filter(src, dest)) return;
-  const destParent = path$9.dirname(dest);
+  const destParent = path$8.dirname(dest);
   if (!fs$b.existsSync(destParent)) mkdirsSync$1(destParent);
   return getStats(destStat, src, dest, opts);
 }
@@ -18776,8 +18772,8 @@ function copyDir(src, dest, opts) {
   }
 }
 function copyDirItem(item, src, dest, opts) {
-  const srcItem = path$9.join(src, item);
-  const destItem = path$9.join(dest, item);
+  const srcItem = path$8.join(src, item);
+  const destItem = path$8.join(dest, item);
   if (opts.filter && !opts.filter(srcItem, destItem)) return;
   const { destStat } = stat$2.checkPathsSync(srcItem, destItem, "copy", opts);
   return getStats(destStat, srcItem, destItem, opts);
@@ -18785,7 +18781,7 @@ function copyDirItem(item, src, dest, opts) {
 function onLink(destStat, src, dest, opts) {
   let resolvedSrc = fs$b.readlinkSync(src);
   if (opts.dereference) {
-    resolvedSrc = path$9.resolve(process.cwd(), resolvedSrc);
+    resolvedSrc = path$8.resolve(process.cwd(), resolvedSrc);
   }
   if (!destStat) {
     return fs$b.symlinkSync(resolvedSrc, dest);
@@ -18798,7 +18794,7 @@ function onLink(destStat, src, dest, opts) {
       throw err;
     }
     if (opts.dereference) {
-      resolvedDest = path$9.resolve(process.cwd(), resolvedDest);
+      resolvedDest = path$8.resolve(process.cwd(), resolvedDest);
     }
     if (stat$2.isSrcSubdir(resolvedSrc, resolvedDest)) {
       throw new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`);
@@ -18833,7 +18829,7 @@ var remove_1 = {
 };
 const u$8 = universalify$1.fromPromise;
 const fs$9 = fs$i;
-const path$8 = path$g;
+const path$7 = require$$1$2;
 const mkdir$3 = mkdirs$2;
 const remove$1 = remove_1;
 const emptyDir = u$8(async function emptyDir2(dir) {
@@ -18843,7 +18839,7 @@ const emptyDir = u$8(async function emptyDir2(dir) {
   } catch {
     return mkdir$3.mkdirs(dir);
   }
-  return Promise.all(items.map((item) => remove$1.remove(path$8.join(dir, item))));
+  return Promise.all(items.map((item) => remove$1.remove(path$7.join(dir, item))));
 });
 function emptyDirSync(dir) {
   let items;
@@ -18853,7 +18849,7 @@ function emptyDirSync(dir) {
     return mkdir$3.mkdirsSync(dir);
   }
   items.forEach((item) => {
-    item = path$8.join(dir, item);
+    item = path$7.join(dir, item);
     remove$1.removeSync(item);
   });
 }
@@ -18864,7 +18860,7 @@ var empty = {
   emptydir: emptyDir
 };
 const u$7 = universalify$1.fromPromise;
-const path$7 = path$g;
+const path$6 = require$$1$2;
 const fs$8 = fs$i;
 const mkdir$2 = mkdirs$2;
 async function createFile$1(file2) {
@@ -18874,7 +18870,7 @@ async function createFile$1(file2) {
   } catch {
   }
   if (stats && stats.isFile()) return;
-  const dir = path$7.dirname(file2);
+  const dir = path$6.dirname(file2);
   let dirStats = null;
   try {
     dirStats = await fs$8.stat(dir);
@@ -18900,7 +18896,7 @@ function createFileSync$1(file2) {
   } catch {
   }
   if (stats && stats.isFile()) return;
-  const dir = path$7.dirname(file2);
+  const dir = path$6.dirname(file2);
   try {
     if (!fs$8.statSync(dir).isDirectory()) {
       fs$8.readdirSync(dir);
@@ -18916,7 +18912,7 @@ var file = {
   createFileSync: createFileSync$1
 };
 const u$6 = universalify$1.fromPromise;
-const path$6 = path$g;
+const path$5 = require$$1$2;
 const fs$7 = fs$i;
 const mkdir$1 = mkdirs$2;
 const { pathExists: pathExists$4 } = pathExists_1;
@@ -18935,7 +18931,7 @@ async function createLink$1(srcpath, dstpath) {
     throw err;
   }
   if (dstStat && areIdentical$1(srcStat, dstStat)) return;
-  const dir = path$6.dirname(dstpath);
+  const dir = path$5.dirname(dstpath);
   const dirExists = await pathExists$4(dir);
   if (!dirExists) {
     await mkdir$1.mkdirs(dir);
@@ -18955,7 +18951,7 @@ function createLinkSync$1(srcpath, dstpath) {
     err.message = err.message.replace("lstat", "ensureLink");
     throw err;
   }
-  const dir = path$6.dirname(dstpath);
+  const dir = path$5.dirname(dstpath);
   const dirExists = fs$7.existsSync(dir);
   if (dirExists) return fs$7.linkSync(srcpath, dstpath);
   mkdir$1.mkdirsSync(dir);
@@ -18965,12 +18961,12 @@ var link = {
   createLink: u$6(createLink$1),
   createLinkSync: createLinkSync$1
 };
-const path$5 = path$g;
+const path$4 = require$$1$2;
 const fs$6 = fs$i;
 const { pathExists: pathExists$3 } = pathExists_1;
 const u$5 = universalify$1.fromPromise;
 async function symlinkPaths$1(srcpath, dstpath) {
-  if (path$5.isAbsolute(srcpath)) {
+  if (path$4.isAbsolute(srcpath)) {
     try {
       await fs$6.lstat(srcpath);
     } catch (err) {
@@ -18982,8 +18978,8 @@ async function symlinkPaths$1(srcpath, dstpath) {
       toDst: srcpath
     };
   }
-  const dstdir = path$5.dirname(dstpath);
-  const relativeToDst = path$5.join(dstdir, srcpath);
+  const dstdir = path$4.dirname(dstpath);
+  const relativeToDst = path$4.join(dstdir, srcpath);
   const exists = await pathExists$3(relativeToDst);
   if (exists) {
     return {
@@ -18999,11 +18995,11 @@ async function symlinkPaths$1(srcpath, dstpath) {
   }
   return {
     toCwd: srcpath,
-    toDst: path$5.relative(dstdir, srcpath)
+    toDst: path$4.relative(dstdir, srcpath)
   };
 }
 function symlinkPathsSync$1(srcpath, dstpath) {
-  if (path$5.isAbsolute(srcpath)) {
+  if (path$4.isAbsolute(srcpath)) {
     const exists2 = fs$6.existsSync(srcpath);
     if (!exists2) throw new Error("absolute srcpath does not exist");
     return {
@@ -19011,8 +19007,8 @@ function symlinkPathsSync$1(srcpath, dstpath) {
       toDst: srcpath
     };
   }
-  const dstdir = path$5.dirname(dstpath);
-  const relativeToDst = path$5.join(dstdir, srcpath);
+  const dstdir = path$4.dirname(dstpath);
+  const relativeToDst = path$4.join(dstdir, srcpath);
   const exists = fs$6.existsSync(relativeToDst);
   if (exists) {
     return {
@@ -19024,7 +19020,7 @@ function symlinkPathsSync$1(srcpath, dstpath) {
   if (!srcExists) throw new Error("relative srcpath does not exist");
   return {
     toCwd: srcpath,
-    toDst: path$5.relative(dstdir, srcpath)
+    toDst: path$4.relative(dstdir, srcpath)
   };
 }
 var symlinkPaths_1 = {
@@ -19058,7 +19054,7 @@ var symlinkType_1 = {
   symlinkTypeSync: symlinkTypeSync$1
 };
 const u$3 = universalify$1.fromPromise;
-const path$4 = path$g;
+const path$3 = require$$1$2;
 const fs$4 = fs$i;
 const { mkdirs, mkdirsSync } = mkdirs$2;
 const { symlinkPaths, symlinkPathsSync } = symlinkPaths_1;
@@ -19081,7 +19077,7 @@ async function createSymlink$1(srcpath, dstpath, type) {
   const relative = await symlinkPaths(srcpath, dstpath);
   srcpath = relative.toDst;
   const toType = await symlinkType(relative.toCwd, type);
-  const dir = path$4.dirname(dstpath);
+  const dir = path$3.dirname(dstpath);
   if (!await pathExists$2(dir)) {
     await mkdirs(dir);
   }
@@ -19101,7 +19097,7 @@ function createSymlinkSync$1(srcpath, dstpath, type) {
   const relative = symlinkPathsSync(srcpath, dstpath);
   srcpath = relative.toDst;
   type = symlinkTypeSync(relative.toCwd, type);
-  const dir = path$4.dirname(dstpath);
+  const dir = path$3.dirname(dstpath);
   const exists = fs$4.existsSync(dir);
   if (exists) return fs$4.symlinkSync(srcpath, dstpath, type);
   mkdirsSync(dir);
@@ -19218,18 +19214,18 @@ var jsonfile = {
 };
 const u$2 = universalify$1.fromPromise;
 const fs$3 = fs$i;
-const path$3 = path$g;
+const path$2 = require$$1$2;
 const mkdir = mkdirs$2;
 const pathExists$1 = pathExists_1.pathExists;
 async function outputFile$1(file2, data, encoding = "utf-8") {
-  const dir = path$3.dirname(file2);
+  const dir = path$2.dirname(file2);
   if (!await pathExists$1(dir)) {
     await mkdir.mkdirs(dir);
   }
   return fs$3.writeFile(file2, data, encoding);
 }
 function outputFileSync$1(file2, ...args) {
-  const dir = path$3.dirname(file2);
+  const dir = path$2.dirname(file2);
   if (!fs$3.existsSync(dir)) {
     mkdir.mkdirsSync(dir);
   }
@@ -19265,7 +19261,7 @@ jsonFile.readJSON = jsonFile.readJson;
 jsonFile.readJSONSync = jsonFile.readJsonSync;
 var json = jsonFile;
 const fs$2 = fs$i;
-const path$2 = path$g;
+const path$1 = require$$1$2;
 const { copy } = copy$1;
 const { remove } = remove_1;
 const { mkdirp } = mkdirs$2;
@@ -19275,8 +19271,8 @@ async function move$1(src, dest, opts = {}) {
   const overwrite = opts.overwrite || opts.clobber || false;
   const { srcStat, isChangingCase = false } = await stat$1.checkPaths(src, dest, "move", opts);
   await stat$1.checkParentPaths(src, srcStat, dest, "move");
-  const destParent = path$2.dirname(dest);
-  const parsedParentPath = path$2.parse(destParent);
+  const destParent = path$1.dirname(dest);
+  const parsedParentPath = path$1.parse(destParent);
   if (parsedParentPath.root !== destParent) {
     await mkdirp(destParent);
   }
@@ -19310,7 +19306,7 @@ async function moveAcrossDevice$1(src, dest, overwrite) {
 }
 var move_1 = move$1;
 const fs$1 = gracefulFs;
-const path$1 = path$g;
+const path = require$$1$2;
 const copySync = copy$1.copySync;
 const removeSync = remove_1.removeSync;
 const mkdirpSync = mkdirs$2.mkdirpSync;
@@ -19320,12 +19316,12 @@ function moveSync(src, dest, opts) {
   const overwrite = opts.overwrite || opts.clobber || false;
   const { srcStat, isChangingCase = false } = stat.checkPathsSync(src, dest, "move", opts);
   stat.checkParentPathsSync(src, srcStat, dest, "move");
-  if (!isParentRoot(dest)) mkdirpSync(path$1.dirname(dest));
+  if (!isParentRoot(dest)) mkdirpSync(path.dirname(dest));
   return doRename(src, dest, overwrite, isChangingCase);
 }
 function isParentRoot(dest) {
-  const parent = path$1.dirname(dest);
-  const parsedPath = path$1.parse(parent);
+  const parent = path.dirname(dest);
+  const parsedPath = path.parse(parent);
   return parsedPath.root === parent;
 }
 function doRename(src, dest, overwrite, isChangingCase) {
@@ -19375,1032 +19371,8 @@ var lib = {
   ...remove_1
 };
 const fs = /* @__PURE__ */ getDefaultExportFromCjs(lib);
-var util = require$$4, path = path$g, spawn = require$$1.spawn, HKLM = "HKLM", HKCU = "HKCU", HKCR = "HKCR", HKU = "HKU", HKCC = "HKCC", HIVES = [HKLM, HKCU, HKCR, HKU, HKCC], REG_SZ = "REG_SZ", REG_MULTI_SZ = "REG_MULTI_SZ", REG_EXPAND_SZ = "REG_EXPAND_SZ", REG_DWORD = "REG_DWORD", REG_QWORD = "REG_QWORD", REG_BINARY = "REG_BINARY", REG_NONE = "REG_NONE", REG_TYPES = [REG_SZ, REG_MULTI_SZ, REG_EXPAND_SZ, REG_DWORD, REG_QWORD, REG_BINARY, REG_NONE], DEFAULT_VALUE = "", KEY_PATTERN = /(\\[a-zA-Z0-9_\s]+)*/, PATH_PATTERN = /^(HKEY_LOCAL_MACHINE|HKEY_CURRENT_USER|HKEY_CLASSES_ROOT|HKEY_USERS|HKEY_CURRENT_CONFIG)(.*)$/, ITEM_PATTERN = /^(.*)\s(REG_SZ|REG_MULTI_SZ|REG_EXPAND_SZ|REG_DWORD|REG_QWORD|REG_BINARY|REG_NONE)\s+([^\s].*)$/;
-function ProcessUncleanExitError(message, code) {
-  if (!(this instanceof ProcessUncleanExitError))
-    return new ProcessUncleanExitError(message, code);
-  Error.captureStackTrace(this, ProcessUncleanExitError);
-  this.__defineGetter__("name", function() {
-    return ProcessUncleanExitError.name;
-  });
-  this.__defineGetter__("message", function() {
-    return message;
-  });
-  this.__defineGetter__("code", function() {
-    return code;
-  });
-}
-util.inherits(ProcessUncleanExitError, Error);
-function captureOutput(child) {
-  var output = { "stdout": "", "stderr": "" };
-  child.stdout.on("data", function(data) {
-    output["stdout"] += data.toString();
-  });
-  child.stderr.on("data", function(data) {
-    output["stderr"] += data.toString();
-  });
-  return output;
-}
-function mkErrorMsg(registryCommand, code, output) {
-  var stdout = output["stdout"].trim();
-  var stderr = output["stderr"].trim();
-  var msg = util.format("%s command exited with code %d:\n%s\n%s", registryCommand, code, stdout, stderr);
-  return new ProcessUncleanExitError(msg, code);
-}
-function convertArchString(archString) {
-  if (archString == "x64") {
-    return "64";
-  } else if (archString == "x86") {
-    return "32";
-  } else {
-    throw new Error("illegal architecture: " + archString + " (use x86 or x64)");
-  }
-}
-function pushArch(args, arch) {
-  if (arch) {
-    args.push("/reg:" + convertArchString(arch));
-  }
-}
-function getRegExePath() {
-  if (process.platform === "win32") {
-    return path.join(process.env.windir, "system32", "reg.exe");
-  } else {
-    return "REG";
-  }
-}
-function RegistryItem(host, hive, key, name, type, value, arch) {
-  if (!(this instanceof RegistryItem))
-    return new RegistryItem(host, hive, key, name, type, value, arch);
-  var _host = host, _hive = hive, _key = key, _name = name, _type = type, _value = value, _arch = arch;
-  this.__defineGetter__("host", function() {
-    return _host;
-  });
-  this.__defineGetter__("hive", function() {
-    return _hive;
-  });
-  this.__defineGetter__("key", function() {
-    return _key;
-  });
-  this.__defineGetter__("name", function() {
-    return _name;
-  });
-  this.__defineGetter__("type", function() {
-    return _type;
-  });
-  this.__defineGetter__("value", function() {
-    return _value;
-  });
-  this.__defineGetter__("arch", function() {
-    return _arch;
-  });
-}
-util.inherits(RegistryItem, Object);
-function Registry(options) {
-  if (!(this instanceof Registry))
-    return new Registry(options);
-  var _options = options || {}, _host = "" + (_options.host || ""), _hive = "" + (_options.hive || HKLM), _key = "" + (_options.key || ""), _arch = _options.arch || null;
-  this.__defineGetter__("host", function() {
-    return _host;
-  });
-  this.__defineGetter__("hive", function() {
-    return _hive;
-  });
-  this.__defineGetter__("key", function() {
-    return _key;
-  });
-  this.__defineGetter__("path", function() {
-    return '"' + (_host.length == 0 ? "" : "\\\\" + _host + "\\") + _hive + _key + '"';
-  });
-  this.__defineGetter__("arch", function() {
-    return _arch;
-  });
-  this.__defineGetter__("parent", function() {
-    var i = _key.lastIndexOf("\\");
-    return new Registry({
-      host: this.host,
-      hive: this.hive,
-      key: i == -1 ? "" : _key.substring(0, i),
-      arch: this.arch
-    });
-  });
-  if (HIVES.indexOf(_hive) == -1)
-    throw new Error("illegal hive specified.");
-  if (!KEY_PATTERN.test(_key))
-    throw new Error("illegal key specified.");
-  if (_arch && _arch != "x64" && _arch != "x86")
-    throw new Error("illegal architecture specified (use x86 or x64)");
-}
-Registry.HKLM = HKLM;
-Registry.HKCU = HKCU;
-Registry.HKCR = HKCR;
-Registry.HKU = HKU;
-Registry.HKCC = HKCC;
-Registry.HIVES = HIVES;
-Registry.REG_SZ = REG_SZ;
-Registry.REG_MULTI_SZ = REG_MULTI_SZ;
-Registry.REG_EXPAND_SZ = REG_EXPAND_SZ;
-Registry.REG_DWORD = REG_DWORD;
-Registry.REG_QWORD = REG_QWORD;
-Registry.REG_BINARY = REG_BINARY;
-Registry.REG_NONE = REG_NONE;
-Registry.REG_TYPES = REG_TYPES;
-Registry.DEFAULT_VALUE = DEFAULT_VALUE;
-Registry.prototype.values = function values(cb) {
-  if (typeof cb !== "function")
-    throw new TypeError("must specify a callback");
-  var args = ["QUERY", this.path];
-  pushArch(args, this.arch);
-  var proc = spawn(getRegExePath(), args, {
-    cwd: void 0,
-    env: process.env,
-    shell: true,
-    windowsHide: true,
-    stdio: ["ignore", "pipe", "pipe"]
-  }), buffer = "", self2 = this, error = null;
-  var output = captureOutput(proc);
-  proc.on("close", function(code) {
-    if (error) {
-      return;
-    } else if (code !== 0) {
-      cb(mkErrorMsg("QUERY", code, output), null);
-    } else {
-      var items = [], result2 = [], lines = buffer.split("\n"), lineNumber = 0;
-      for (var i = 0, l = lines.length; i < l; i++) {
-        var line = lines[i].trim();
-        if (line.length > 0) {
-          if (lineNumber != 0) {
-            items.push(line);
-          }
-          ++lineNumber;
-        }
-      }
-      for (var i = 0, l = items.length; i < l; i++) {
-        var match = ITEM_PATTERN.exec(items[i]), name, type, value;
-        if (match) {
-          name = match[1].trim();
-          type = match[2].trim();
-          value = match[3];
-          result2.push(new RegistryItem(self2.host, self2.hive, self2.key, name, type, value, self2.arch));
-        }
-      }
-      cb(null, result2);
-    }
-  });
-  proc.stdout.on("data", function(data) {
-    buffer += data.toString();
-  });
-  proc.on("error", function(err) {
-    error = err;
-    cb(err);
-  });
-  return this;
-};
-Registry.prototype.keys = function keys(cb) {
-  if (typeof cb !== "function")
-    throw new TypeError("must specify a callback");
-  var args = ["QUERY", this.path];
-  pushArch(args, this.arch);
-  var proc = spawn(getRegExePath(), args, {
-    cwd: void 0,
-    env: process.env,
-    shell: true,
-    windowsHide: true,
-    stdio: ["ignore", "pipe", "pipe"]
-  }), buffer = "", self2 = this, error = null;
-  var output = captureOutput(proc);
-  proc.on("close", function(code) {
-    if (error) {
-      return;
-    } else if (code !== 0) {
-      cb(mkErrorMsg("QUERY", code, output), null);
-    }
-  });
-  proc.stdout.on("data", function(data) {
-    buffer += data.toString();
-  });
-  proc.stdout.on("end", function() {
-    var items = [], result2 = [], lines = buffer.split("\n");
-    for (var i = 0, l = lines.length; i < l; i++) {
-      var line = lines[i].trim();
-      if (line.length > 0) {
-        items.push(line);
-      }
-    }
-    for (var i = 0, l = items.length; i < l; i++) {
-      var match = PATH_PATTERN.exec(items[i]), key;
-      if (match) {
-        match[1];
-        key = match[2];
-        if (key && key !== self2.key) {
-          result2.push(new Registry({
-            host: self2.host,
-            hive: self2.hive,
-            key,
-            arch: self2.arch
-          }));
-        }
-      }
-    }
-    cb(null, result2);
-  });
-  proc.on("error", function(err) {
-    error = err;
-    cb(err);
-  });
-  return this;
-};
-Registry.prototype.get = function get(name, cb) {
-  if (typeof cb !== "function")
-    throw new TypeError("must specify a callback");
-  var args = ["QUERY", this.path];
-  if (name == "")
-    args.push("/ve");
-  else
-    args = args.concat(["/v", name]);
-  pushArch(args, this.arch);
-  var proc = spawn(getRegExePath(), args, {
-    cwd: void 0,
-    env: process.env,
-    shell: true,
-    windowsHide: true,
-    stdio: ["ignore", "pipe", "pipe"]
-  }), buffer = "", self2 = this, error = null;
-  var output = captureOutput(proc);
-  proc.on("close", function(code) {
-    if (error) {
-      return;
-    } else if (code !== 0) {
-      cb(mkErrorMsg("QUERY", code, output), null);
-    } else {
-      var items = [], result2 = null, lines = buffer.split("\n"), lineNumber = 0;
-      for (var i = 0, l = lines.length; i < l; i++) {
-        var line = lines[i].trim();
-        if (line.length > 0) {
-          if (lineNumber != 0) {
-            items.push(line);
-          }
-          ++lineNumber;
-        }
-      }
-      var item = items[items.length - 1] || "", match = ITEM_PATTERN.exec(item), name2, type, value;
-      if (match) {
-        name2 = match[1].trim();
-        type = match[2].trim();
-        value = match[3];
-        result2 = new RegistryItem(self2.host, self2.hive, self2.key, name2, type, value, self2.arch);
-      }
-      cb(null, result2);
-    }
-  });
-  proc.stdout.on("data", function(data) {
-    buffer += data.toString();
-  });
-  proc.on("error", function(err) {
-    error = err;
-    cb(err);
-  });
-  return this;
-};
-Registry.prototype.set = function set(name, type, value, cb) {
-  if (typeof cb !== "function")
-    throw new TypeError("must specify a callback");
-  if (REG_TYPES.indexOf(type) == -1)
-    throw Error("illegal type specified.");
-  var args = ["ADD", this.path];
-  if (name == "")
-    args.push("/ve");
-  else
-    args = args.concat(["/v", name]);
-  args = args.concat(["/t", type, "/d", value, "/f"]);
-  pushArch(args, this.arch);
-  var proc = spawn(getRegExePath(), args, {
-    cwd: void 0,
-    env: process.env,
-    shell: true,
-    windowsHide: true,
-    stdio: ["ignore", "pipe", "pipe"]
-  }), error = null;
-  var output = captureOutput(proc);
-  proc.on("close", function(code) {
-    if (error) {
-      return;
-    } else if (code !== 0) {
-      cb(mkErrorMsg("ADD", code, output));
-    } else {
-      cb(null);
-    }
-  });
-  proc.stdout.on("data", function(data) {
-  });
-  proc.on("error", function(err) {
-    error = err;
-    cb(err);
-  });
-  return this;
-};
-Registry.prototype.remove = function remove2(name, cb) {
-  if (typeof cb !== "function")
-    throw new TypeError("must specify a callback");
-  var args = name ? ["DELETE", this.path, "/f", "/v", name] : ["DELETE", this.path, "/f", "/ve"];
-  pushArch(args, this.arch);
-  var proc = spawn(getRegExePath(), args, {
-    cwd: void 0,
-    env: process.env,
-    shell: true,
-    windowsHide: true,
-    stdio: ["ignore", "pipe", "pipe"]
-  }), error = null;
-  var output = captureOutput(proc);
-  proc.on("close", function(code) {
-    if (error) {
-      return;
-    } else if (code !== 0) {
-      cb(mkErrorMsg("DELETE", code, output), null);
-    } else {
-      cb(null);
-    }
-  });
-  proc.stdout.on("data", function(data) {
-  });
-  proc.on("error", function(err) {
-    error = err;
-    cb(err);
-  });
-  return this;
-};
-Registry.prototype.clear = function clear(cb) {
-  if (typeof cb !== "function")
-    throw new TypeError("must specify a callback");
-  var args = ["DELETE", this.path, "/f", "/va"];
-  pushArch(args, this.arch);
-  var proc = spawn(getRegExePath(), args, {
-    cwd: void 0,
-    env: process.env,
-    shell: true,
-    windowsHide: true,
-    stdio: ["ignore", "pipe", "pipe"]
-  }), error = null;
-  var output = captureOutput(proc);
-  proc.on("close", function(code) {
-    if (error) {
-      return;
-    } else if (code !== 0) {
-      cb(mkErrorMsg("DELETE", code, output), null);
-    } else {
-      cb(null);
-    }
-  });
-  proc.stdout.on("data", function(data) {
-  });
-  proc.on("error", function(err) {
-    error = err;
-    cb(err);
-  });
-  return this;
-};
-Registry.prototype.erase = Registry.prototype.clear;
-Registry.prototype.destroy = function destroy(cb) {
-  if (typeof cb !== "function")
-    throw new TypeError("must specify a callback");
-  var args = ["DELETE", this.path, "/f"];
-  pushArch(args, this.arch);
-  var proc = spawn(getRegExePath(), args, {
-    cwd: void 0,
-    env: process.env,
-    shell: true,
-    windowsHide: true,
-    stdio: ["ignore", "pipe", "pipe"]
-  }), error = null;
-  var output = captureOutput(proc);
-  proc.on("close", function(code) {
-    if (error) {
-      return;
-    } else if (code !== 0) {
-      cb(mkErrorMsg("DELETE", code, output), null);
-    } else {
-      cb(null);
-    }
-  });
-  proc.stdout.on("data", function(data) {
-  });
-  proc.on("error", function(err) {
-    error = err;
-    cb(err);
-  });
-  return this;
-};
-Registry.prototype.create = function create(cb) {
-  if (typeof cb !== "function")
-    throw new TypeError("must specify a callback");
-  var args = ["ADD", this.path, "/f"];
-  pushArch(args, this.arch);
-  var proc = spawn(getRegExePath(), args, {
-    cwd: void 0,
-    env: process.env,
-    shell: true,
-    windowsHide: true,
-    stdio: ["ignore", "pipe", "pipe"]
-  }), error = null;
-  var output = captureOutput(proc);
-  proc.on("close", function(code) {
-    if (error) {
-      return;
-    } else if (code !== 0) {
-      cb(mkErrorMsg("ADD", code, output), null);
-    } else {
-      cb(null);
-    }
-  });
-  proc.stdout.on("data", function(data) {
-  });
-  proc.on("error", function(err) {
-    error = err;
-    cb(err);
-  });
-  return this;
-};
-Registry.prototype.keyExists = function keyExists(cb) {
-  this.values(function(err, items) {
-    if (err) {
-      if (err.code == 1) {
-        return cb(null, false);
-      }
-      return cb(err);
-    }
-    cb(null, true);
-  });
-  return this;
-};
-Registry.prototype.valueExists = function valueExists(name, cb) {
-  this.get(name, function(err, item) {
-    if (err) {
-      if (err.code == 1) {
-        return cb(null, false);
-      }
-      return cb(err);
-    }
-    cb(null, true);
-  });
-  return this;
-};
-var registry = Registry;
-const Registry$1 = /* @__PURE__ */ getDefaultExportFromCjs(registry);
-const promisifyRegistry = (regKey) => ({
-  values: promisify$1(regKey.values.bind(regKey)),
-  remove: promisify$1(regKey.remove.bind(regKey)),
-  set: promisify$1(regKey.set.bind(regKey))
-});
-const SCAN_KEYS = [
-  "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-  "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-  "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run",
-  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run32",
-  "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
-  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
-  // More specific paths to avoid scanning entire software registry
-  "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
-  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
-];
-class WindowsRegistryCleaner {
-  getRegistryKey(keyPath) {
-    return new Registry$1({
-      hive: keyPath.startsWith("HKCU") ? Registry$1.HKCU : Registry$1.HKLM,
-      key: keyPath.substring(keyPath.indexOf("\\") + 1)
-    });
-  }
-  async getRegistryValues(regKey, keyPath) {
-    try {
-      const promisified = promisifyRegistry(regKey);
-      const result2 = await promisified.values();
-      return result2.map((item) => ({
-        name: item.name,
-        path: `${keyPath}\\${item.name}`,
-        value: item.value,
-        type: item.type,
-        isInvalid: false
-      }));
-    } catch (error) {
-      console.error(`Failed to get registry values for ${keyPath}:`, error);
-      return [];
-    }
-  }
-  async validateRegistryItem(item) {
-    if (item.type !== "REG_SZ" && item.type !== "REG_EXPAND_SZ") {
-      return false;
-    }
-    const systemCriticalPaths = [
-      "Windows Security",
-      "Windows Defender",
-      "Microsoft",
-      "System32"
-    ];
-    if (systemCriticalPaths.some((path2) => item.value.includes(path2))) {
-      return false;
-    }
-    const filePath = item.value.replace(/"/g, "").split(" ")[0].replace(/%([^%]+)%/g, (_, name) => process.env[name] || "");
-    if (!filePath) return false;
-    try {
-      await fs.access(filePath);
-      return false;
-    } catch {
-      return true;
-    }
-  }
-  async scanRegistry() {
-    const issues = [];
-    const scanPromises = SCAN_KEYS.map(async (keyPath) => {
-      try {
-        const regKey = this.getRegistryKey(keyPath);
-        const items = await this.getRegistryValues(regKey, keyPath);
-        const validationPromises = items.map(async (item) => {
-          if (await this.validateRegistryItem(item)) {
-            return { ...item, isInvalid: true };
-          }
-          return null;
-        });
-        const validatedItems = await Promise.all(validationPromises);
-        return validatedItems.filter(Boolean);
-      } catch (error) {
-        console.error(`Failed to scan registry key ${keyPath}:`, error);
-        return [];
-      }
-    });
-    const results = await Promise.all(scanPromises);
-    results.forEach((result2) => issues.push(...result2));
-    return issues;
-  }
-  async backupRegistry(backup) {
-    const backupDir = path$g.join(app.getPath("userData"), "registry-backups");
-    await fs.mkdir(backupDir, { recursive: true });
-    const backupPath = path$g.join(backupDir, `backup-${backup.timestamp}.json`);
-    await fs.writeFile(backupPath, JSON.stringify(backup, null, 2));
-  }
-  async cleanRegistry(items) {
-    const cleanPromises = items.map(async (item) => {
-      try {
-        const keyPath = item.path.substring(0, item.path.lastIndexOf("\\"));
-        const valueName = item.path.substring(item.path.lastIndexOf("\\") + 1);
-        const regKey = new Registry$1({
-          hive: keyPath.startsWith("HKCU") ? Registry$1.HKCU : Registry$1.HKLM,
-          key: keyPath.substring(keyPath.indexOf("\\") + 1)
-        });
-        const promisified = promisifyRegistry(regKey);
-        await promisified.remove(valueName);
-      } catch (error) {
-        console.error(`Failed to clean registry entry ${item.path}:`, error);
-        throw error;
-      }
-    });
-    await Promise.all(cleanPromises);
-  }
-  async restoreRegistry(backup) {
-    const restorePromises = backup.items.map(async (item) => {
-      try {
-        const keyPath = item.path.substring(0, item.path.lastIndexOf("\\"));
-        const valueName = item.path.substring(item.path.lastIndexOf("\\") + 1);
-        const regKey = new Registry$1({
-          hive: keyPath.startsWith("HKCU") ? Registry$1.HKCU : Registry$1.HKLM,
-          key: keyPath.substring(keyPath.indexOf("\\") + 1)
-        });
-        const promisified = promisifyRegistry(regKey);
-        await promisified.set(valueName, item.type, item.value);
-      } catch (error) {
-        console.error(`Failed to restore registry entry ${item.path}:`, error);
-        throw error;
-      }
-    });
-    await Promise.all(restorePromises);
-  }
-}
-let activeRegistryCleaner;
-if (process.platform === "win32") {
-  activeRegistryCleaner = new WindowsRegistryCleaner();
-} else {
-  class DummyRegistryCleaner {
-    async scanRegistry() {
-      console.warn("Registry scanning not supported on this OS.");
-      return [];
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async backupRegistry(_backup) {
-      console.warn("Registry backup not supported on this OS.");
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async cleanRegistry(_items) {
-      console.warn("Registry cleaning not supported on this OS.");
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async restoreRegistry(_backup) {
-      console.warn("Registry restore not supported on this OS.");
-    }
-  }
-  activeRegistryCleaner = new DummyRegistryCleaner();
-}
-const registryService = {
-  scanRegistry: async () => activeRegistryCleaner.scanRegistry(),
-  backupRegistry: async (backup) => activeRegistryCleaner.backupRegistry(backup),
-  cleanRegistry: async (items) => activeRegistryCleaner.cleanRegistry(items),
-  restoreRegistry: async (backup) => activeRegistryCleaner.restoreRegistry(backup)
-};
-function initRegistryHandlers() {
-  ipcMain.handle("scan-registry", () => registryService.scanRegistry());
-  ipcMain.handle(
-    "backup-registry",
-    (_, backup) => registryService.backupRegistry(backup)
-  );
-  ipcMain.handle(
-    "clean-registry",
-    (_, items) => registryService.cleanRegistry(items)
-  );
-  ipcMain.handle(
-    "restore-registry",
-    (_, backup) => registryService.restoreRegistry(backup)
-  );
-}
-const DATA_DIR$1 = path$g.join(app.getPath("userData"), "ai-data");
-const PERFORMANCE_LOG_FILE = path$g.join(DATA_DIR$1, "performance.json");
-const CRASH_LOG_FILE = path$g.join(DATA_DIR$1, "crashes.json");
-const APP_USAGE_LOG_FILE = path$g.join(DATA_DIR$1, "app-usage.json");
-const SYSTEM_EVENT_LOG_FILE = path$g.join(DATA_DIR$1, "system-events.json");
-const OPTIMIZATION_CACHE_FILE = path$g.join(DATA_DIR$1, "optimization-cache.json");
-class AIOptimizationService {
-  constructor() {
-    __publicField(this, "cache", null);
-    __publicField(this, "CACHE_DURATION", 5 * 60 * 1e3);
-  }
-  // 5 minutes
-  async loadCache() {
-    try {
-      if (await fs.pathExists(OPTIMIZATION_CACHE_FILE)) {
-        const cacheData = JSON.parse(await fs.readFile(OPTIMIZATION_CACHE_FILE, "utf-8"));
-        const cacheAge = Date.now() - new Date(cacheData.lastAnalysis).getTime();
-        if (cacheAge < this.CACHE_DURATION) {
-          return cacheData;
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load optimization cache:", error);
-    }
-    return null;
-  }
-  async saveCache(cache) {
-    try {
-      await fs.writeFile(OPTIMIZATION_CACHE_FILE, JSON.stringify(cache, null, 2));
-    } catch (error) {
-      console.error("Failed to save optimization cache:", error);
-    }
-  }
-  calculatePerformanceScore(logs) {
-    if (logs.length === 0) return 100;
-    const recent = logs.slice(-10);
-    const avgCpu = recent.reduce((sum, log) => sum + log.cpu, 0) / recent.length;
-    const avgMem = recent.reduce((sum, log) => sum + log.mem, 0) / recent.length;
-    const avgDisk = recent.reduce((sum, log) => sum + (log.diskUsage || 0), 0) / recent.length;
-    const cpuScore = Math.max(0, 100 - avgCpu);
-    const memScore = Math.max(0, 100 - avgMem);
-    const diskScore = Math.max(0, 100 - avgDisk);
-    return Math.round((cpuScore + memScore + diskScore) / 3);
-  }
-  analyzeTrends(logs) {
-    if (logs.length < 10) {
-      return { cpu: "stable", memory: "stable", disk: "stable" };
-    }
-    const recent = logs.slice(-5);
-    const older = logs.slice(-10, -5);
-    const avgRecentCpu = recent.reduce((sum, log) => sum + log.cpu, 0) / recent.length;
-    const avgOlderCpu = older.reduce((sum, log) => sum + log.cpu, 0) / older.length;
-    const avgRecentMem = recent.reduce((sum, log) => sum + log.mem, 0) / recent.length;
-    const avgOlderMem = older.reduce((sum, log) => sum + log.mem, 0) / older.length;
-    const avgRecentDisk = recent.reduce((sum, log) => sum + (log.diskUsage || 0), 0) / recent.length;
-    const avgOlderDisk = older.reduce((sum, log) => sum + (log.diskUsage || 0), 0) / older.length;
-    const getTrend = (recent2, older2) => {
-      const diff = recent2 - older2;
-      if (diff > 5) return "degrading";
-      if (diff < -5) return "improving";
-      return "stable";
-    };
-    return {
-      cpu: getTrend(avgRecentCpu, avgOlderCpu),
-      memory: getTrend(avgRecentMem, avgOlderMem),
-      disk: getTrend(avgRecentDisk, avgOlderDisk)
-    };
-  }
-  async initDataDir() {
-    await fs.ensureDir(DATA_DIR$1);
-  }
-  async logPerformance(data) {
-    const startTime = performance.now();
-    try {
-      let logs = [];
-      if (await fs.pathExists(PERFORMANCE_LOG_FILE)) {
-        logs = JSON.parse(await fs.readFile(PERFORMANCE_LOG_FILE, "utf-8"));
-      }
-      const enhancedData = {
-        ...data,
-        responseTime: performance.now() - startTime,
-        memoryLeaks: data.mem > 90
-        // Flag potential memory leaks
-      };
-      logs.push(enhancedData);
-      if (logs.length > 1e3) {
-        logs = logs.slice(logs.length - 1e3);
-      }
-      await fs.writeFile(PERFORMANCE_LOG_FILE, JSON.stringify(logs, null, 2));
-      this.cache = null;
-    } catch (error) {
-      console.error("Failed to log performance data:", error);
-    }
-  }
-  async logCrash(data) {
-    try {
-      let logs = [];
-      if (await fs.pathExists(CRASH_LOG_FILE)) {
-        logs = JSON.parse(await fs.readFile(CRASH_LOG_FILE, "utf-8"));
-      }
-      const enhancedData = {
-        ...data,
-        severity: this.determineCrashSeverity(data.message)
-      };
-      logs.push(enhancedData);
-      if (logs.length > 100) {
-        logs = logs.slice(logs.length - 100);
-      }
-      await fs.writeFile(CRASH_LOG_FILE, JSON.stringify(logs, null, 2));
-    } catch (error) {
-      console.error("Failed to log crash data:", error);
-    }
-  }
-  determineCrashSeverity(message) {
-    const criticalKeywords = ["segmentation fault", "access violation", "kernel panic"];
-    const highKeywords = ["out of memory", "stack overflow", "deadlock"];
-    const mediumKeywords = ["timeout", "connection lost", "file not found"];
-    const lowerMessage = message.toLowerCase();
-    if (criticalKeywords.some((keyword) => lowerMessage.includes(keyword))) {
-      return "critical";
-    }
-    if (highKeywords.some((keyword) => lowerMessage.includes(keyword))) {
-      return "high";
-    }
-    if (mediumKeywords.some((keyword) => lowerMessage.includes(keyword))) {
-      return "medium";
-    }
-    return "low";
-  }
-  async logAppUsage(data) {
-    try {
-      let logs = [];
-      if (await fs.pathExists(APP_USAGE_LOG_FILE)) {
-        logs = JSON.parse(await fs.readFile(APP_USAGE_LOG_FILE, "utf-8"));
-      }
-      logs.push(data);
-      if (logs.length > 1e3) {
-        logs = logs.slice(logs.length - 1e3);
-      }
-      await fs.writeFile(APP_USAGE_LOG_FILE, JSON.stringify(logs, null, 2));
-    } catch (error) {
-      console.error("Failed to log app usage data:", error);
-    }
-  }
-  async logSystemEvent(data) {
-    try {
-      let logs = [];
-      if (await fs.pathExists(SYSTEM_EVENT_LOG_FILE)) {
-        logs = JSON.parse(await fs.readFile(SYSTEM_EVENT_LOG_FILE, "utf-8"));
-      }
-      logs.push(data);
-      if (logs.length > 500) {
-        logs = logs.slice(logs.length - 500);
-      }
-      await fs.writeFile(SYSTEM_EVENT_LOG_FILE, JSON.stringify(logs, null, 2));
-    } catch (error) {
-      console.error("Failed to log system event data:", error);
-    }
-  }
-  async getSuggestions() {
-    this.cache = await this.loadCache();
-    if (this.cache) {
-      return this.cache.suggestions;
-    }
-    const suggestions = [];
-    try {
-      if (await fs.pathExists(PERFORMANCE_LOG_FILE)) {
-        const logs = JSON.parse(
-          await fs.readFile(PERFORMANCE_LOG_FILE, "utf-8")
-        );
-        const recentLogs = logs.slice(-50);
-        const highCpuCount = recentLogs.filter((log) => log.cpu > 80).length;
-        const highMemCount = recentLogs.filter((log) => log.mem > 85).length;
-        const memoryLeaks = recentLogs.filter((log) => log.memoryLeaks).length;
-        if (highCpuCount > 10) {
-          suggestions.push(
-            "Sustained high CPU usage detected. Consider checking background processes or running a system scan."
-          );
-        }
-        if (highMemCount > 10) {
-          suggestions.push(
-            "High memory usage detected consistently. Consider closing unused applications or increasing RAM."
-          );
-        }
-        if (memoryLeaks > 5) {
-          suggestions.push(
-            "Potential memory leaks detected. Restart applications that have been running for extended periods."
-          );
-        }
-        const lastLog = logs[logs.length - 1];
-        if (lastLog && lastLog.totalDisk > 0 && lastLog.diskUsage > 90) {
-          suggestions.push(
-            "Your disk space is running low. Consider cleaning junk files or uninstalling unused applications."
-          );
-        }
-        const performanceScore = this.calculatePerformanceScore(logs);
-        const trends = this.analyzeTrends(logs);
-        if (performanceScore < 60) {
-          suggestions.push(
-            `System performance score is ${performanceScore}/100. Consider optimizing your system for better performance.`
-          );
-        }
-        if (trends.cpu === "degrading") {
-          suggestions.push("CPU performance is degrading over time. Check for resource-intensive processes.");
-        }
-        if (trends.memory === "degrading") {
-          suggestions.push("Memory usage is increasing over time. Consider restarting applications periodically.");
-        }
-        this.cache = {
-          lastAnalysis: (/* @__PURE__ */ new Date()).toISOString(),
-          suggestions: [...suggestions],
-          performanceScore,
-          trends
-        };
-        await this.saveCache(this.cache);
-      }
-      if (await fs.pathExists(CRASH_LOG_FILE)) {
-        const crashes = JSON.parse(
-          await fs.readFile(CRASH_LOG_FILE, "utf-8")
-        );
-        const recentCrashes = crashes.filter(
-          (crash) => Date.now() - new Date(crash.timestamp).getTime() < 24 * 60 * 60 * 1e3
-        );
-        const criticalCrashes = crashes.filter((crash) => crash.severity === "critical").length;
-        if (recentCrashes.length > 3) {
-          const appName = crashes[crashes.length - 1].appName;
-          suggestions.push(
-            `${recentCrashes.length} application crashes detected in the last 24 hours for ${appName}. Consider updating or reinstalling the application.`
-          );
-        }
-        if (criticalCrashes > 0) {
-          suggestions.push(
-            `${criticalCrashes} critical system crashes detected. Run a comprehensive system diagnostic.`
-          );
-        }
-      }
-      if (await fs.pathExists(APP_USAGE_LOG_FILE)) {
-        const usageLogs = JSON.parse(
-          await fs.readFile(APP_USAGE_LOG_FILE, "utf-8")
-        );
-        const appDurations = usageLogs.reduce(
-          (acc, log) => {
-            acc[log.appName] = (acc[log.appName] || 0) + log.duration;
-            return acc;
-          },
-          {}
-        );
-        const sortedApps = Object.entries(appDurations).sort(
-          (a, b) => b[1] - a[1]
-        );
-        if (sortedApps.length > 0) {
-          const heaviestApp = sortedApps[0][0];
-          const usage = Math.round(sortedApps[0][1] / 3600);
-          suggestions.push(
-            `The application '${heaviestApp}' has been running for ${usage} hours total. If you're not actively using it, consider closing it to improve performance.`
-          );
-        }
-      }
-      if (suggestions.length === 0) {
-        suggestions.push(
-          "Your system is running well! Consider running a disk cleanup and updating your software to maintain optimal performance."
-        );
-      }
-    } catch (error) {
-      console.error("Failed to analyze AI data:", error);
-      suggestions.push("Unable to analyze system data. Please check system logs for errors.");
-    }
-    return suggestions;
-  }
-}
-const aiOptimizationService = new AIOptimizationService();
-function initAIOptimizationHandlers() {
-  ipcMain.handle("ai-init-data-dir", () => aiOptimizationService.initDataDir());
-  ipcMain.handle(
-    "ai-log-performance",
-    (_, data) => aiOptimizationService.logPerformance(data)
-  );
-  ipcMain.handle(
-    "ai-log-crash",
-    (_, data) => aiOptimizationService.logCrash(data)
-  );
-  ipcMain.handle(
-    "ai-get-suggestions",
-    () => aiOptimizationService.getSuggestions()
-  );
-}
-const DATA_DIR = path$g.join(app.getPath("userData"), "memory-data");
-const MEMORY_LOG_FILE = path$g.join(DATA_DIR, "memory_usage.json");
-const memoryOptimizerService = {
-  initDataDir: async () => {
-    await fs.ensureDir(DATA_DIR);
-  },
-  logUsage: async (data) => {
-    try {
-      let logs = [];
-      if (await fs.pathExists(MEMORY_LOG_FILE)) {
-        logs = JSON.parse(await fs.readFile(MEMORY_LOG_FILE, "utf-8"));
-      }
-      logs.push(data);
-      if (logs.length > 1e3) {
-        logs = logs.slice(logs.length - 1e3);
-      }
-      await fs.writeFile(MEMORY_LOG_FILE, JSON.stringify(logs, null, 2));
-    } catch (error) {
-      console.error("Failed to log memory usage data:", error);
-    }
-  },
-  getCurrentUsage: async () => {
-    try {
-      const memData = await si.mem();
-      const logEntry = {
-        timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-        total: memData.total,
-        used: memData.used,
-        free: memData.free,
-        usedPercentage: parseFloat(
-          (memData.used / memData.total * 100).toFixed(2)
-        )
-      };
-      return logEntry;
-    } catch (error) {
-      console.error("Failed to get current memory usage:", error);
-      throw error;
-    }
-  },
-  optimize: async () => {
-    const suggestions = [];
-    try {
-      const memData = await si.mem();
-      const usedPercentage = parseFloat(
-        (memData.used / memData.total * 100).toFixed(2)
-      );
-      if (usedPercentage > 85) {
-        suggestions.push(
-          "High memory usage detected. Consider closing unused applications to free up RAM."
-        );
-      } else {
-        suggestions.push("Memory usage is within normal limits.");
-      }
-      suggestions.push(
-        "Regularly check for applications with potential memory leaks."
-      );
-      return { success: true, suggestions };
-    } catch (error) {
-      console.error("Failed to optimize memory:", error);
-      return {
-        success: false,
-        error: error.message || "Failed to optimize memory."
-      };
-    }
-  },
-  getHistory: async () => {
-    try {
-      if (await fs.pathExists(MEMORY_LOG_FILE)) {
-        const logs = JSON.parse(
-          await fs.readFile(MEMORY_LOG_FILE, "utf-8")
-        );
-        return logs;
-      }
-      return [];
-    } catch (error) {
-      console.error("Failed to get memory usage history:", error);
-      return [];
-    }
-  }
-};
-function initMemoryOptimizerHandlers() {
-  ipcMain.handle(
-    "memory-init-data-dir",
-    () => memoryOptimizerService.initDataDir()
-  );
-  ipcMain.handle("memory-get-current-usage", async () => {
-    const logEntry = await memoryOptimizerService.getCurrentUsage();
-    memoryOptimizerService.logUsage(logEntry);
-    return logEntry;
-  });
-  ipcMain.handle("memory-optimize", () => memoryOptimizerService.optimize());
-  ipcMain.handle(
-    "memory-get-history",
-    () => memoryOptimizerService.getHistory()
-  );
-}
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path$g.dirname(__filename);
+const __dirname = require$$1$2.dirname(__filename);
 class AppWindowManager {
   constructor() {
     this.mainWindow = null;
@@ -20409,7 +19381,10 @@ class AppWindowManager {
   async sendSystemUsage() {
     try {
       if (!this.mainWindow) return;
-      const [cpuData, memData] = await Promise.all([si.currentLoad(), si.mem()]);
+      const [cpuData, memData] = await Promise.all([
+        si.currentLoad(),
+        si.mem()
+      ]);
       this.mainWindow.webContents.send("updateMetrics", {
         cpu: parseFloat(cpuData.currentLoad.toFixed(2)),
         mem: parseFloat((memData.used / memData.total * 100).toFixed(2))
@@ -20425,18 +19400,20 @@ class AppWindowManager {
       minWidth: 850,
       minHeight: 600,
       webPreferences: {
-        preload: path$g.join(__dirname, "preload.cjs"),
+        preload: require$$1$2.join(__dirname, "preload.cjs"),
         contextIsolation: true,
         nodeIntegration: false
       },
       title: "WesGuard",
-      icon: path$g.join(__dirname, "assets/icon.png")
+      icon: require$$1$2.join(__dirname, "assets/icon.png")
       // Assuming an icon file exists
     });
     if (process$1.env["VITE_DEV_SERVER_URL"]) {
       this.mainWindow.loadURL(process$1.env["VITE_DEV_SERVER_URL"]);
     } else {
-      this.mainWindow.loadFile(path$g.join(app.getAppPath(), "dist", "index.html"));
+      this.mainWindow.loadFile(
+        require$$1$2.join(app.getAppPath(), "dist", "index.html")
+      );
     }
     this.mainWindow.on("closed", () => {
       this.mainWindow = null;
@@ -20453,9 +19430,6 @@ class AppWindowManager {
     });
   }
 }
-initRegistryHandlers();
-initAIOptimizationHandlers();
-initMemoryOptimizerHandlers();
 const appWindowManager = new AppWindowManager();
 appWindowManager.init();
 app.on("window-all-closed", function() {
@@ -20480,39 +19454,54 @@ ipcMain.on("get-system-info", async (event) => {
     });
   }
 });
-ipcMain.handle("get-disk-and-network-metrics", async () => {
+ipcMain.handle("get-disk-usage", async () => {
   try {
-    const [diskData, netStats] = await Promise.all([si.fsSize(), si.networkStats()]);
-    let diskUsage = { diskUsage: 0, totalDisk: 0 };
+    const diskData = await si.fsSize();
     if (diskData.length > 0) {
       const totalDisk = diskData.reduce((acc, fs2) => acc + fs2.size, 0);
       const usedDisk = diskData.reduce((acc, fs2) => acc + fs2.used, 0);
-      diskUsage = {
-        diskUsage: parseFloat((usedDisk / totalDisk * 100).toFixed(2)),
+      const diskUsagePercentage = parseFloat(
+        (usedDisk / totalDisk * 100).toFixed(2)
+      );
+      return {
+        diskUsage: diskUsagePercentage,
         totalDisk
       };
     }
-    let networkActivity = { netRx: 0, netTx: 0 };
+    return { diskUsage: 0, totalDisk: 0 };
+  } catch (error) {
+    console.error("Error fetching disk usage:", error);
+    return { error: error.message || "Failed to fetch disk usage" };
+  }
+});
+ipcMain.handle("get-network-activity", async () => {
+  try {
+    const netStats = await si.networkStats();
     if (netStats.length > 0) {
       const totalRx = netStats.reduce((acc, net2) => acc + net2.rx_sec, 0);
       const totalTx = netStats.reduce((acc, net2) => acc + net2.tx_sec, 0);
-      networkActivity = { netRx: totalRx, netTx: totalTx };
+      return { netRx: totalRx, netTx: totalTx };
     }
-    return { ...diskUsage, ...networkActivity };
+    return { netRx: 0, netTx: 0 };
   } catch (error) {
-    console.error("Error fetching disk and network metrics:", error);
-    return {
-      error: error.message || "Failed to fetch system info"
-    };
+    console.error("Error fetching network activity:", error);
+    return { error: error.message || "Failed to fetch network activity" };
   }
 });
 ipcMain.handle("analyze-junk-files", async () => {
   const scanLocations = [
     require$$0$1.tmpdir(),
     // Common junk file locations on Windows
-    path$g.join(require$$0$1.homedir(), "Downloads"),
-    path$g.join(require$$0$1.homedir(), "AppData", "Local", "Temp"),
-    path$g.join(require$$0$1.homedir(), "AppData", "Local", "Microsoft", "Windows", "INetCache")
+    require$$1$2.join(require$$0$1.homedir(), "Downloads"),
+    require$$1$2.join(require$$0$1.homedir(), "AppData", "Local", "Temp"),
+    require$$1$2.join(
+      require$$0$1.homedir(),
+      "AppData",
+      "Local",
+      "Microsoft",
+      "Windows",
+      "INetCache"
+    )
     // Common junk file locations on macOS (uncomment if targeting macOS)
     // path.join(os.homedir(), 'Downloads'),
     // path.join(os.homedir(), 'Library', 'Caches'),
@@ -20524,7 +19513,7 @@ ipcMain.handle("analyze-junk-files", async () => {
     try {
       const files = await fs.readdir(location);
       for (const file2 of files) {
-        const filePath = path$g.join(location, file2);
+        const filePath = require$$1$2.join(location, file2);
         try {
           const stats = await fs.stat(filePath);
           if (stats.isFile()) {
@@ -20592,5 +19581,8 @@ ipcMain.on("set-system-metrics-interval", (event, interval) => {
   if (appWindowManager.usageInterval) {
     clearInterval(appWindowManager.usageInterval);
   }
-  appWindowManager.usageInterval = setInterval(() => appWindowManager.sendSystemUsage(), interval);
+  appWindowManager.usageInterval = setInterval(
+    () => appWindowManager.sendSystemUsage(),
+    interval
+  );
 });

@@ -1,91 +1,235 @@
-@import "tw-animate-css";
-@import "./styles/themes.css";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Enhanced focus styles for all form fields */
-input:focus,
-textarea:focus,
-select:focus {
-  @apply outline-none ring-2 ring-offset-2 ring-ring;
-}
-
-/* Base styles for form inputs */
-.form-input {
-  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:ring-ring focus:border-primary sm:text-sm;
-}
-
-/* Validation error state */
-.form-input.error {
-  @apply border-destructive focus:ring-destructive focus:border-destructive;
-}
-
-/* Checkbox focus and hover */
-input[type="checkbox"]:focus {
-  @apply ring-2 ring-offset-2 ring-ring;
-}
-/* Global base styles that are not theme-managed or component-specific.
-   Most styles have been moved to component CSS Modules or GlobalStyles.tsx. */
-
-/* Visually hide content but keep it accessible to screen readers */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+/* General Styles */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1a1a2e; /* Primary Background */
+  color: #e0e0e0; /* Text Primary */
+  margin: 0;
   padding: 0;
-  margin: -1px;
+  box-sizing: border-box;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #20203a; /* Secondary Background */
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #3a3a5a; /* Border/Divider */
+}
+
+.sidebar-header h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-button {
+  background-color: transparent;
+  color: #b0b0b0; /* Text Secondary */
+  border: none;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  text-align: left;
+  font-size: 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.nav-button:hover {
+  background-color: #2c2c4a; /* Tertiary Background */
+  color: #e0e0e0; /* Text Primary */
+}
+
+.nav-button.active {
+  background-color: #6a5acd; /* Highlight/Accent Color */
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.dashboard-view h2,
+.cleaner-view h2,
+.reminder-view h2,
+.settings-view h2 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #ffffff; /* White for headings */
+}
+
+/* Usage Cards */
+.usage-card {
+  background-color: #20203a; /* Secondary Background */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 150px;
+}
+
+.usage-card h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #ffffff; /* White for headings */
+  margin-bottom: 10px;
+}
+
+.usage-card .model {
+  font-size: 0.95em;
+  color: #b0b0b0; /* Text Secondary */
+  margin-bottom: 15px;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+.usage-bar-container {
+  background-color: #2c2c4a; /* Tertiary Background */
+  border-radius: 8px;
+  height: 15px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+  position: relative;
+  margin-top: 10px;
 }
 
-/* Chat Message Styling */
-.chat-message {
-  @apply p-3 rounded-lg max-w-[75%] relative; /* max-w-3/4 equivalent */
-  word-wrap: break-word;
+.usage-bar {
+  background-color: #6a5acd; /* Highlight/Accent Color */
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+  width: var(--progress-width);
+  border-radius: 8px;
 }
 
-.user-message {
-  @apply bg-blue-500 text-white ml-auto;
-  border-bottom-right-radius: 0;
+.usage-percentage {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85em;
+  font-weight: 500;
+  color: #e0e0e0; /* Text Primary */
 }
 
-.ai-message {
-  @apply bg-gray-200 text-gray-900 mr-auto;
-  border-bottom-left-radius: 0;
+/* Sidebar collapse styles */
+.sidebar.collapsed {
+  width: 60px; /* Reduced width when collapsed */
+  overflow: hidden;
+  transition: width 0.3s ease-in-out;
 }
 
-.message-timestamp {
-  @apply text-xs mt-1 opacity-75;
+.sidebar.collapsed .sidebar-header h1 {
+  display: none; /* Hide title when collapsed */
 }
 
-.user-message .message-timestamp {
-  @apply text-right;
+.sidebar.collapsed .nav-button {
+  justify-content: center; /* Center content */
+  padding: 0.75rem 0; /* Adjust padding */
 }
 
-.ai-message .message-timestamp {
-  @apply text-left;
+.sidebar.collapsed .nav-button span {
+  display: none; /* Hide text when collapsed */
 }
 
-/* System messages (e.g., API connection status) */
-.chat-message.system-message {
-  @apply bg-yellow-100 text-yellow-800 text-center mx-auto;
-  max-width: fit-content;
-  border-radius: 0.5rem;
+.sidebar.collapsed .collapse-button {
+  transform: rotate(180deg); /* Flip the arrow */
 }
 
-/* Typing Indicator */
-.loadingIndicator {
-  @apply flex items-center justify-start p-3 rounded-lg bg-gray-200 text-gray-900 mr-auto max-w-fit;
+.app.sidebar-collapsed .main-content {
+  margin-left: 60px; /* Adjust margin to account for collapsed sidebar */
+  transition: margin-left 0.3s ease-in-out;
 }
 
-.loadingIndicator .spinner {
-  @apply border-gray-400 border-t-blue-500;
+/* Navigation button styles for icons */
+.nav-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Space between icon and text */
+  padding: 0.75rem 1rem;
 }
 
-.loadingIndicator p {
-  @apply ml-2;
+.nav-button svg {
+  width: 20px; /* Icon size */
+  height: 20px;
+}
+
+.nav-button span {
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.sidebar.collapsed .nav-button {
+  padding: 0.75rem 0; /* Adjust padding for collapsed view */
+  justify-content: center; /* Center icon */
+}
+
+.sidebar.collapsed .nav-button span {
+  display: none; /* Hide text when collapsed */
+}
+
+/* Collapse button styles */
+.collapse-button {
+  background-color: transparent;
+  border: none;
+  color: #b0b0b0; /* Text Secondary */
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease-in-out;
+  margin-left: auto; /* Push to the right */
+}
+
+.collapse-button:hover {
+  color: #e0e0e0; /* Text Primary */
+}
+
+.collapse-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Sidebar logo icon styles */
+.sidebar-logo-icon {
+  width: 24px;
+  height: 24px;
+  color: #6a5acd; /* Highlight/Accent Color */
+  margin-right: 0.75rem;
+}
+
+/* Simple scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #20203a; /* Secondary Background */
+}
+::-webkit-scrollbar-thumb {
+  background: #3a3a5a; /* Border/Divider */
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5a4a9d; /* Hover/Active Accent */
 }
