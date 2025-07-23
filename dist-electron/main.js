@@ -1,9 +1,12 @@
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 import { app, ipcMain, BrowserWindow, Notification } from "electron";
 import path$g from "path";
 import require$$0$1 from "os";
 import require$$1$1 from "fs";
 import require$$1 from "child_process";
-import require$$4 from "util";
+import require$$4, { promisify as promisify$1 } from "util";
 import require$$5 from "https";
 import require$$6 from "http";
 import require$$0$2 from "net";
@@ -12,6 +15,7 @@ import process$1 from "node:process";
 import require$$0$3 from "constants";
 import require$$0$4 from "stream";
 import require$$5$1 from "assert";
+import { performance } from "perf_hooks";
 var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x) {
   return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
@@ -19841,6 +19845,11 @@ Registry.prototype.valueExists = function valueExists(name, cb) {
 };
 var registry = Registry;
 const Registry$1 = /* @__PURE__ */ getDefaultExportFromCjs(registry);
+const promisifyRegistry = (regKey) => ({
+  values: promisify$1(regKey.values.bind(regKey)),
+  remove: promisify$1(regKey.remove.bind(regKey)),
+  set: promisify$1(regKey.set.bind(regKey))
+});
 const SCAN_KEYS = [
   "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
   "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
@@ -19848,38 +19857,44 @@ const SCAN_KEYS = [
   "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run32",
   "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
   "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
-  "HKCU\\Software",
-  "HKCR\\CLSID"
+  // More specific paths to avoid scanning entire software registry
+  "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
 ];
 class WindowsRegistryCleaner {
-  async getRegistryKey(keyPath) {
+  getRegistryKey(keyPath) {
     return new Registry$1({
       hive: keyPath.startsWith("HKCU") ? Registry$1.HKCU : Registry$1.HKLM,
       key: keyPath.substring(keyPath.indexOf("\\") + 1)
     });
   }
   async getRegistryValues(regKey, keyPath) {
-    return new Promise((resolve, reject) => {
-      regKey.values(
-        (err, result2) => {
-          if (err) reject(err);
-          else {
-            resolve(
-              result2.map((item) => ({
-                name: item.name,
-                path: `${keyPath}\\${item.name}`,
-                value: item.value,
-                type: item.type,
-                isInvalid: false
-              }))
-            );
-          }
-        }
-      );
-    });
+    try {
+      const promisified = promisifyRegistry(regKey);
+      const result2 = await promisified.values();
+      return result2.map((item) => ({
+        name: item.name,
+        path: `${keyPath}\\${item.name}`,
+        value: item.value,
+        type: item.type,
+        isInvalid: false
+      }));
+    } catch (error) {
+      console.error(`Failed to get registry values for ${keyPath}:`, error);
+      return [];
+    }
   }
   async validateRegistryItem(item) {
     if (item.type !== "REG_SZ" && item.type !== "REG_EXPAND_SZ") {
+      return false;
+    }
+    const systemCriticalPaths = [
+      "Windows Security",
+      "Windows Defender",
+      "Microsoft",
+      "System32"
+    ];
+    if (systemCriticalPaths.some((path2) => item.value.includes(path2))) {
       return false;
     }
     const filePath = item.value.replace(/"/g, "").split(" ")[0].replace(/%([^%]+)%/g, (_, name) => process.env[name] || "");
@@ -19893,19 +19908,25 @@ class WindowsRegistryCleaner {
   }
   async scanRegistry() {
     const issues = [];
-    for (const keyPath of SCAN_KEYS) {
+    const scanPromises = SCAN_KEYS.map(async (keyPath) => {
       try {
-        const regKey = await this.getRegistryKey(keyPath);
+        const regKey = this.getRegistryKey(keyPath);
         const items = await this.getRegistryValues(regKey, keyPath);
-        for (const item of items) {
+        const validationPromises = items.map(async (item) => {
           if (await this.validateRegistryItem(item)) {
-            issues.push({ ...item, isInvalid: true });
+            return { ...item, isInvalid: true };
           }
-        }
+          return null;
+        });
+        const validatedItems = await Promise.all(validationPromises);
+        return validatedItems.filter(Boolean);
       } catch (error) {
         console.error(`Failed to scan registry key ${keyPath}:`, error);
+        return [];
       }
-    }
+    });
+    const results = await Promise.all(scanPromises);
+    results.forEach((result2) => issues.push(...result2));
     return issues;
   }
   async backupRegistry(backup) {
@@ -19915,7 +19936,7 @@ class WindowsRegistryCleaner {
     await fs.writeFile(backupPath, JSON.stringify(backup, null, 2));
   }
   async cleanRegistry(items) {
-    for (const item of items) {
+    const cleanPromises = items.map(async (item) => {
       try {
         const keyPath = item.path.substring(0, item.path.lastIndexOf("\\"));
         const valueName = item.path.substring(item.path.lastIndexOf("\\") + 1);
@@ -19923,20 +19944,17 @@ class WindowsRegistryCleaner {
           hive: keyPath.startsWith("HKCU") ? Registry$1.HKCU : Registry$1.HKLM,
           key: keyPath.substring(keyPath.indexOf("\\") + 1)
         });
-        await new Promise((resolve, reject) => {
-          regKey.remove(valueName, (err) => {
-            if (err) reject(err);
-            else resolve();
-          });
-        });
+        const promisified = promisifyRegistry(regKey);
+        await promisified.remove(valueName);
       } catch (error) {
         console.error(`Failed to clean registry entry ${item.path}:`, error);
         throw error;
       }
-    }
+    });
+    await Promise.all(cleanPromises);
   }
   async restoreRegistry(backup) {
-    for (const item of backup.items) {
+    const restorePromises = backup.items.map(async (item) => {
       try {
         const keyPath = item.path.substring(0, item.path.lastIndexOf("\\"));
         const valueName = item.path.substring(item.path.lastIndexOf("\\") + 1);
@@ -19944,17 +19962,14 @@ class WindowsRegistryCleaner {
           hive: keyPath.startsWith("HKCU") ? Registry$1.HKCU : Registry$1.HKLM,
           key: keyPath.substring(keyPath.indexOf("\\") + 1)
         });
-        await new Promise((resolve, reject) => {
-          regKey.set(valueName, item.type, item.value, (err) => {
-            if (err) reject(err);
-            else resolve();
-          });
-        });
+        const promisified = promisifyRegistry(regKey);
+        await promisified.set(valueName, item.type, item.value);
       } catch (error) {
         console.error(`Failed to restore registry entry ${item.path}:`, error);
         throw error;
       }
-    }
+    });
+    await Promise.all(restorePromises);
   }
 }
 let activeRegistryCleaner;
@@ -20007,32 +20022,106 @@ const PERFORMANCE_LOG_FILE = path$g.join(DATA_DIR$1, "performance.json");
 const CRASH_LOG_FILE = path$g.join(DATA_DIR$1, "crashes.json");
 const APP_USAGE_LOG_FILE = path$g.join(DATA_DIR$1, "app-usage.json");
 const SYSTEM_EVENT_LOG_FILE = path$g.join(DATA_DIR$1, "system-events.json");
-const aiOptimizationService = {
-  initDataDir: async () => {
+const OPTIMIZATION_CACHE_FILE = path$g.join(DATA_DIR$1, "optimization-cache.json");
+class AIOptimizationService {
+  constructor() {
+    __publicField(this, "cache", null);
+    __publicField(this, "CACHE_DURATION", 5 * 60 * 1e3);
+  }
+  // 5 minutes
+  async loadCache() {
+    try {
+      if (await fs.pathExists(OPTIMIZATION_CACHE_FILE)) {
+        const cacheData = JSON.parse(await fs.readFile(OPTIMIZATION_CACHE_FILE, "utf-8"));
+        const cacheAge = Date.now() - new Date(cacheData.lastAnalysis).getTime();
+        if (cacheAge < this.CACHE_DURATION) {
+          return cacheData;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load optimization cache:", error);
+    }
+    return null;
+  }
+  async saveCache(cache) {
+    try {
+      await fs.writeFile(OPTIMIZATION_CACHE_FILE, JSON.stringify(cache, null, 2));
+    } catch (error) {
+      console.error("Failed to save optimization cache:", error);
+    }
+  }
+  calculatePerformanceScore(logs) {
+    if (logs.length === 0) return 100;
+    const recent = logs.slice(-10);
+    const avgCpu = recent.reduce((sum, log) => sum + log.cpu, 0) / recent.length;
+    const avgMem = recent.reduce((sum, log) => sum + log.mem, 0) / recent.length;
+    const avgDisk = recent.reduce((sum, log) => sum + (log.diskUsage || 0), 0) / recent.length;
+    const cpuScore = Math.max(0, 100 - avgCpu);
+    const memScore = Math.max(0, 100 - avgMem);
+    const diskScore = Math.max(0, 100 - avgDisk);
+    return Math.round((cpuScore + memScore + diskScore) / 3);
+  }
+  analyzeTrends(logs) {
+    if (logs.length < 10) {
+      return { cpu: "stable", memory: "stable", disk: "stable" };
+    }
+    const recent = logs.slice(-5);
+    const older = logs.slice(-10, -5);
+    const avgRecentCpu = recent.reduce((sum, log) => sum + log.cpu, 0) / recent.length;
+    const avgOlderCpu = older.reduce((sum, log) => sum + log.cpu, 0) / older.length;
+    const avgRecentMem = recent.reduce((sum, log) => sum + log.mem, 0) / recent.length;
+    const avgOlderMem = older.reduce((sum, log) => sum + log.mem, 0) / older.length;
+    const avgRecentDisk = recent.reduce((sum, log) => sum + (log.diskUsage || 0), 0) / recent.length;
+    const avgOlderDisk = older.reduce((sum, log) => sum + (log.diskUsage || 0), 0) / older.length;
+    const getTrend = (recent2, older2) => {
+      const diff = recent2 - older2;
+      if (diff > 5) return "degrading";
+      if (diff < -5) return "improving";
+      return "stable";
+    };
+    return {
+      cpu: getTrend(avgRecentCpu, avgOlderCpu),
+      memory: getTrend(avgRecentMem, avgOlderMem),
+      disk: getTrend(avgRecentDisk, avgOlderDisk)
+    };
+  }
+  async initDataDir() {
     await fs.ensureDir(DATA_DIR$1);
-  },
-  logPerformance: async (data) => {
+  }
+  async logPerformance(data) {
+    const startTime = performance.now();
     try {
       let logs = [];
       if (await fs.pathExists(PERFORMANCE_LOG_FILE)) {
         logs = JSON.parse(await fs.readFile(PERFORMANCE_LOG_FILE, "utf-8"));
       }
-      logs.push(data);
+      const enhancedData = {
+        ...data,
+        responseTime: performance.now() - startTime,
+        memoryLeaks: data.mem > 90
+        // Flag potential memory leaks
+      };
+      logs.push(enhancedData);
       if (logs.length > 1e3) {
         logs = logs.slice(logs.length - 1e3);
       }
       await fs.writeFile(PERFORMANCE_LOG_FILE, JSON.stringify(logs, null, 2));
+      this.cache = null;
     } catch (error) {
       console.error("Failed to log performance data:", error);
     }
-  },
-  logCrash: async (data) => {
+  }
+  async logCrash(data) {
     try {
       let logs = [];
       if (await fs.pathExists(CRASH_LOG_FILE)) {
         logs = JSON.parse(await fs.readFile(CRASH_LOG_FILE, "utf-8"));
       }
-      logs.push(data);
+      const enhancedData = {
+        ...data,
+        severity: this.determineCrashSeverity(data.message)
+      };
+      logs.push(enhancedData);
       if (logs.length > 100) {
         logs = logs.slice(logs.length - 100);
       }
@@ -20040,8 +20129,24 @@ const aiOptimizationService = {
     } catch (error) {
       console.error("Failed to log crash data:", error);
     }
-  },
-  logAppUsage: async (data) => {
+  }
+  determineCrashSeverity(message) {
+    const criticalKeywords = ["segmentation fault", "access violation", "kernel panic"];
+    const highKeywords = ["out of memory", "stack overflow", "deadlock"];
+    const mediumKeywords = ["timeout", "connection lost", "file not found"];
+    const lowerMessage = message.toLowerCase();
+    if (criticalKeywords.some((keyword) => lowerMessage.includes(keyword))) {
+      return "critical";
+    }
+    if (highKeywords.some((keyword) => lowerMessage.includes(keyword))) {
+      return "high";
+    }
+    if (mediumKeywords.some((keyword) => lowerMessage.includes(keyword))) {
+      return "medium";
+    }
+    return "low";
+  }
+  async logAppUsage(data) {
     try {
       let logs = [];
       if (await fs.pathExists(APP_USAGE_LOG_FILE)) {
@@ -20055,8 +20160,8 @@ const aiOptimizationService = {
     } catch (error) {
       console.error("Failed to log app usage data:", error);
     }
-  },
-  logSystemEvent: async (data) => {
+  }
+  async logSystemEvent(data) {
     try {
       let logs = [];
       if (await fs.pathExists(SYSTEM_EVENT_LOG_FILE)) {
@@ -20070,8 +20175,12 @@ const aiOptimizationService = {
     } catch (error) {
       console.error("Failed to log system event data:", error);
     }
-  },
-  getSuggestions: async () => {
+  }
+  async getSuggestions() {
+    this.cache = await this.loadCache();
+    if (this.cache) {
+      return this.cache.suggestions;
+    }
     const suggestions = [];
     try {
       if (await fs.pathExists(PERFORMANCE_LOG_FILE)) {
@@ -20080,26 +20189,67 @@ const aiOptimizationService = {
         );
         const recentLogs = logs.slice(-50);
         const highCpuCount = recentLogs.filter((log) => log.cpu > 80).length;
+        const highMemCount = recentLogs.filter((log) => log.mem > 85).length;
+        const memoryLeaks = recentLogs.filter((log) => log.memoryLeaks).length;
         if (highCpuCount > 10) {
           suggestions.push(
             "Sustained high CPU usage detected. Consider checking background processes or running a system scan."
           );
         }
+        if (highMemCount > 10) {
+          suggestions.push(
+            "High memory usage detected consistently. Consider closing unused applications or increasing RAM."
+          );
+        }
+        if (memoryLeaks > 5) {
+          suggestions.push(
+            "Potential memory leaks detected. Restart applications that have been running for extended periods."
+          );
+        }
         const lastLog = logs[logs.length - 1];
-        if (lastLog && lastLog.totalDisk > 0 && (lastLog.totalDisk - lastLog.diskUsage) / lastLog.totalDisk < 0.1) {
+        if (lastLog && lastLog.totalDisk > 0 && lastLog.diskUsage > 90) {
           suggestions.push(
             "Your disk space is running low. Consider cleaning junk files or uninstalling unused applications."
           );
         }
+        const performanceScore = this.calculatePerformanceScore(logs);
+        const trends = this.analyzeTrends(logs);
+        if (performanceScore < 60) {
+          suggestions.push(
+            `System performance score is ${performanceScore}/100. Consider optimizing your system for better performance.`
+          );
+        }
+        if (trends.cpu === "degrading") {
+          suggestions.push("CPU performance is degrading over time. Check for resource-intensive processes.");
+        }
+        if (trends.memory === "degrading") {
+          suggestions.push("Memory usage is increasing over time. Consider restarting applications periodically.");
+        }
+        this.cache = {
+          lastAnalysis: (/* @__PURE__ */ new Date()).toISOString(),
+          suggestions: [...suggestions],
+          performanceScore,
+          trends
+        };
+        await this.saveCache(this.cache);
       }
       if (await fs.pathExists(CRASH_LOG_FILE)) {
         const crashes = JSON.parse(
           await fs.readFile(CRASH_LOG_FILE, "utf-8")
         );
-        if (crashes.length > 5) {
+        const recentCrashes = crashes.filter(
+          (crash) => Date.now() - new Date(crash.timestamp).getTime() < 24 * 60 * 60 * 1e3
+        );
+        const criticalCrashes = crashes.filter((crash) => crash.severity === "critical").length;
+        if (recentCrashes.length > 3) {
           const appName = crashes[crashes.length - 1].appName;
           suggestions.push(
-            `Multiple application crashes detected for ${appName}. This might indicate system instability or problematic software.`
+            `${recentCrashes.length} application crashes detected in the last 24 hours for ${appName}. Consider updating or reinstalling the application.`
+          );
+        }
+        if (criticalCrashes > 0) {
+          suggestions.push(
+            `${criticalCrashes} critical system crashes detected. Run a comprehensive system diagnostic.`
           );
         }
       }
@@ -20119,17 +20269,25 @@ const aiOptimizationService = {
         );
         if (sortedApps.length > 0) {
           const heaviestApp = sortedApps[0][0];
+          const usage = Math.round(sortedApps[0][1] / 3600);
           suggestions.push(
-            `The application '${heaviestApp}' is consuming the most resources. If you are not using it, consider closing it to improve performance.`
+            `The application '${heaviestApp}' has been running for ${usage} hours total. If you're not actively using it, consider closing it to improve performance.`
           );
         }
       }
+      if (suggestions.length === 0) {
+        suggestions.push(
+          "Your system is running well! Consider running a disk cleanup and updating your software to maintain optimal performance."
+        );
+      }
     } catch (error) {
       console.error("Failed to analyze AI data:", error);
+      suggestions.push("Unable to analyze system data. Please check system logs for errors.");
     }
     return suggestions;
   }
-};
+}
+const aiOptimizationService = new AIOptimizationService();
 function initAIOptimizationHandlers() {
   ipcMain.handle("ai-init-data-dir", () => aiOptimizationService.initDataDir());
   ipcMain.handle(
