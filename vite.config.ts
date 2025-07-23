@@ -11,16 +11,24 @@ export default defineConfig({
     electron({
       main: {
         entry: 'main.js',
-        // Removed outputDir as it's not a valid option here
       },
       preload: {
         input: path.join(__dirname, 'preload.cjs'),
-        // Removed outputDir as it's not a valid option here
       },
       renderer: {},
     }),
   ],
+  optimizeDeps: {
+    exclude: ['electron']
+  },
+  server: {
+    fs: {
+      strict: false
+    }
+  },
   build: {
+    target: 'esnext',
+    minify: false,
     rollupOptions: {
       external: ['systeminformation'],
       output: {
