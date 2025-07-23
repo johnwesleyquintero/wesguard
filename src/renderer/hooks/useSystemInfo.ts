@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { formatBytes } from "../utils/formatters"; // Import formatBytes
 
 interface SystemInfo {
   os: string;
@@ -120,16 +121,6 @@ const useSystemInfo = () => {
       };
     }
   }, [updateInterval]); // Depend on updateInterval to re-create interval if it changes
-
-  // Function to format bytes (can be moved to a utility file if needed elsewhere)
-  const formatBytes = (bytes: number, decimals = 2) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  };
 
   const setMetricsUpdateInterval = useCallback((interval: number) => {
     setUpdateInterval(interval);
