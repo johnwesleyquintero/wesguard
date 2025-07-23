@@ -1,7 +1,5 @@
 # WesGuard PC Optimizer
 
-<img width="1405" height="764" alt="image" src="https://github.com/user-attachments/assets/d3711723-e5d6-43ac-a59d-ea04a6c0dd94" />
-
 **A modern, lightweight, and powerful PC optimization tool built with Electron and React, designed to be fast, reliable, and easy to use.**
 
 ---
@@ -15,18 +13,6 @@ Developed with a professional workflow, WesGuard leverages a strong, scalable ar
 ## Core Features
 
 - **Consistent UI/UX Design:** A unified and modern aesthetic applied across all application tabs for a seamless user experience.
-- **Real-time System Dashboard:** Get an instant, live overview of your system's health, including:
-  - Operating System Information
-  - CPU Model and Live Usage Percentage
-  - Live Memory Usage Percentage
-  - Disk Usage
-  - Network Activity (Rx/Tx)
-
-- **Junk File Cleaner:** Safely analyze and remove temporary files and other system junk to free up valuable disk space.
-  - **Analyze:** Scans your system to calculate the total amount of recoverable space.
-  - **Clean:** Securely deletes junk files upon user confirmation.
-  - Features a consistent card-like design for improved aesthetics.
-
 - **Reminder Feature:** Set custom reminders with messages and optional system sound notifications to help manage your time or tasks.
   - Customizable reminder messages.
   - Option to play system sound notification when a reminder triggers.
